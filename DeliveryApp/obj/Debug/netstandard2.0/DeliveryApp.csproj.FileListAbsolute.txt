@@ -1,0 +1,82 @@
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/bin/Debug/netstandard2.0/DeliveryApp.deps.json
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/bin/Debug/netstandard2.0/DeliveryApp.dll
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/bin/Debug/netstandard2.0/ref/DeliveryApp.dll
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/bin/Debug/netstandard2.0/DeliveryApp.pdb
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.csprojAssemblyReference.cache
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/App.xaml.g.cs
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/MainPage.xaml.g.cs
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.csproj.CoreCompileInputs.cache
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.AssemblyInfoInputs.cache
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.AssemblyInfo.cs
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/XamlC.stamp
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.dll
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/ref/DeliveryApp.dll
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.pdb
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/SecondPage.xaml.g.cs
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/FifthPage.xaml.g.cs
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/FourthPage.xaml.g.cs
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/SixthPage.xaml.g.cs
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/ThirdPage.xaml.g.cs
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/SkipPage.xaml.g.cs
+/Users/geysit/Projects/DeliveryApp/DeliveryApp/obj/Debug/netstandard2.0/UserAccountInfo.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/bin/Debug/netstandard2.0/DeliveryApp.deps.json
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/bin/Debug/netstandard2.0/DeliveryApp.dll
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/bin/Debug/netstandard2.0/ref/DeliveryApp.dll
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/bin/Debug/netstandard2.0/DeliveryApp.pdb
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.csprojAssemblyReference.cache
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/App.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/FifthPage.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/FourthPage.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/MainPage.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/SecondPage.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/SixthPage.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/SkipPage.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/ThirdPage.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/UserAccountInfo.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.AssemblyInfoInputs.cache
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.AssemblyInfo.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.csproj.CoreCompileInputs.cache
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/XamlC.stamp
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.dll
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/ref/DeliveryApp.dll
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered/DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.pdb
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/bin/Debug/netstandard2.0/DeliveryApp.deps.json
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/bin/Debug/netstandard2.0/DeliveryApp.dll
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/bin/Debug/netstandard2.0/ref/DeliveryApp.dll
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/bin/Debug/netstandard2.0/DeliveryApp.pdb
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.csprojAssemblyReference.cache
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/App.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/FourthPage.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/MainPage.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/SecondPage.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/SixthPage.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/UserAccountInfo.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.AssemblyInfoInputs.cache
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.AssemblyInfo.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.csproj.CoreCompileInputs.cache
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/XamlC.stamp
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.dll
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/ref/DeliveryApp.dll
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.pdb
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/TransitionPage.xaml.g.cs
+/Users/geysit/Desktop/IO - Just Delivered Copy/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/NewUserPage.xaml.g.cs
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/App.xaml.g.cs
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/FourthPage.xaml.g.cs
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/MainPage.xaml.g.cs
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/NewUserPage.xaml.g.cs
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/ScannerPage.xaml.g.cs
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/SixthPage.xaml.g.cs
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/TransitionPage.xaml.g.cs
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/UserAccountInfo.xaml.g.cs
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.AssemblyInfoInputs.cache
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.AssemblyInfo.cs
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.csproj.CoreCompileInputs.cache
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/bin/Debug/netstandard2.0/DeliveryApp.deps.json
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/bin/Debug/netstandard2.0/DeliveryApp.dll
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/bin/Debug/netstandard2.0/ref/DeliveryApp.dll
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/bin/Debug/netstandard2.0/DeliveryApp.pdb
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/XamlC.stamp
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.dll
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/ref/DeliveryApp.dll
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.pdb
+/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/obj/Debug/netstandard2.0/DeliveryApp.csprojAssemblyReference.cache

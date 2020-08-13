@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="DeliveryApp.SixthPage"
+    NavigationPage.HasNavigationBar="False">
+    <RelativeLayout>
+        
+        <Frame
+            x:Name="bottomSheet" 
+            HasShadow="true"
+            CornerRadius="8"
+            Padding="1,4,1,0"
+            BackgroundColor="#faf9f8" 
+            RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0.85,Constant=0}"
+            RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
+            RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1,Constant=0}">
+            <Frame.GestureRecognizers>
+                <PanGestureRecognizer
+                    PanUpdated="PanGestureRecognizer_PanUpdated"/>
+            </Frame.GestureRecognizers>
+            <StackLayout>
+
+                <StackLayout Spacing="5">
+                    <BoxView
+                        HeightRequest="5"
+                        CornerRadius="2"
+                        WidthRequest="50"
+                        BackgroundColor="Gray"
+                        HorizontalOptions="Center"/>
+                        <!--/Delete Text property [Text="Take picture of delivery"]-->
+                        <Label
+                            x:Name="swipeFrameNavigationMessage"
+                            TextColor="Red"
+                            FontSize="Small"
+                            FontAttributes="Bold"
+                            HorizontalOptions="Center">
+
+                        </Label>
+                        <Label
+                            x:Name="swipeFrameNavigationSubMessage"
+                            TextColor="Red"
+                            FontSize="Small"
+                            FontAttributes="Bold"
+                            HorizontalOptions="Center">
+                            <Label.HeightRequest>
+                                <OnPlatform x:TypeArguments="x:Double">
+                                    <On Platform="Android" Value="50"></On>
+                                </OnPlatform>
+                            </Label.HeightRequest>
+                        </Label>
+                        <!--<Button x:Name="returnButton" Clicked="returnButton_Clicked"></Button>-->
+                    
+                    <BoxView
+                        x:Name="titleSwipeDividerLine"
+                        HeightRequest="0.5"
+                        Color="Black"
+                        Margin="5,-5,5,0">
+                    </BoxView>
+                </StackLayout>
+
+                <StackLayout
+                    Margin="30,10,0,0">
+                    <Label
+                        x:Name="customerSectionTitle"
+                        Text="Customer"
+                        TextColor="Red"
+                        FontSize="Medium"
+                        FontAttributes="Bold">
+                    </Label>
+                    <!--/Delete Text property [Text="Carlos. T"]-->
+                    <Label
+                        x:Name="customerNameLabel"
+                        TextColor="Black"
+                        Margin="20,0,0,0"
+                        FontSize="Small"
+                        FontAttributes="Bold">
+                    </Label>
+
+                    <RelativeLayout
+                        x:Name="customersOptionsLayout"
+                        Margin="20,0,0,0"
+                        HeightRequest="30">
+
+                        <ImageButton
+                            x:Name="callButton"
+                            Source="callIcon.png"
+                            CornerRadius="5"
+                            Scale="0.9"
+                            BackgroundColor="#faf9f8"
+                            Clicked="CallCustomer">
+                        </ImageButton>
+                    </RelativeLayout>
+                </StackLayout>
+
+                <BoxView
+                    x:Name="dividerLine1"
+                    HeightRequest="1"
+                    Color="Black"
+                    Margin="30,0,30,0">
+                </BoxView>
+
+                <StackLayout
+                    Margin="30,10,0,0">
+
+                    <Label
+                        x:Name="addressSectionTitle"
+                        Text="Address"
+                        TextColor="Red"
+                        FontSize="Medium"
+                        FontAttributes="Bold">
+                    </Label>
+                    <!--/Delete Text property [Text="1658 Sacramento St"]-->
+                    <Label
+                        x:Name="addressLabel"
+                        TextColor="Black"
+                        Margin="20,0,0,0"
+                        FontSize="Small"
+                        FontAttributes="Bold">
+                    </Label>
+                    <!--/Delete Text property [Text="San Francisco, CA, 94109"]-->
+                    <Label
+                        x:Name="cityStateZipcodeLabel"
+                        TextColor="Black"
+                        Margin="20,0,0,0"
+                        FontSize="Small"
+                        FontAttributes="Bold">
+                    </Label>
+
+                </StackLayout>
+
+                <BoxView
+                    x:Name="dividerLine2"
+                    HeightRequest="1"
+                    Color="Black"
+                    Margin="30,0,30,0">
+                </BoxView>
+
+                <StackLayout
+                    Margin="30,10,0,0">
+                    <Label
+                        x:Name="deliveryInstructionsSectionTitle"
+                        Text="Delivery Instructions"
+                        TextColor="Red"
+                        FontSize="Medium"
+                        FontAttributes="Bold">
+                    </Label>
+
+                    <Label
+                        x:Name="deliveryInstructionsMessage"
+                        TextColor="Black"
+                        Margin="20,0,0,0"
+                        FontSize="Small"
+                        FontAttributes="Bold">
+                    </Label>
+                </StackLayout>
+
+                <BoxView
+                    x:Name="dividerLine3"
+                    HeightRequest="1"
+                    Color="Black"
+                    Margin="30,0,30,0">
+                </BoxView>
+
+                <StackLayout
+                    Margin="30,10,0,0">
+
+                    <Label
+                        x:Name="itemsSectionTitle"
+                        Text="Items"
+                        TextColor="Red"
+                        FontSize="Medium"
+                        FontAttributes="Bold">
+                    </Label>
+
+                    <Label
+                        Margin="20,0,0,0"
+                        Text=""
+                        FontSize="Small"
+                        FontAttributes="Bold">
+                    </Label>
+                </StackLayout>
+
+                <BoxView
+                    x:Name="dividerLine4"
+                    HeightRequest="1"
+                    Color="Black"
+                    Margin="30,0,30,0">
+                </BoxView>
+            </StackLayout>
+        </Frame>
+    </RelativeLayout>
+</ContentPage>

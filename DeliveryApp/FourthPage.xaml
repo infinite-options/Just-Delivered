@@ -1,0 +1,396 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
+    x:Class="DeliveryApp.FourthPage"
+    NavigationPage.HasNavigationBar="False">
+    
+    <RelativeLayout>
+                <maps:Map
+                    x:Name="map"
+                    IsVisible="true">
+                </maps:Map>
+                <ImageButton
+                    x:Name="helpButton"
+                    Source="jdHelpIcon.png"
+                    BackgroundColor="#faf9f8"
+                    CornerRadius="15"
+                    Padding="0,5,0,0"
+                    Clicked="ContactCustomerService">
+                    <ImageButton.HeightRequest>
+                        <OnPlatform x:TypeArguments="x:Double">
+                            <On Platform="Android" Value="40"></On>
+                            <On Platform="iOS" Value="35"></On>
+                        </OnPlatform>
+                    </ImageButton.HeightRequest>
+                    <ImageButton.WidthRequest>
+                        <OnPlatform x:TypeArguments="x:Double">
+                            <On Platform="Android" Value="40"></On>
+                            <On Platform="iOS" Value="35"></On>
+                        </OnPlatform>
+                    </ImageButton.WidthRequest>
+                </ImageButton>
+                <!-- change the Yconstaint factor to 0 when previewing elements on Split mode-->
+                <Frame
+                    x:Name="bottomSheet" 
+                    HasShadow="true"
+                    CornerRadius="8"
+                    Padding="1,4,1,0"
+                    BackgroundColor="#faf9f8"
+                    RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0.9,Constant=0}"
+                    RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
+                    RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1,Constant=0}">
+                    <Frame.GestureRecognizers>
+                        <PanGestureRecognizer
+                            PanUpdated="PanGestureRecognizer_PanUpdated"/>
+                    </Frame.GestureRecognizers>
+                    <StackLayout>
+                        <StackLayout Spacing="5">
+                            <BoxView
+                                HeightRequest="5"
+                                CornerRadius="2"
+                                WidthRequest="50"
+                                BackgroundColor="Gray"
+                                HorizontalOptions="Center"/>
+
+                            <RelativeLayout>
+                                <!--/Delete Text property [Text="1"]-->
+                                <Label
+                                    x:Name="deliveryNumber"
+                                    TextColor="Red"
+                                    FontAttributes="Bold"
+                                    Margin="25,0,0,0">
+                                    <Label.FontSize>
+                                        <OnPlatform x:TypeArguments="x:Double">
+                                            <On Platform="Android" Value="30"></On>
+                                            <On Platform="iOS" Value="30"></On>
+                                        </OnPlatform>
+                                    </Label.FontSize>
+                                </Label>
+                        
+                                <Label
+                                    x:Name="deliveryNumberLabel"
+                                    Text="Delivery"
+                                    TextColor="Red"
+                                    FontSize="7"
+                                    FontAttributes="Bold"
+                                    Margin="20,35,0,0">
+                                    <Label.HeightRequest>
+                                        <OnPlatform x:TypeArguments="x:Double">
+                                            <On Platform="Android" Value="10"></On>
+                                            <On Platform="iOS" Value="10"></On>
+                                        </OnPlatform>
+                                    </Label.HeightRequest>
+                                </Label>
+
+                                <!--/Delete Margin & Text property [Margin="340,0,0,0"],[Text="7"]-->
+                                <Button
+                                    x:Name="totalDeliveriesNumber"
+                                    TextColor="Red"
+                                    FontAttributes="Bold"
+                                    Clicked="ShowTotalDeliveries"
+                                    BackgroundColor="#faf9f8">
+                                    <Button.FontSize>
+                                        <OnPlatform x:TypeArguments="x:Double">
+                                            <On Platform="Android" Value="30"></On>
+                                            <On Platform="iOS" Value="30"></On>
+                                        </OnPlatform>
+                                    </Button.FontSize></Button>
+
+                                <!--/Delete Margin property [Margin="320,35,0,0"]-->
+                                <Label
+                                    x:Name="totalDeliveiesLabel"
+                                    Text="Total Deliveries"
+                                    TextColor="Red"
+                                    FontAttributes="Bold"
+                                    FontSize="7"></Label>
+
+                                <!--/Delete Margin property [Margin="100,0,0,0"]-->
+                                <Label
+                                    x:Name="titleSwipeFrame"
+                                    Text="Swipe up to view delivery details"
+                                    TextColor="Red"
+                                    FontAttributes="Bold"></Label>
+
+                                <!--/Delete Margin property [Margin="90,25,0,0"]-->
+                                <BoxView
+                                    x:Name="titleSwipeFrameUnderline"
+                                    HeightRequest="0.5"
+                                    Color="Black">
+                                    <BoxView.WidthRequest>
+                                        <OnPlatform x:TypeArguments="x:Double">
+                                            <On Platform="Android" Value="220"></On>
+                                            <On Platform="iOS" Value="260"></On>
+                                        </OnPlatform>
+                                    </BoxView.WidthRequest></BoxView>
+                        
+                            </RelativeLayout>
+                    
+                            <BoxView
+                                x:Name="titleSwipeDividerLine"
+                                HeightRequest="0.5"
+                                Color="Black"
+                                Margin="5,0,5,0"></BoxView>
+                        </StackLayout>
+
+                        <StackLayout>
+                            <!--/Delete Margin property [Margin="30,10,0,0"]-->
+                            <StackLayout
+                                x:Name="customerSectionStack">
+
+                                <Label
+                                    x:Name="customerSectionTitle"
+                                    Text="Customer"
+                                    TextColor="Red"
+                                    FontSize="Medium"
+                                    FontAttributes="Bold">
+                                </Label>
+                                <!--/Delete Text property [Text="Carlos. T"]-->
+                                <Label
+                                    x:Name="customerNameLabel"
+                                    TextColor="Black"
+                                    Margin="20,0,0,0"
+                                    FontSize="Small"
+                                    FontAttributes="Bold">
+                                </Label>
+
+                                <RelativeLayout
+                                    x:Name="customersOptionsLayout"
+                                    Margin="20,0,0,0"
+                                    HeightRequest="30">
+
+                                    <ImageButton
+                                        x:Name="callButton"
+                                        Source="callIcon.png"
+                                        CornerRadius="5"
+                                        Scale="0.9"
+                                        BackgroundColor="#faf9f8"
+                                        Clicked="CallCustomer">
+                                    </ImageButton>
+
+                                    <ImageButton
+                                        x:Name="textButton"
+                                        Source="textMessageIcon.png"
+                                        CornerRadius="5"
+                                        Scale="0.9"
+                                        Margin="50,0,0,0"
+                                        BackgroundColor="#faf9f8"
+                                        Clicked="TextCustomer">
+                                    </ImageButton>
+                                </RelativeLayout></StackLayout>
+
+                            <BoxView
+                                x:Name="dividerLine1"
+                                HeightRequest="1"
+                                Color="Black"
+                                Margin="30,0,30,0"></BoxView>
+
+                            <StackLayout
+                                Margin="30,10,0,0">
+
+                                <Label
+                                    x:Name="addressSectionTitle"
+                                    Text="Address"
+                                    TextColor="Red"
+                                    FontSize="Medium"
+                                    FontAttributes="Bold"></Label>
+                                <!--/Delete Text property [Text="1658 Sacramento St"]-->
+                                <Label
+                                    x:Name="addressLabel"
+                                    TextColor="Black"
+                                    Margin="20,0,0,0"
+                                    FontSize="Small"
+                                    FontAttributes="Bold"></Label>
+                                <!--/Delete Text property [Text="San Francisco, CA, 94109"]-->
+                                <Label
+                                    x:Name="cityStateZipcodeLabel"
+                                    TextColor="Black"
+                                    Margin="20,0,0,0"
+                                    FontSize="Small"
+                                    FontAttributes="Bold"></Label>
+
+                                <RelativeLayout
+                                    x:Name="customerAddressLabelLayout"
+                                    Margin="20,0,0,0"
+                                    HeightRequest="30">
+                                    <!--<ImageButton x:Name="getDirectionsButton" CornerRadius="5" Scale="0.9" Clicked="getDirections"></ImageButton>-->
+                                    <!--<ImageButton x:Name="skipDeliveryButton" CornerRadius="5" Scale="0.9"  Margin="50,0,0,0" Clicked="skipDelivery"></ImageButton>-->
+                                    <Button
+                                        x:Name="getDirectionsButton"
+                                        Text="Get Directions"
+                                        TextColor="Red"
+                                        FontSize="Micro"
+                                        FontAttributes="Bold"
+                                        BackgroundColor="WhiteSmoke"
+                                        BorderColor="Red"
+                                        BorderWidth="0.6"
+                                        Clicked="GetDirections">
+
+                                        <Button.HeightRequest>
+                                            <OnPlatform x:TypeArguments="x:Double">
+                                                <On Platform="Android" Value="25"></On>
+                                                <On Platform="iOS" Value="20"></On>
+                                            </OnPlatform>
+                                        </Button.HeightRequest>
+
+                                        <Button.Padding>
+                                            <OnPlatform x:TypeArguments="Thickness">
+                                                <On Platform="Android" Value="0"></On>
+                                                <On Platform="iOS" Value="5,0,5,0"></On>
+                                            </OnPlatform>
+                                        </Button.Padding>
+                                    </Button>
+
+                                    <Button
+                                        x:Name="confirmDelivery"
+                                        Text="Skip Directions"
+                                        TextColor="Black"
+                                        FontSize="Micro"
+                                        FontAttributes="Bold"
+                                        BackgroundColor="WhiteSmoke"
+                                        BorderColor="Red"
+                                        BorderWidth="0.6"
+                                        Clicked="SkipGetDirections">
+
+                                        <Button.HeightRequest>
+                                            <OnPlatform x:TypeArguments="x:Double">
+                                                <On Platform="Android" Value="25"></On>
+                                                <On Platform="iOS" Value="20"></On>
+                                            </OnPlatform>
+                                        </Button.HeightRequest>
+
+                                        <Button.Padding>
+                                            <OnPlatform x:TypeArguments="Thickness">
+                                                <On Platform="Android" Value="5,0,5,0"></On>
+                                                <On Platform="iOS" Value="5,0,5,0"></On>
+                                            </OnPlatform>
+                                        </Button.Padding>
+
+                                        <Button.Margin>
+                                            <OnPlatform x:TypeArguments="Thickness">
+                                                <On Platform="Android" Value="100,0,0,0"></On>
+                                                <On Platform="iOS" Value="100,0,0,0"></On>
+                                            </OnPlatform>
+                                        </Button.Margin>
+                                    </Button>
+
+                                    <Button
+                                        x:Name="skipDeliveryButton"
+                                        Text="Skip Delivery"
+                                        TextColor="Black"
+                                        FontSize="Micro"
+                                        FontAttributes="Bold"
+                                        BackgroundColor="WhiteSmoke"
+                                        BorderColor="Red"
+                                        BorderWidth="0.6"
+                                        Clicked="SkipDelivery">
+
+                                        <Button.HeightRequest>
+                                            <OnPlatform x:TypeArguments="x:Double">
+                                                <On Platform="Android" Value="25"></On>
+                                                <On Platform="iOS" Value="20"></On>
+                                            </OnPlatform>
+                                        </Button.HeightRequest>
+
+                                        <Button.Padding>
+                                            <OnPlatform x:TypeArguments="Thickness">
+                                                <On Platform="Android" Value="0"></On>
+                                                <On Platform="iOS" Value="5,0,5,0"></On>
+                                            </OnPlatform>
+                                        </Button.Padding>
+
+                                        <Button.Margin>
+                                            <OnPlatform x:TypeArguments="Thickness">
+                                                <On Platform="Android" Value="205,0,0,0"></On>
+                                                <On Platform="iOS" Value="205,0,0,0"></On>
+                                            </OnPlatform>
+                                        </Button.Margin>
+                                    </Button>
+                                </RelativeLayout></StackLayout>
+
+                            <BoxView
+                                x:Name="dividerLine2"
+                                HeightRequest="1"
+                                Color="Black"
+                                Margin="30,0,30,0"></BoxView>
+
+                            <StackLayout
+                                Margin="30,10,0,0">
+                                <Label
+                                    x:Name="deliveryInstructionsSectionTitle"
+                                    Text="Delivery Instructions"
+                                    TextColor="Red"
+                                    FontSize="Medium"
+                                    FontAttributes="Bold"></Label>
+
+                                <Label
+                                    x:Name="deliveryInstructionsMessage"
+                                    TextColor="Black"
+                                    Margin="20,0,0,0"
+                                    FontSize="Small"
+                                    FontAttributes="Bold"></Label></StackLayout>
+
+                            <BoxView
+                                x:Name="dividerLine3"
+                                HeightRequest="1"
+                                Color="Black"
+                                Margin="30,0,30,0"></BoxView>
+
+                            <StackLayout
+                                Margin="30,10,0,0">
+
+                                <Label
+                                    x:Name="itemsSectionTitle"
+                                    Text="Items"
+                                    TextColor="Red"
+                                    FontSize="Medium"
+                                    FontAttributes="Bold"></Label>
+
+                                <Label
+                                    Margin="20,0,0,0"
+                                    Text=""
+                                    FontSize="Small"
+                                    FontAttributes="Bold"></Label></StackLayout>
+
+                            <BoxView
+                                x:Name="dividerLine4"
+                                HeightRequest="1"
+                                Color="Black"
+                                Margin="30,0,30,0"></BoxView>
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+                <StackLayout
+            x:Name="deliveriesList"
+            BackgroundColor="#faf9f8">
+            <Label
+                Text="Deliveries List"
+                TextColor="Red"
+                FontSize="Medium"
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                Margin = "0,10,0,0">
+
+            </Label>
+            <Button
+                Text="Hide list"
+                TextColor="Red"
+                BorderColor="Red"
+                BackgroundColor="#faf9f8"
+                BorderWidth="1"
+                Margin="10,0,10,0"
+                Clicked="HideTotalDeliveries">
+                
+            </Button>
+            <ScrollView
+                x:Name="scrollFrame"
+                BackgroundColor="#faf9f8">
+                <StackLayout
+                    x:Name="listOfDeliveries">
+                </StackLayout>
+            </ScrollView>
+        </StackLayout>
+     </RelativeLayout>
+</ContentPage>
+     

@@ -1,0 +1,64 @@
+{
+  "version": 2,
+  "dgSpecHash": "Qg9ZjRtHJk0/DB8UoUIbLpUTXNM8mN+OFPfrkmupGadyMyrbOd+WlqNFCQ5FdZE5RKRmIU+j6m/a4hJMzqSV1g==",
+  "success": true,
+  "projectFilePath": "/Users/geysit/Desktop/Infinite Options/Just Delivered Versions/Just Delivered (Master 1.7 iOS & Android Lastest Version) /DeliveryApp/DeliveryApp.csproj",
+  "expectedPackageFiles": [
+    "/Users/geysit/.nuget/packages/leadtools.barcode/20.0.0.8/leadtools.barcode.20.0.0.8.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/leadtools.camera.xamarin/20.0.0.8/leadtools.camera.xamarin.20.0.0.8.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/leadtools.formats.raster.common/20.0.0.8/leadtools.formats.raster.common.20.0.0.8.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/leadtools.image.processing/20.0.0.8/leadtools.image.processing.20.0.0.8.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/leadtools.kernel/20.0.0.8/leadtools.kernel.20.0.0.8.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/leadtools.kernel.netstandard/20.0.0.8/leadtools.kernel.netstandard.20.0.0.8.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/microsoft.bcl/1.1.10/microsoft.bcl.1.1.10.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/microsoft.bcl.build/1.0.14/microsoft.bcl.build.1.0.14.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/microsoft.net.http/2.2.29/microsoft.net.http.2.2.29.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/microsoft.netcore.platforms/1.1.0/microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/microsoft.netcore.targets/1.1.0/microsoft.netcore.targets.1.1.0.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/netstandard.library/2.0.3/netstandard.library.2.0.3.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/newtonsoft.json/12.0.3/newtonsoft.json.12.0.3.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/system.globalization/4.3.0/system.globalization.4.3.0.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/system.io/4.3.0/system.io.4.3.0.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/system.numerics.vectors/4.5.0/system.numerics.vectors.4.5.0.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/system.reflection/4.3.0/system.reflection.4.3.0.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/system.reflection.primitives/4.3.0/system.reflection.primitives.4.3.0.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/system.resources.resourcemanager/4.3.0/system.resources.resourcemanager.4.3.0.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/system.runtime/4.3.0/system.runtime.4.3.0.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/system.runtime.serialization.primitives/4.3.0/system.runtime.serialization.primitives.4.3.0.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/system.text.encoding/4.3.0/system.text.encoding.4.3.0.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/system.threading.tasks/4.3.0/system.threading.tasks.4.3.0.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/xam.plugin.connectivity/3.2.0/xam.plugin.connectivity.3.2.0.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/xam.plugin.externalmaps/4.0.1/xam.plugin.externalmaps.4.0.1.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/xam.plugin.geolocator/4.5.0.6/xam.plugin.geolocator.4.5.0.6.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/xam.plugin.latestversion/1.1.2/xam.plugin.latestversion.1.1.2.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/xam.plugin.media/5.0.1/xam.plugin.media.5.0.1.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/xam.plugins.messaging/5.2.0/xam.plugins.messaging.5.2.0.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/xamarin.essentials/1.5.3.2/xamarin.essentials.1.5.3.2.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/xamarin.forms/4.7.0.1142/xamarin.forms.4.7.0.1142.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/xamarin.forms.maps/4.7.0.1142/xamarin.forms.maps.4.7.0.1142.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/zxing.net.mobile/2.4.1/zxing.net.mobile.2.4.1.nupkg.sha512",
+    "/Users/geysit/.nuget/packages/zxing.net.mobile.forms/2.4.1/zxing.net.mobile.forms.2.4.1.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'Microsoft.Bcl 1.1.10' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework '.NETStandard,Version=v2.0'. This package may not be fully compatible with your project.",
+      "libraryId": "Microsoft.Bcl",
+      "targetGraphs": [
+        ".NETStandard,Version=v2.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'Microsoft.Net.Http 2.2.29' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework '.NETStandard,Version=v2.0'. This package may not be fully compatible with your project.",
+      "libraryId": "Microsoft.Net.Http",
+      "targetGraphs": [
+        ".NETStandard,Version=v2.0"
+      ]
+    }
+  ]
+}
