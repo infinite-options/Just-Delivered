@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
+    x:Class="JustDelivered.Views.DeliveriesPage">
+    <ContentPage.Content>
+        <StackLayout BackgroundColor="White" x:Name="MyStack">
+            <RelativeLayout HeightRequest="600" BackgroundColor="White">
+                <maps:Map
+                    HeightRequest="600"
+                    x:Name="DeliveriesMap">
+                </maps:Map>
+                <Grid x:Name="HelpButtonRow" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <BoxView Grid.Row="0" Grid.Column="2" HeightRequest="100" Color="Transparent"></BoxView>
+                </Grid>
+                <Frame
+                    x:Name="BottomSheet" 
+                    HasShadow="true"
+                    CornerRadius="8"
+                    Padding="1,4,1,0"
+                    BackgroundColor="#faf9f8"
+                    RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0.9,Constant=0}"
+                    RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
+                    RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1,Constant=0}">
+                    <Frame.GestureRecognizers>
+                        <PanGestureRecognizer
+                            PanUpdated="PanGestureRecognizer_PanUpdated"/>
+                    </Frame.GestureRecognizers>
+                    <StackLayout>
+                        <StackLayout Padding="100,0,100,0">
+                            <BoxView HeightRequest="3" Color="Gray" ></BoxView>
+                        </StackLayout>
+
+                        <Grid HeightRequest="50">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="80"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" x:Name="CurrentDeliveryNumber" FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center"></Label>
+                            <Label Grid.Row="0" Grid.Column="1" Text="Swipe up to view delivery details" TextColor="Gray" FontSize="Small" FontAttributes="Bold"  HorizontalTextAlignment="Center" VerticalTextAlignment="Center"></Label>
+                            <Label Grid.Row="0" Grid.Column="2" x:Name="TotalDeliveriesNumber" FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="ShowBackupDeliveriesFrame" ></TapGestureRecognizer>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Grid>
+
+                        <Frame Margin="10,20,10,0" CornerRadius="10" Padding="0" >
+                            <StackLayout Padding="20,0,20,0">
+                                <Label Text="CUSTOMER" FontSize="Header" TextColor="Red" FontAttributes="Bold"></Label>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="80"></ColumnDefinition>
+                                        <ColumnDefinition Width="80"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Padding="20,0,0,0" Grid.Row="0" Grid.Column="0" x:Name="CustomerName" FontAttributes="Bold" FontSize="Small" VerticalOptions="Center" ></Label>
+                                    <ImageButton Grid.Row="0" Grid.Column="1" HeightRequest="30" Source="CallIcon.png" HorizontalOptions="End" Clicked="CallCustomer"></ImageButton>
+                                    <ImageButton Grid.Row="0" Grid.Column="2" HeightRequest="30" Source="TextIcon.png" Clicked="TextCustomer"></ImageButton>
+                                </Grid>
+                            </StackLayout>
+                        </Frame>
+
+                        <Frame Margin="10,0,10,0" Padding="0" CornerRadius="10">
+                            <StackLayout Padding="20,0,20,0">
+                                <Label Text="ADDRESS" FontSize="Header" TextColor="Red" FontAttributes="Bold"></Label>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="50"></ColumnDefinition>
+                                        <ColumnDefinition Width="50"></ColumnDefinition>
+                                        <ColumnDefinition Width="50"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Padding="20,0,0,0" Grid.Row="0" Grid.Column="0" x:Name="CustomerAddress" FontAttributes="Bold" FontSize="Small" VerticalOptions="Center" ></Label>
+                                    <Label Grid.Row="0" Grid.Column="1" Text="Get Directions" FontSize="10" >
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="GetDirections"></TapGestureRecognizer>
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                    <Label Grid.Row="0" Grid.Column="2" Text="Skip Directions" FontSize="10">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="SkipDirections"></TapGestureRecognizer>
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                    <Label Grid.Row="0" Grid.Column="3" Text="Skip Delivery" FontSize="10">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="SkipDelivery"></TapGestureRecognizer>
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </Grid>
+                            </StackLayout>
+                        </Frame>
+
+                        <Frame Margin="10,0,10,0" Padding="0" CornerRadius="10">
+                            <StackLayout Padding="20,0,20,0">
+                                <Label Text="DELIVERY INSTRUCTIONS" FontSize="Header" TextColor="Red" FontAttributes="Bold"></Label>
+                                <StackLayout Padding="20,0,0,0" >
+                                    <Label x:Name="DeliveryInstructions" FontSize="Small"></Label>
+                                </StackLayout>
+                            </StackLayout>
+                        </Frame>
+
+                        <Frame Margin="10,0,10,0" Padding="0" CornerRadius="10">
+                            <StackLayout Padding="20,0,20,0">
+                                <Label Text="ORDER ITEMS" FontSize="Header" TextColor="Red" FontAttributes="Bold" ></Label>
+                                <ListView HeightRequest="150">
+
+                                </ListView>
+                            </StackLayout>
+                        </Frame>
+                    </StackLayout>
+                </Frame>
+                    <StackLayout
+                    x:Name="BackupDisplay"
+                    BackgroundColor="#faf9f8">
+                        <Label
+                            Text="Deliveries List"
+                            TextColor="Red"
+                            FontSize="Medium"
+                            FontAttributes="Bold"
+                            HorizontalOptions="Center"
+                            Margin = "0,10,0,0">
+
+                        </Label>
+
+                        <Button
+                            Text="Hide list"
+                            TextColor="Red"
+                            BorderColor="Red"
+                            BackgroundColor="#faf9f8"
+                            BorderWidth="1"
+                            Margin="10,0,10,0"
+                            Clicked="HideBackupDeliveriesFrame">
+                
+                        </Button>
+
+                        <CollectionView x:Name="BackupDeliveriesList" >
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackLayout Padding="20,10,20,0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="30"></ColumnDefinition>
+                                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                                <ColumnDefinition Width="25"></ColumnDefinition>
+                                                <ColumnDefinition Width="25"></ColumnDefinition>
+                                                <ColumnDefinition Width="50"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <StackLayout Grid.Column="0" HeightRequest="40" >
+                                                <Frame Padding="0" CornerRadius="2" BorderColor="Black" HasShadow="False" >
+                                                    <Label Text="{Binding ID}" FontAttributes="Bold" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" ></Label>
+                                                </Frame>
+                                            </StackLayout>
+                                            <StackLayout Grid.Column="1" HeightRequest="80">
+                                                <Label Text="{Binding firstNameAndFirstLetterLastName}" FontSize="Small" FontAttributes="Bold"></Label>
+                                                <Label Text="{Binding house_address}" FontSize="Small" Padding="0,0,20,0" ></Label>
+                                                <Label Text="{Binding status}" FontSize="Small"></Label>
+                                            </StackLayout>
+                                            <ImageButton Grid.Column="2" Source="CallIcon.png" HeightRequest="25" ></ImageButton>
+                                            <ImageButton Grid.Column="3" Source="TextIcon.png" HeightRequest="25"></ImageButton>
+                                            <Label ClassId="{Binding ID}" Grid.Column="4" Text="Get Directions" FontSize="10" VerticalTextAlignment="Center">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="GetDirectionFromBackup"></TapGestureRecognizer>
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </Grid>
+                                    </StackLayout>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                                        
+                        </CollectionView>
+                    </StackLayout>
+            </RelativeLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="JustDelivered.Views.LogInPage">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="200"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="0" HeightRequest="200">
+                <Label HeightRequest="200" Text="JD" TextColor="Red" FontSize="100" HorizontalOptions="Center" VerticalTextAlignment="Center"></Label>
+            </StackLayout>
+            <StackLayout Grid.Row="1" Padding="25,0,25,0">
+                <Label Text="Select Organization" FontSize="Default" FontAttributes="Bold"></Label>
+                <Button 
+                    x:Name="organizations"
+                 
+                    Text="infiniteoptions"
+                    FontAttributes="Bold"
+                    TextColor="LightGray"
+                    HeightRequest="35"
+                    BackgroundColor="WhiteSmoke"
+                    BorderColor="DarkGray"
+                    BorderWidth="1">
+                </Button>
+                <Label Text="Email Address" FontSize="Default" FontAttributes="Bold"></Label>
+                <Entry
+                    x:Name="userEmailAddress"
+                    Placeholder="carlos@infiniteoptions.com"
+                    HorizontalTextAlignment="Center"
+                    Keyboard="Email">
+                </Entry>
+                <Label Text="Password" FontSize="Default" FontAttributes="Bold"></Label>
+                <Entry
+                    x:Name="userPassword"
+                    Placeholder="********"
+                    HorizontalTextAlignment="Center"
+                    Keyboard="Email"
+                    IsPassword="True">
+                </Entry>
+                <Button Margin="30,30,30,0" x:Name="LogInButton" Text="Log-In" FontAttributes="Bold" TextColor="White" BackgroundColor="Red" Clicked="DirectLogInClick"></Button>
+                <Grid HeightRequest="40" Padding="0,30,0,30">
+                    <ImageButton
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Source="FacebookIcon.png"
+                        Padding="0,0,10,0"
+                        BackgroundColor="Transparent">
+                    </ImageButton>
+                    <ImageButton
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Source="GoogleIcon.png"
+                        Padding="5,0,5,0"
+                        BackgroundColor="Transparent"
+                        Clicked="GoogleClick">
+                    </ImageButton>
+                    <ImageButton
+                        x:Name="appleLogInButton"
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        Source="AppleIcon.png"
+                        Padding="10,0,0,0"
+                        BackgroundColor="Transparent">
+                    </ImageButton>
+                </Grid>
+                <Button Margin="30,0,30,0" Text="Sign up to become a JD Driver"  FontAttributes="Bold" TextColor="Red" BackgroundColor="White" BorderColor="Red" BorderWidth="1"></Button>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

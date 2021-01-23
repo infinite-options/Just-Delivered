@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="JustDelivered.Views.ConfirmationPage">
+<ContentPage.Content>
+        <StackLayout>
+            <RelativeLayout HeightRequest="1">
+            <Frame
+                x:Name="BottomSheet" 
+                HasShadow="true"
+                CornerRadius="8"
+                Padding="1,4,1,0"
+                BackgroundColor="#faf9f8"
+                RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0.9,Constant=0}"
+                RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
+                RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1,Constant=0}">
+                <Frame.GestureRecognizers>
+                    <PanGestureRecognizer
+                        PanUpdated="PanGestureRecognizer_PanUpdated"/>
+                </Frame.GestureRecognizers>
+                <StackLayout>
+                    <StackLayout Padding="100,0,100,0">
+                        <BoxView HeightRequest="3" Color="Gray" ></BoxView>
+                    </StackLayout>
+
+                    <Grid HeightRequest="50">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="80"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Row="0" Grid.Column="0" x:Name="CurrentDeliveryNumber" FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center"></Label>
+                        <Label Grid.Row="0" Grid.Column="1" Text="Swipe up to view delivery details" TextColor="Gray" FontSize="Small" FontAttributes="Bold"  HorizontalTextAlignment="Center" VerticalTextAlignment="Center"></Label>
+                        <Label Grid.Row="0" Grid.Column="2" x:Name="TotalDeliveriesNumber" FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center"></Label>
+                    </Grid>
+
+                    <Frame Margin="10,20,10,0" CornerRadius="10" Padding="0" >
+                        <StackLayout Padding="20,0,20,0">
+                            <Label Text="CUSTOMER" FontSize="Header" TextColor="Red" FontAttributes="Bold"></Label>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="80"></ColumnDefinition>
+                                    <ColumnDefinition Width="80"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Label Padding="20,0,0,0" Grid.Row="0" Grid.Column="0" x:Name="CustomerName" FontAttributes="Bold" FontSize="Small" VerticalOptions="Center" ></Label>
+                                <ImageButton Grid.Row="0" Grid.Column="1" HeightRequest="30" Source="CallIcon.png" HorizontalOptions="End" ></ImageButton>
+                                <ImageButton Grid.Row="0" Grid.Column="2" HeightRequest="30" Source="TextIcon.png" ></ImageButton>
+                            </Grid>
+                        </StackLayout>
+                    </Frame>
+
+                    <Frame Margin="10,0,10,0" Padding="0" CornerRadius="10">
+                        <StackLayout Padding="20,0,20,0">
+                            <Label Text="ADDRESS" FontSize="Header" TextColor="Red" FontAttributes="Bold"></Label>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="50"></ColumnDefinition>
+                                    <ColumnDefinition Width="50"></ColumnDefinition>
+                                    <ColumnDefinition Width="50"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Label Padding="20,0,0,0" Grid.Row="0" Grid.Column="0" x:Name="CustomerAddress" FontAttributes="Bold" FontSize="Small" VerticalOptions="Center" ></Label>
+                                <!--<Label Grid.Row="0" Grid.Column="1" Text="Get Directions" FontSize="10" >
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="GetDirections"></TapGestureRecognizer>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <Label Grid.Row="0" Grid.Column="2" Text="Skip Directions" FontSize="10">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="SkipDirections"></TapGestureRecognizer>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <Label Grid.Row="0" Grid.Column="3" Text="Skip Delivery" FontSize="10">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="SkipDelivery"></TapGestureRecognizer>
+                                    </Label.GestureRecognizers>
+                                </Label>-->
+                            </Grid>
+                        </StackLayout>
+                    </Frame>
+
+                    <Frame Margin="10,0,10,0" Padding="0" CornerRadius="10">
+                        <StackLayout Padding="20,0,20,0">
+                            <Label Text="DELIVERY INSTRUCTIONS" FontSize="Header" TextColor="Red" FontAttributes="Bold"></Label>
+                            <StackLayout Padding="20,0,0,0" >
+                                <Label Text="Please place my order outside my apt door." FontSize="Small"></Label>
+                            </StackLayout>
+                        </StackLayout>
+                    </Frame>
+
+                    <Frame Margin="10,0,10,0" Padding="0" CornerRadius="10">
+                        <StackLayout Padding="20,0,20,0">
+                            <Label Text="ORDER ITEMS" FontSize="Header" TextColor="Red" FontAttributes="Bold" ></Label>
+                            <ListView HeightRequest="150">
+
+                            </ListView>
+                        </StackLayout>
+                    </Frame>
+
+                </StackLayout>
+            </Frame>
+                </RelativeLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
