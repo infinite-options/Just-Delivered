@@ -440,19 +440,21 @@ namespace JustDelivered.iOS.ConfirmationPageRenderer
 		{
 			try
 			{
-				var mailController = new MFMailComposeViewController();
+				var d = new MFMessageComposeViewController();
 
-				mailController.SetToRecipients(recipients);
-				mailController.SetSubject("Email Confirmation By Just Delivered");
-				mailController.SetMessageBody(messageBody, false);
-				mailController.AddAttachmentData(attachment.AsJPEG(), "image/png", "photo.png");
+                var mailController = new MFMailComposeViewController();
 
-				mailController.Finished += (object s, MFComposeResultEventArgs args) =>
-				{
-					args.Controller.DismissViewController(true, null);
-				};
+                mailController.SetToRecipients(recipients);
+                mailController.SetSubject("Email Confirmation By Just Delivered");
+                mailController.SetMessageBody(messageBody, false);
+                mailController.AddAttachmentData(attachment.AsJPEG(), "image/png", "photo.png");
 
-				this.PresentViewController(mailController, true, null);
+                mailController.Finished += (object s, MFComposeResultEventArgs args) =>
+                {
+                    args.Controller.DismissViewController(true, null);
+                };
+
+                this.PresentViewController(d, true, null);
 			}
 			catch (FeatureNotSupportedException ex)
 			{

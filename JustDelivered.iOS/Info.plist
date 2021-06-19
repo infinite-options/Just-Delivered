@@ -19,13 +19,13 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>MinimumOSVersion</key>
-	<string>8.0</string>
+	<string>13.0</string>
 	<key>CFBundleDisplayName</key>
 	<string>JustDelivered</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.InfiniteOptions.JustDelivered</string>
 	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
+	<string>JustDelivered</string>
 	<key>CFBundleName</key>
 	<string>JustDelivered</string>
 	<key>XSAppIconAssets</key>
@@ -42,12 +42,18 @@
 		</dict>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>Just Delivery needs access to your camera to capture pictures to confirm delivery</string>
+	<string>This app needs access to the camera to take photos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to photos.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs access to microphone.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app needs access to the photo gallery.</string>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
-	<key>CFBundleVersion</key>
-	<string>4</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.1</string>
+	<key>CFBundleVersion</key>
+	<string>18</string>
 </dict>
 </plist>

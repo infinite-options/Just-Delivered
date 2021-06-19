@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="JustDelivered.Views.SocialSignUpPage">
+    <ContentPage.Content>
+        <StackLayout>
+            <Frame BackgroundColor="Red">
+            <Label Text="Sign Up" TextColor="White" FontSize="Title" FontAttributes="Bold" HorizontalTextAlignment="Center"></Label>
+            </Frame>
+            <Label Padding="10" Text="Welcome to Just Delivered!" FontSize="Medium" FontAttributes="Bold" HorizontalOptions="Center"></Label>
+            <Label Padding="20,0,0,0" Text="Please enter all the required information to complete your application." FontSize="Micro" TextColor="Gray" FontAttributes="Bold"></Label>
+            <ScrollView Padding="0,25,0,0">
+                <StackLayout Padding="20,0,20,0">
+                    <Grid HeightRequest="30" ColumnSpacing="0">
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
+                        <Label Grid.Column="1" Text=" Step 1: Personal Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                    </Grid>
+                    <StackLayout Padding="40,0,0,0">
+                        <Grid>
+                            <Entry Grid.Row="0" Grid.Column="0" Placeholder="First name"></Entry>
+                             <Entry Grid.Row="0" Grid.Column="1" Placeholder="Last name"> </Entry>
+                        </Grid>
+                        <Entry Placeholder="Email address" ></Entry>
+                        <Entry Placeholder="Phone number"></Entry>
+                    </StackLayout>
+                    <Grid HeightRequest="30" ColumnSpacing="0">
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
+                        <Label Grid.Column="1" Text=" Step 2: Contact Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                    </Grid>
+                    <StackLayout Padding="40,0,0,0">
+                        <Entry Placeholder="Address"></Entry>
+                        <Entry Placeholder="Unit"></Entry>
+                        <Grid>
+                            <Entry Grid.Row="0" Grid.Column="0" Placeholder="City"></Entry>
+                            <Entry Grid.Row="0" Grid.Column="1" Placeholder="State"> </Entry>
+                            <Entry Grid.Row="0" Grid.Column="2" Placeholder="Zip"></Entry>
+                        </Grid>
+                    </StackLayout>
+                    <Grid HeightRequest="30" ColumnSpacing="0">
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
+                        <Label Grid.Column="1" Text=" Step 3: Emergency Contact Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                    </Grid>
+                    <StackLayout Padding="40,0,0,0">
+                        <Entry Placeholder="Address"></Entry>
+                        <Entry Placeholder="Unit"></Entry>
+                        <Grid>
+                            <Entry Grid.Row="0" Grid.Column="0" Placeholder="City"></Entry>
+                            <Entry Grid.Row="0" Grid.Column="1" Placeholder="State"> </Entry>
+                            <Entry Grid.Row="0" Grid.Column="2" Placeholder="Zip"></Entry>
+                        </Grid>
+                    </StackLayout>
+                    <Grid HeightRequest="30" ColumnSpacing="0">
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
+                        <Label Grid.Column="1" Text=" Step 4: Social Security Number" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                    </Grid>
+                     <StackLayout Padding="40,0,0,0">
+                        <Entry Placeholder="111-22-3333" MaxLength="9" Keyboard="Numeric" IsPassword="True"></Entry>
+                    </StackLayout>
+                    <Grid HeightRequest="30" ColumnSpacing="0">
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
+                        <Label Grid.Column="1" Text=" Step 5: Vehicle Insurance Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                    </Grid>
+                    <StackLayout Padding="40,0,0,0">
+                        <Button BackgroundColor="Red" TextColor="White" Text="Take picture"></Button>
+                    </StackLayout>
+                    <Grid HeightRequest="30" ColumnSpacing="0">
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
+                        <Label Grid.Column="1" Text=" Step 6: Driver License Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                    </Grid>
+                    <StackLayout Padding="40,0,0,0">
+                         <Grid>
+                            <Entry Grid.Row="0" Grid.Column="0" Placeholder="ID" Keyboard="Chat"></Entry>
+                            <Entry Grid.Row="0" Grid.Column="1" Placeholder="06/12/2024" MaxLength="10" Keyboard="Numeric"> </Entry>
+                        </Grid>
+                    </StackLayout>
+                    <Grid HeightRequest="30" ColumnSpacing="0">
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
+                        <Label Grid.Column="1" Text=" Step 7: Bank Account Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                    </Grid>
+                    <StackLayout Padding="40,0,0,0">
+                         <Grid>
+                            <Entry Grid.Row="0" Grid.Column="0" Placeholder="Account number" Keyboard="Numeric"></Entry>
+                            <Entry Grid.Row="0" Grid.Column="1" Placeholder="Routing number" Keyboard="Numeric"> </Entry>
+                        </Grid>
+                    </StackLayout>
+                    <Button BackgroundColor="Red" Text="Submit" TextColor="White" FontSize="Small" FontAttributes="Bold" Clicked="Button_Clicked"></Button>
+                    <Button BackgroundColor="White" Text="Cancel" TextColor="Red" FontSize="Small" FontAttributes="Bold" Clicked="Button_Clicked_1"></Button>
+                </StackLayout>
+             </ScrollView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

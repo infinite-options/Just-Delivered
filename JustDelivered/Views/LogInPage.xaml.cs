@@ -5,11 +5,17 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Acr.UserDialogs;
 using JustDelivered.Config;
+using JustDelivered.LogIn.Apple;
 using JustDelivered.LogIn.Classes;
+using JustDelivered.Models;
+using JustDelivered.Notifications;
 using Newtonsoft.Json;
 using Xamarin.Auth;
+using Xamarin.Essentials;
 using Xamarin.Forms;
+using static JustDelivered.Views.DeliveriesPage;
 
 namespace JustDelivered.Views
 {
@@ -18,10 +24,218 @@ namespace JustDelivered.Views
 
         public event EventHandler SignIn;
         public bool createAccount = false;
+        INotifications appleNotification = DependencyService.Get<INotifications>();
         private string deviceId;
+
         public LogInPage()
         {
             InitializeComponent();
+
+            if (Device.RuntimePlatform == Device.Android)
+            {
+                System.Diagnostics.Debug.WriteLine("Running on Android: Line 32");
+                Console.WriteLine("guid: " + Preferences.Get("guid", null));
+                appleLogInButton.IsEnabled = false;
+            }
+            else
+            {
+                InitializedAppleLogin();
+                //appleNotification.IsNotifications();
+            }
+
+            if (Device.RuntimePlatform == Device.iOS)
+            {
+                deviceId = Preferences.Get("guid", null);
+                if (deviceId != null) { Debug.WriteLine("This is the iOS GUID from Log in: " + deviceId); }
+            }
+            else
+            {
+                deviceId = Preferences.Get("guid", null);
+                if (deviceId != null) { Debug.WriteLine("This is the Android GUID from Log in " + deviceId); }
+            }
+        }
+
+        public void InitializedAppleLogin()
+        {
+            var vm = new AppleLogIn();
+            vm.AppleError += AppleError;
+            BindingContext = vm;
+        }
+
+        public void AppleLogInClick(System.Object sender, System.EventArgs e)
+        {
+            //SignIn?.Invoke(sender, e);
+            //var c = (ImageButton)sender;
+            //c.Command?.Execute(c.CommandParameter);
+            OnAppleSignInRequest();
+        }
+
+        public async void OnAppleSignInRequest()
+        {
+            try
+            {
+                //IAppleSignInService appleSignInService = DependencyService.Get<IAppleSignInService>();
+                //var account = await appleSignInService.SignInAsync();
+                //if (account != null)
+                //{
+                //    Preferences.Set(App.LoggedInKey, true);
+                //    await SecureStorage.SetAsync(App.AppleUserIdKey, account.UserId);
+
+                //    if (account.Token == null) { account.Token = ""; }
+                //    if (account.Email != null)
+                //    {
+                //        if (Application.Current.Properties.ContainsKey(account.UserId.ToString()))
+                //        {
+                //            //Application.Current.Properties[account.UserId.ToString()] = account.Email;
+                //            Debug.WriteLine((string)Application.Current.Properties[account.UserId.ToString()]);
+                //        }
+                //        else
+                //        {
+                //            Application.Current.Properties[account.UserId.ToString()] = account.Email;
+                //        }
+                //    }
+                //    if (account.Email == null) { account.Email = ""; }
+                //    if (account.Name == null) { account.Name = ""; }
+
+                //    if (Application.Current.Properties.ContainsKey(account.UserId.ToString()))
+                //    {
+                //        account.Email = (string)Application.Current.Properties[account.UserId.ToString()];
+                //        //Application.Current.MainPage = new SelectionPage("", "", null, account, "APPLE");
+                //        //var root = (LogInPage)Application.Current.MainPage;
+                //        //root.AppleLogIn("", "", null, account, "APPLE");
+
+                //        //var client = new SignIn();
+                //        //UserDialogs.Instance.ShowLoading("Retrieving your SF account...");
+                //        //var status = await client.VerifyUserCredentials("", "", null, account, "APPLE");
+                //        //RedirectUserBasedOnVerification(status, direction);
+                //        //AppleUserProfileAsync(account.UserId, account.Token, (string)Application.Current.Properties[account.UserId.ToString()], account.Name);
+                //        Application.Current.MainPage = new DeliveriesPage();
+                //    }
+                //    else
+                //    {
+                //        var client = new HttpClient();
+                //        var getAppleEmail = new AppleEmail();
+                //        getAppleEmail.social_id = account.UserId;
+
+                //        var socialLogInPostSerialized = JsonConvert.SerializeObject(getAppleEmail);
+
+                //        System.Diagnostics.Debug.WriteLine(socialLogInPostSerialized);
+
+                //        var postContent = new StringContent(socialLogInPostSerialized, Encoding.UTF8, "application/json");
+                //        var RDSResponse = await client.PostAsync("https://tsx3rnuidi.execute-api.us-west-1.amazonaws.com/dev/api/v2/AppleEmail", postContent);
+                //        var responseContent = await RDSResponse.Content.ReadAsStringAsync();
+
+                //        System.Diagnostics.Debug.WriteLine(responseContent);
+                //        if (RDSResponse.IsSuccessStatusCode)
+                //        {
+                //            var data = JsonConvert.DeserializeObject<AppleUser>(responseContent);
+                //            Application.Current.Properties[account.UserId.ToString()] = data.result[0].customer_email;
+                //            account.Email = (string)Application.Current.Properties[account.UserId.ToString()];
+                //            //var root = (LogInPage)Application.Current.MainPage;
+                //            //root.AppleLogIn("", "", null, account, "APPLE");
+                //            //Application.Current.MainPage = new SelectionPage("", "", null, account, "APPLE");
+                //            //AppleUserProfileAsync(account.UserId, account.Token, (string)Application.Current.Properties[account.UserId.ToString()], account.Name);
+                //            Application.Current.MainPage = new DeliveriesPage();
+                //            //var client1 = new SignIn();
+                //            //UserDialogs.Instance.ShowLoading("Retrieving your SF account...");
+                //            //var status = await client1.VerifyUserCredentials("", "", null, account, "APPLE");
+                //            //RedirectUserBasedOnVerification(status, direction);
+                //        }
+                //        else
+                //        {
+                //            await Application.Current.MainPage.DisplayAlert("Ooops", "Our system is not working. We can't process your request at this moment", "OK");
+                //        }
+                //    }
+                //}
+                //else
+                //{
+                //    //AppleError?.Invoke(this, default(EventArgs));
+
+                //}
+
+
+
+
+                IAppleSignInService appleSignInService = DependencyService.Get<IAppleSignInService>();
+                var account = await appleSignInService.SignInAsync();
+
+                if (account != null)
+                {
+                    Preferences.Set(App.LoggedInKey, true);
+                    await SecureStorage.SetAsync(App.AppleUserIdKey, account.UserId);
+                    string email = "";
+                    if (account.Email != null)
+                    {
+                        await SecureStorage.SetAsync(account.UserId, account.Email);
+                        Application.Current.Properties[account.UserId.ToString()] = account.Email;
+                    }
+                    else
+                    {
+                        email = await SecureStorage.GetAsync(account.UserId);
+
+                        if (email == null)
+                        {
+                            if (Application.Current.Properties.ContainsKey(account.UserId.ToString()))
+                            {
+                                email = (string)Application.Current.Properties[account.UserId.ToString()];
+                            }
+                            else
+                            {
+                                email = "";
+                            }
+                        }
+                        //Debug.WriteLine("EMAIL THAT WAS SAVED: " + email);
+
+                        account.Email = email;
+
+                    }
+
+                    //string url = AppConstants.BaseUrl + AppConstants.addGuid;
+                    //Debug.WriteLine("WRITE GUID: " + url);
+
+                    //if (Device.RuntimePlatform == Device.iOS)
+                    //{
+                    //    deviceId = Preferences.Get("guid", "");
+                    //    if (deviceId != null) { Debug.WriteLine("This is the iOS GUID from Log in: " + deviceId); }
+                    //}
+                    //else
+                    //{
+                    //    deviceId = Preferences.Get("guid", "");
+                    //    if (deviceId != null) { Debug.WriteLine("This is the Android GUID from Log in " + deviceId); }
+                    //}
+                    //if (deviceId != "")
+                    //{
+                    //    Application.Current.Properties["guid"] = deviceId.Substring(5);
+                    //}
+                    //else
+                    //{
+                    //    Application.Current.Properties["guid"] = "";
+                    //}
+
+                    var client = new SignIn();
+                    //UserDialogs.Instance.ShowLoading("We are processing your request...");
+
+                    var authenticationStatus = await client.VerifyUserAccount("", "", null, account, "APPLE");
+
+                    Debug.WriteLine("authenticationStatus: " + authenticationStatus);
+
+                    ProcessRequest(authenticationStatus);
+
+                }
+            }
+            catch (Exception errorAppleSignInRequest)
+            {
+                //var client = new Diagnostic();
+                //client.parseException(errorAppleSignInRequest.ToString(), user);
+            }
+        }
+
+        public void InvokeSignInEvent(object sender, EventArgs e)
+            => SignIn?.Invoke(sender, e);
+
+        private async void AppleError(object sender, EventArgs e)
+        {
+            await DisplayAlert("Error", "We weren't able to set an account for you", "OK");
         }
 
         public void InitializeAppProperties()
@@ -94,7 +308,12 @@ namespace JustDelivered.Views
 
             if (e.IsAuthenticated)
             {
-                Application.Current.MainPage = new DeliveriesPage(e.Account.Properties["access_token"], e.Account.Properties["refresh_token"], e);
+                var client = new SignIn();
+                var result = await client.VerifyUserAccount(e.Account.Properties["access_token"], e.Account.Properties["refresh_token"], e, null, "GOOGLE"); 
+                if(result != null)
+                {
+                    ProcessRequest(result);
+                }
             }
             else
             {
@@ -103,180 +322,31 @@ namespace JustDelivered.Views
             }
         }
 
-        public async void GoogleUserProfileAsync(string accessToken, string refreshToken, AuthenticatorCompletedEventArgs e)
+        public async void ProcessRequest(string code)
         {
-            try
+            Debug.WriteLine("LOGIN CODE: " + code);
+            if (code == "AUTHENTICATED")
             {
-                Debug.WriteLine("IN SIDE GOOGLE PROFILE");
-                var client = new HttpClient();
-                var socialLogInPost = new SocialLogInPost();
-
-                var request = new OAuth2Request("GET", new Uri(Constant.GoogleUserInfoUrl), null, e.Account);
-                var GoogleResponse = await request.GetResponseAsync();
-                var userData = GoogleResponse.GetResponseText();
-
-                System.Diagnostics.Debug.WriteLine(userData);
-                GoogleResponse googleData = JsonConvert.DeserializeObject<GoogleResponse>(userData);
-
-                socialLogInPost.email = googleData.email;
-                socialLogInPost.password = "";
-                socialLogInPost.social_id = googleData.id;
-                socialLogInPost.delivery_date = DateTime.Now.AddDays(2).ToString("yyyy-MM-dd 00:00:00");
-                socialLogInPost.signup_platform = "GOOGLE";
-
-                var socialLogInPostSerialized = JsonConvert.SerializeObject(socialLogInPost);
-                var postContent = new StringContent(socialLogInPostSerialized, Encoding.UTF8, "application/json");
-
-                Debug.WriteLine(socialLogInPostSerialized);
-
-                var RDSResponse = await client.PostAsync(Constant.LogInUrl, postContent);
-                var responseContent = await RDSResponse.Content.ReadAsStringAsync();
-
-                Debug.WriteLine(responseContent);
-
-                Debug.WriteLine(RDSResponse.IsSuccessStatusCode);
-                //Application.Current.MainPage = new DeliveriesPage();
-                if (RDSResponse.IsSuccessStatusCode)
+                if (user != null)
                 {
-                    if (responseContent != null)
-                    {
-                        if (responseContent.Contains(Constant.EmailNotFound))
-                        {
-                            var signUp = await DisplayAlert("Message", "It looks like you don't have a Serving Fresh account. Please sign up!", "OK", "Cancel");
-                            if (signUp)
-                            {
-                                //Application.Current.MainPage = new SocialSignUp(googleData.id, googleData.given_name, googleData.family_name, googleData.email, accessToken, refreshToken, "GOOGLE");
-                            }
-                        }
-                        if (responseContent.Contains(Constant.AutheticatedSuccesful))
-                        {
-                            //Application.Current.MainPage = new DeliveriesPage();
-                            //try
-                            //{
-                            //    var data = JsonConvert.DeserializeObject<UserInfo>(responseContent);
-                            //    //Application.Current.Properties["user_id"] = data.result[0].customer_uid;
-
-                            //    UpdateTokensPost updateTokesPost = new UpdateTokensPost();
-                            //    updateTokesPost.uid = data.result[0].customer_uid;
-                            //    updateTokesPost.mobile_access_token = accessToken;
-                            //    updateTokesPost.mobile_refresh_token = refreshToken;
-
-                            //    var updateTokesPostSerializedObject = JsonConvert.SerializeObject(updateTokesPost);
-                            //    var updateTokesContent = new StringContent(updateTokesPostSerializedObject, Encoding.UTF8, "application/json");
-                            //    var updateTokesResponse = await client.PostAsync(Constant.UpdateTokensUrl, updateTokesContent);
-                            //    var updateTokenResponseContent = await updateTokesResponse.Content.ReadAsStringAsync();
-                            //    System.Diagnostics.Debug.WriteLine(updateTokenResponseContent);
-
-                            //    if (updateTokesResponse.IsSuccessStatusCode)
-                            //    {
-                            //        var GoogleRequest = new RequestUserInfo();
-                            //        GoogleRequest.uid = data.result[0].customer_uid;
-
-                            //        var requestSelializedObject = JsonConvert.SerializeObject(GoogleRequest);
-                            //        var requestContent = new StringContent(requestSelializedObject, Encoding.UTF8, "application/json");
-
-                            //        var clientRequest = await client.PostAsync(Constant.GetUserInfoUrl, requestContent);
-
-                            //        if (clientRequest.IsSuccessStatusCode)
-                            //        {
-                            //            var SFUser = await clientRequest.Content.ReadAsStringAsync();
-                            //            var GoogleUserData = JsonConvert.DeserializeObject<UserInfo>(SFUser);
-
-                            //            DateTime today = DateTime.Now;
-                            //            DateTime expDate = today.AddDays(14);
-
-                            //            Debug.WriteLine("I AM SIGN IN");
-
-
-                            //            //Application.Current.Properties["user_id"] = data.result[0].customer_uid;
-                            //            //Application.Current.Properties["time_stamp"] = expDate;
-                            //            //Application.Current.Properties["platform"] = "GOOGLE";
-                            //            //Application.Current.Properties["user_email"] = GoogleUserData.result[0].customer_email;
-                            //            //Application.Current.Properties["user_first_name"] = GoogleUserData.result[0].customer_first_name;
-                            //            //Application.Current.Properties["user_last_name"] = GoogleUserData.result[0].customer_last_name;
-                            //            //Application.Current.Properties["user_phone_num"] = GoogleUserData.result[0].customer_phone_num;
-                            //            //Application.Current.Properties["user_address"] = GoogleUserData.result[0].customer_address;
-                            //            //Application.Current.Properties["user_unit"] = GoogleUserData.result[0].customer_unit;
-                            //            //Application.Current.Properties["user_city"] = GoogleUserData.result[0].customer_city;
-                            //            //Application.Current.Properties["user_state"] = GoogleUserData.result[0].customer_state;
-                            //            //Application.Current.Properties["user_zip_code"] = GoogleUserData.result[0].customer_zip;
-                            //            //Application.Current.Properties["user_latitude"] = GoogleUserData.result[0].customer_lat;
-                            //            //Application.Current.Properties["user_longitude"] = GoogleUserData.result[0].customer_long;
-
-                            //            //_ = Application.Current.SavePropertiesAsync();
-
-                            //            //if (Device.RuntimePlatform == Device.iOS)
-                            //            //{
-                            //            //    deviceId = Preferences.Get("guid", null);
-                            //            //    if (deviceId != null) { Debug.WriteLine("This is the iOS GUID from Log in: " + deviceId); }
-                            //            //}
-                            //            //else
-                            //            //{
-                            //            //    deviceId = Preferences.Get("guid", null);
-                            //            //    if (deviceId != null) { Debug.WriteLine("This is the Android GUID from Log in " + deviceId); }
-                            //            //}
-
-                            //            //if (deviceId != null)
-                            //            //{
-                            //            //    NotificationPost notificationPost = new NotificationPost();
-
-                            //            //    notificationPost.uid = (string)Application.Current.Properties["user_id"];
-                            //            //    notificationPost.guid = deviceId.Substring(5);
-                            //            //    Application.Current.Properties["guid"] = deviceId.Substring(5);
-                            //            //    notificationPost.notification = "TRUE";
-
-                            //            //    var notificationSerializedObject = JsonConvert.SerializeObject(notificationPost);
-                            //            //    Debug.WriteLine("Notification JSON Object to send: " + notificationSerializedObject);
-
-                            //            //    var notificationContent = new StringContent(notificationSerializedObject, Encoding.UTF8, "application/json");
-
-                            //            //    var clientResponse = await client.PostAsync(Constant.NotificationsUrl, notificationContent);
-
-                            //            //    Debug.WriteLine("Status code: " + clientResponse.IsSuccessStatusCode);
-
-                            //            //    if (clientResponse.IsSuccessStatusCode)
-                            //            //    {
-                            //            //        System.Diagnostics.Debug.WriteLine("We have post the guid to the database");
-                            //            //    }
-                            //            //    else
-                            //            //    {
-                            //            //        await DisplayAlert("Ooops!", "Something went wrong. We are not able to send you notification at this moment", "OK");
-                            //            //    }
-                            //            //}
-
-                            //            //Application.Current.MainPage = new SelectionPage();
-                            //        }
-                            //        else
-                            //        {
-                            //            await DisplayAlert("Alert!", "Our internal system was not able to retrieve your user information. We are working to solve this issue.", "OK");
-                            //        }
-                            //    }
-                            //    else
-                            //    {
-                            //        await DisplayAlert("Oops", "We are facing some problems with our internal system. We weren't able to update your credentials", "OK");
-                            //    }
-                            //}
-                            //catch (Exception second)
-                            //{
-                            //    Debug.WriteLine(second.Message);
-                            //}
-                        }
-                        if (responseContent.Contains(Constant.ErrorPlatform))
-                        {
-                            //var RDSCode = JsonConvert.DeserializeObject<RDSLogInMessage>(responseContent);
-                            //await DisplayAlert("Message", RDSCode.message, "OK");
-                        }
-
-                        if (responseContent.Contains(Constant.ErrorUserDirectLogIn))
-                        {
-                            await DisplayAlert("Oops!", "You have an existing Serving Fresh account. Please use direct login", "OK");
-                        }
-                    }
+                    Application.Current.MainPage = new DeliveriesPage();
                 }
             }
-            catch (Exception first)
+            else if(code == "NEED TO SIGN UP")
             {
-                Debug.WriteLine(first.Message);
+                await DisplayAlert("Oops","You don't have an account with Just Delivered. Please sign up!","OK");
+            }
+            else if (code == "WRONG PLATFORM")
+            {
+                await DisplayAlert("Oops", "It looks like you have an account with Just Delivered, but you tried to log in with the wrong social media account.", "OK");
+            }
+            else if (code == "LOG IN USING DIRECT LOG IN")
+            {
+                await DisplayAlert("Oops", "It looks like you have an account with Just Delivered; try logging in using the direct login.", "OK");
+            }
+            else
+            {
+                await DisplayAlert("Oops", "We weren't able to process your request. Please try again later.", "OK");
             }
         }
 
@@ -313,6 +383,14 @@ namespace JustDelivered.Views
                             {
                                 var SFUser = await clientRequest.Content.ReadAsStringAsync();
                                 Debug.WriteLine("DATA FROM LOGIN ENDPOINT (DIRECT): " + SFUser);
+
+
+
+                                // needs to implement direct log in...
+
+
+
+                                //Application.Current.MainPage = new DeliveriesPage("", "", null,null, "");
                                 //var userData = JsonConvert.DeserializeObject<UserInfo>(SFUser);
 
                                 //DateTime today = DateTime.Now;
@@ -499,5 +577,71 @@ namespace JustDelivered.Views
             }
         }
 
+        void FacebookLogInClick(System.Object sender, System.EventArgs e)
+        {
+            string clientID = string.Empty;
+            string redirectURL = string.Empty;
+
+            switch (Device.RuntimePlatform)
+            {
+                case Device.iOS:
+                    clientID = Constant.FacebookiOSClientID;
+                    redirectURL = Constant.FacebookiOSRedirectUrl;
+                    break;
+                case Device.Android:
+                    clientID = Constant.FacebookAndroidClientID;
+                    redirectURL = Constant.FacebookAndroidRedirectUrl;
+                    break;
+            }
+
+            var authenticator = new OAuth2Authenticator(clientID, Constant.FacebookScope, new Uri(Constant.FacebookAuthorizeUrl), new Uri(redirectURL), null, false);
+            var presenter = new Xamarin.Auth.Presenters.OAuthLoginPresenter();
+
+            authenticator.Completed += FacebookAuthenticatorCompletedAsync;
+            authenticator.Error += FacebookAutheticatorError;
+
+            presenter.Login(authenticator);
+        }
+
+        public async void FacebookAuthenticatorCompletedAsync(object sender, AuthenticatorCompletedEventArgs e)
+        {
+            var authenticator = sender as OAuth2Authenticator;
+
+            if (authenticator != null)
+            {
+                authenticator.Completed -= FacebookAuthenticatorCompletedAsync;
+                authenticator.Error -= FacebookAutheticatorError;
+            }
+
+            if (e.IsAuthenticated)
+            {
+                //FacebookUserProfileAsync(e.Account.Properties["access_token"]);
+                //Application.Current.MainPage = new DeliveriesPage(e.Account.Properties["access_token"], "", null, null, "FACEBOOK");
+
+                var client = new SignIn();
+                var result = await client.VerifyUserAccount(e.Account.Properties["access_token"], "", null, null, "FACEBOOK");
+                if (result != null)
+                {
+                    ProcessRequest(result);
+                }
+            }
+            else
+            {
+                Application.Current.MainPage = new LogInPage();
+                await DisplayAlert("Error", "Facebook was not able to autheticate your account", "OK");
+            }
+        }
+
+        private async void FacebookAutheticatorError(object sender, AuthenticatorErrorEventArgs e)
+        {
+            var authenticator = sender as OAuth2Authenticator;
+            if (authenticator != null)
+            {
+                authenticator.Completed -= FacebookAuthenticatorCompletedAsync;
+                authenticator.Error -= FacebookAutheticatorError;
+            }
+
+            await DisplayAlert("Authentication error: ", e.Message, "OK");
+        }
     }
 }

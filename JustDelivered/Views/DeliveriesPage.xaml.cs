@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using Acr.UserDialogs;
 using JustDelivered.Config;
+using JustDelivered.Controls;
+using JustDelivered.LogIn.Apple;
 using JustDelivered.LogIn.Classes;
+using JustDelivered.Models;
 using Newtonsoft.Json;
 using Xamarin.Auth;
 using Xamarin.Essentials;
@@ -17,14 +22,60 @@ namespace JustDelivered.Views
 {
     public partial class DeliveriesPage : ContentPage
     {
+        public static Models.User user = null;
         double y = 0;
 
-        private static int CurrentIndex = 1;
-        private static int BackupIndex = -1;
-        private static List<DeliveryInfo> LocalDeliveriesList = new List<DeliveryInfo>();
-        private static List<DeliveryInfo> LocalBackupDeliveriesList = new List<DeliveryInfo>();
-        ObservableCollection<DeliveryInfo> BackupDeliveries = new ObservableCollection<DeliveryInfo>();
+        private static int CurrentIndex = 0;
+        public static readonly DeliveryInfo startLocation = new DeliveryInfo();
+        public static List<string> list = new List<string>();
+        // list of deliveries
+        public static ObservableCollection<DeliveryInfo> deliveryList = new ObservableCollection<DeliveryInfo>();
+        public static DeliveryInfo delivery = null;
+        // list of items of first delivery in the queue
+        ObservableCollection<DisplayItem> OrderList = new ObservableCollection<DisplayItem>();
 
+        public class DisplayItem : INotifyPropertyChanged
+        {
+            public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
+            public string img { get; set; }
+            public string title { get; set; }
+            public string itemName { get; set; }
+            public string quantity { get; set; }
+            public double opacityValue { get; set; }
+            public int index { get; set; }
+
+            public void updateOpacity(double value)
+            {
+                opacityValue = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("opacityValue"));
+            }
+            public Color color { get; set; }
+        }
+
+        public class DeliveryItem
+        {
+            public string img { get; set; }
+            public int qty { get; set; }
+            public string name { get; set; }
+            public string unit { get; set; }
+            public double price { get; set; }
+            public string item_uid { get; set; }
+            public string description { get; set; }
+            public double business_price { get; set; }
+            public string itm_business_uid { get; set; }
+        }
+
+        public class Route
+        {
+            public string uid { get; set; }
+            public string delivery_date { get; set; }
+        }
+
+        public class Order
+        {
+            public IList<DeliveryItem> items { get; set; }
+        }
 
         public class Delivery
         {
@@ -49,7 +100,47 @@ namespace JustDelivered.Views
             public string delivery_state { get; set; }
             public string delivery_zip { get; set; }
             public string delivery_instructions { get; set; }
+            public string delivery_status { get; set; }
+            public string purchase_uid { get; set; }
+            public string customer_uid { get; set; }
             public string delivery_items { get; set; }
+        }
+
+        public class DriverInfo
+        {
+            public string driver_uid { get; set; }
+            public string driver_first_name { get; set; }
+            public string driver_last_name { get; set; }
+            public object business_id { get; set; }
+            public object driver_available_hours { get; set; }
+            public object driver_scheduled_hours { get; set; }
+            public object driver_street { get; set; }
+            public object driver_city { get; set; }
+            public object driver_state { get; set; }
+            public object driver_zip { get; set; }
+            public object driver_latitude { get; set; }
+            public object driver_longitude { get; set; }
+            public object driver_phone_num { get; set; }
+            public string driver_email { get; set; }
+            public object driver_phone_num2 { get; set; }
+            public object driver_ssn { get; set; }
+            public object driver_license { get; set; }
+            public object driver_license_exp { get; set; }
+            public object driver_insurance_carrier { get; set; }
+            public object driver_insurance_num { get; set; }
+            public object driver_insurance_exp_date { get; set; }
+            public object driver_insurance_picture { get; set; }
+            public object emergency_contact_name { get; set; }
+            public object emergency_contact_phone { get; set; }
+            public object emergency_contact_relationship { get; set; }
+        }
+
+        public class RDSAuthentication
+        {
+            public string message { get; set; }
+            public int code { get; set; }
+            public IList<DriverInfo> result { get; set; }
+            public string sql { get; set; }
         }
 
 
@@ -61,8 +152,10 @@ namespace JustDelivered.Views
             public string sql { get; set; }
         }
 
-        public class DeliveryInfo
+        public class DeliveryInfo : INotifyPropertyChanged
         {
+            public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
             public int route_id { get; set; }
             public string name { get; set; }
             public string house_address { get; set; }
@@ -73,10 +166,34 @@ namespace JustDelivered.Views
             public string phone { get; set; }
             public double latitude { get; set; }
             public double longitude { get; set; }
-
             public string status { get; set; }
+            public string skipAndUnskip { get; set; }
             public string delivery_instructions { get; set; }
             public int ID { get; set; }
+            public int placement { get; set; }
+            public string delivery_items { get; set; }
+            public string purchase_uid { get; set; }
+            public string customer_uid { get; set; }
+            public string delivery_date { get; set; }
+
+            public string updateStatus
+            {
+                set
+                {
+                    status = value;
+                    PropertyChanged(this, new PropertyChangedEventArgs("status"));
+                }
+            }
+
+            public string updateSkipText
+            {
+                set
+                {
+                    skipAndUnskip = value;
+                    PropertyChanged(this, new PropertyChangedEventArgs("skipAndUnskip"));
+                }
+            }
+
             public string parsedPhone
             {
                 get
@@ -137,175 +254,113 @@ namespace JustDelivered.Views
             public string delivery_instructions { get; set; }
         }
 
-        public DeliveriesPage(string accessToken, string refreshToken, AuthenticatorCompletedEventArgs e)
+
+
+        public DeliveriesPage()
         {
             InitializeComponent();
-            UserDialogs.Instance.ShowLoading("Please wait while we are processing your request...");
+            SetDefaultLocationOnMap();
+            VerifyUserAccount();
+        }
+
+        public DeliveriesPage(string back)
+        {
+            InitializeComponent();
+            ResetMap();
+            SetDefaultLocationOnMap();
+            deliveryListView.ItemsSource = deliveryList;
+            FindNextDeliveryAvailable(deliveryList);
+
+            SetDelivery();
             SetHeightWidthOnMap();
             SetWidthOnHelpButtonRow();
-            SetDefaultLocationOnMap();
-            BackupDisplay.Margin = new Thickness(0, Application.Current.MainPage.Height, 0, 0);
-            VerifyUserAccount(accessToken, refreshToken, e);
+            SetStartToFirstLocation(Color.Black);
+            SetCompleteRouteView("versionB");
+
         }
 
-        public DeliveriesPage(int Index)
+        async void FindNextDeliveryAvailable(ObservableCollection<DeliveryInfo> deliveryList)
         {
-            if (Index == -1)
+            bool found = false;
+
+            if (CurrentIndex < deliveryList.Count)
             {
-                InitializeComponent();
-                BackupDeliveries.Clear();
-                Debug.WriteLine("CONSTRUCTOR CALLED FROM CONFIRMATION PAGE -1");
-                Debug.WriteLine("FLAG 1: " + Index);
-                Debug.WriteLine("BACKUP INDEX: " + BackupIndex);
-                Debug.WriteLine("STATUS BEFORE: " + LocalBackupDeliveriesList[BackupIndex].status);
-                LocalBackupDeliveriesList[BackupIndex].status = "Status: Completed";
-                Debug.WriteLine("STATUS AFTER: " + LocalBackupDeliveriesList[BackupIndex].status);
-                SetHeightWidthOnMap();
-                SetWidthOnHelpButtonRow();
-                SetDefaultLocationOnMap();
-                GetNextDelivery();
-
-
-                SetStartToFirstLocation();
-
-                var Path = new Polyline();
-                Path.StrokeColor = Color.Black;
-                Path.StrokeWidth = 4;
-
-                for (int i = 1; i < LocalDeliveriesList.Count; i++)
+                
+                if (deliveryList[CurrentIndex].status == "Status: Pending..." || deliveryList[CurrentIndex].status == "Status: Skipped")
                 {
-                    var Pin = new Pin();
-                    Pin.Label = "Delivery " + i + " For: " + LocalDeliveriesList[i].firstNameAndFirstLetterLastName;
-                    Pin.Address = LocalDeliveriesList[i].house_address;
-                    Pin.Type = PinType.Generic;
-                    Pin.Position = new Position(LocalDeliveriesList[i].latitude, LocalDeliveriesList[i].longitude);
-
-                    Path.Geopath.Add(Pin.Position);
-                    DeliveriesMap.Pins.Add(Pin);
-                    Debug.WriteLine(LocalDeliveriesList[i].parsedPhone);
-                    LocalDeliveriesList[i].ID = i;
-                    BackupDeliveries.Add(LocalDeliveriesList[i]);
+                    AddPurchaseIdToArray(deliveryList[CurrentIndex].purchase_uid);
                 }
-
-                BackupDeliveriesList.ItemsSource = BackupDeliveries;
-                DeliveriesMap.MapElements.Add(Path);
-
-                for (int i = 1; i < LocalBackupDeliveriesList.Count; i++)
-                {
-                    BackupDeliveries.Add(LocalBackupDeliveriesList[i]);
-                }
-                BackupDeliveriesList.ItemsSource = BackupDeliveries;
-                BackupDisplay.Margin = new Thickness(0, Application.Current.MainPage.Height, 0, 0);
             }
-            else
+
+            for (int i = 0; i <  deliveryList.Count; i++)
             {
-                InitializeComponent();
-                BackupDeliveries.Clear();
-                CurrentIndex = Index;
-
-                for (int i = 1; i < LocalBackupDeliveriesList.Count; i++)
+                if(deliveryList[i].status == "Status: Pending...")
                 {
-                    if(CurrentIndex == i)
-                    {
-                        LocalBackupDeliveriesList[i].status = "Status: Completed";
-                    }
-                    BackupDeliveries.Add(LocalBackupDeliveriesList[i]);
+                    SetStartToFirstLocation(Color.Black);
+                    CurrentIndex = i;
+                    found = true;
+                   
+                    break;
                 }
+            }
 
-                SetStartToFirstLocation();
-
-                var Path = new Polyline();
-                Path.StrokeColor = Color.Black;
-                Path.StrokeWidth = 4;
-
-                for (int i = 1; i < LocalDeliveriesList.Count; i++)
-                {
-                    var Pin = new Pin();
-                    Pin.Label = "Delivery " + i + " For: " + LocalDeliveriesList[i].firstNameAndFirstLetterLastName;
-                    Pin.Address = LocalDeliveriesList[i].house_address;
-                    Pin.Type = PinType.Generic;
-                    Pin.Position = new Position(LocalDeliveriesList[i].latitude, LocalDeliveriesList[i].longitude);
-
-                    Path.Geopath.Add(Pin.Position);
-                    DeliveriesMap.Pins.Add(Pin);
-                    Debug.WriteLine(LocalDeliveriesList[i].parsedPhone);
-                    LocalDeliveriesList[i].ID = i;
-                    BackupDeliveries.Add(LocalDeliveriesList[i]);
-                }
-
-                BackupDeliveriesList.ItemsSource = BackupDeliveries;
-                DeliveriesMap.MapElements.Add(Path);
-
-                CurrentIndex++;
-                Debug.WriteLine("CONSTRUCTOR CALLED FROM CONFIRMATION PAGE");
-                Debug.WriteLine(CurrentIndex);
-
-                SetHeightWidthOnMap();
-                SetWidthOnHelpButtonRow();
-                SetDefaultLocationOnMap();
-                GetNextDelivery();
-
-                BackupDeliveriesList.ItemsSource = BackupDeliveries;
-                BackupDisplay.Margin = new Thickness(0, Application.Current.MainPage.Height, 0, 0);
+            if (!found)
+            {
+                await DisplayAlert("Great job!","It looks like you completed all your deliveries","OK");
             }
         }
 
-        public void GetNextDelivery()
+        public async void CompletedAllDeliveries()
         {
-            CustomerName.Text = LocalDeliveriesList[CurrentIndex].name;
-            CustomerAddress.Text = LocalDeliveriesList[CurrentIndex].house_address;
-            DeliveryInstructions.Text = LocalDeliveriesList[CurrentIndex].delivery_instructions;
-            CurrentDeliveryNumber.Text = CurrentIndex.ToString();
-            TotalDeliveriesNumber.Text = (LocalDeliveriesList.Count - 1).ToString();
+            await DisplayAlert("Congratulations!", "You have completed all your deliveries!!!\n\nThank you for driving for Just Delivered.", "OK");
         }
 
-        public void SetStartLocation()
-        {
-            //var Map = new CustomMap();
-            var P = new Pin();
-
-            P.Address = LocalDeliveriesList[0].house_address;
-            P.Type = PinType.Place;
-            P.Position = new Position(LocalDeliveriesList[0].latitude, LocalDeliveriesList[0].longitude);
-
-            DeliveriesMap.Pins.Add(P);
-        }
-
-        public async void VerifyUserAccount(string accessToken, string refreshToken, AuthenticatorCompletedEventArgs e)
+        public async void VerifyUserAccount()
         {
             try
             {
-                //Application.Current.MainPage = null;
-                //GoogleUserProfileAsync(e.Account.Properties["access_token"], e.Account.Properties["refresh_token"], e);
-                //Application.Current.MainPage = new DeliveriesPage();
-                //Application.Current.MainPage = new DeliveriesPage();
-
-                //UserDialogs.Instance.ShowLoading("Please wait while we are processing your request...");
-                //UserDialogs.Instance.ShowLoading("Please wait while we are processing your request...");
-                Debug.WriteLine("IN SIDE GOOGLE PROFILE");
+                
                 var client = new HttpClient();
-                var socialLogInPost = new SocialLogInPost();
+                var routeClient = new Route();
+                var currentDate = DateTime.Now;
 
-                var request = new OAuth2Request("GET", new Uri(Constant.GoogleUserInfoUrl), null, e.Account);
-                var GoogleResponse = await request.GetResponseAsync();
-                var userData = GoogleResponse.GetResponseText();
+                for (int i = 0; i < 7; i++)
+                {
+                    if (currentDate.DayOfWeek == DayOfWeek.Wednesday || currentDate.DayOfWeek == DayOfWeek.Sunday)
+                    {
+                        break;
+                    }
+                    currentDate = currentDate.AddDays(1);
+                }
 
-                System.Diagnostics.Debug.WriteLine(userData);
-                GoogleResponse googleData = JsonConvert.DeserializeObject<GoogleResponse>(userData);
+                //socialLogInPost.email = user.email;
+                //socialLogInPost.social_id = user.socialId;
 
-                socialLogInPost.email = googleData.email;
-                socialLogInPost.password = "";
-                socialLogInPost.social_id = googleData.id;
-                //socialLogInPost.delivery_date = DateTime.Now.ToString("yyyy-MM-dd 00:00:00");
-                socialLogInPost.delivery_date = "2021-01-24 00:00:00";
-                socialLogInPost.signup_platform = "GOOGLE";
+                Debug.WriteLine("Current Date: " + currentDate.ToString("yyyy-MM-dd 10:00:00"));
 
-                var socialLogInPostSerialized = JsonConvert.SerializeObject(socialLogInPost);
+                //socialLogInPost.password = "";
+                //socialLogInPost.delivery_date = "2021-06-06 10:00:00";
+                //socialLogInPost.signup_platform = user.platform;
+
+
+                //LIFE
+                routeClient.uid = user.id;
+                routeClient.delivery_date = currentDate.ToString("yyyy-MM-dd 10:00:00");
+
+                //TEST
+
+                //routeClient.uid = user.id;
+                //routeClient.delivery_date = "2021-06-16 10:00:00";
+
+                var socialLogInPostSerialized = JsonConvert.SerializeObject(routeClient);
+
+                Debug.WriteLine("JSON: " + socialLogInPostSerialized);
+
                 var postContent = new StringContent(socialLogInPostSerialized, Encoding.UTF8, "application/json");
 
                 Debug.WriteLine(socialLogInPostSerialized);
-
-                var RDSResponse = await client.PostAsync(Constant.LogInUrl, postContent);
+                
+                var RDSResponse = await client.PostAsync(Constant.DriverRouteUrl, postContent);
                 var responseContent = await RDSResponse.Content.ReadAsStringAsync();
 
                 Debug.WriteLine(responseContent);
@@ -316,306 +371,233 @@ namespace JustDelivered.Views
                 {
                     if (responseContent != null)
                     {
-                        //if (responseContent.Contains(Constant.EmailNotFound))
-                        //{
-                        //    var signUp = await DisplayAlert("Message", "It looks like you don't have a Serving Fresh account. Please sign up!", "OK", "Cancel");
-                        //    if (signUp)
-                        //    {
-                        //        //Application.Current.MainPage = new SocialSignUp(googleData.id, googleData.given_name, googleData.family_name, googleData.email, accessToken, refreshToken, "GOOGLE");
-                        //        Application.Current.MainPage = new MainPage();
-                        //        //UserDialogs.Instance.HideLoading();
-                        //    }
-                        //}
-                        if (responseContent.Contains(Constant.AutheticatedSuccesful))
+                        //var message = JsonConvert.DeserializeObject<RDSAuthentication>(responseContent);
+                    
+
+                        var List = JsonConvert.DeserializeObject<Deliveries>(responseContent);
+                        deliveryList.Clear();
+                        int id = 0;
+                        foreach (Delivery a in List.result)
                         {
-                            //Application.Current.MainPage = new DeliveriesPage();
-                            //Application.Current.MainPage.IsVisible = true;
-                            //UserDialogs.Instance.HideLoading();
-                            //UserDialogs.Instance.ShowLoading("Please wait while we are processing your request...");
+                            var element = new DeliveryInfo();
+                            element.name = a.delivery_first_name + " " + a.delivery_last_name;
+                            element.house_address = a.delivery_street + " " + a.delivery_city + " " + a.delivery_state + " " + a.delivery_zip;
+                            element.delivery_date = a.shipment_date;
+                            element.email = a.delivery_email;
+                            element.phone = a.delivery_phone;
 
-                            var List = JsonConvert.DeserializeObject<Deliveries>(responseContent);
-                            //Debug.WriteLine("LATITUDE OF ELEMENT 0: "+ data.result[0].delivery_coordinates.latitude);
-                            //Debug.WriteLine("LATITUDE OF ELEMENT 1: " + data.result[0].delivery_coordinates.longitude);
+                            var Coordinates = JsonConvert.DeserializeObject<Coordinates>(a.delivery_coordinates);
 
-
-                            //UserDialogs.Instance.ShowLoading("Please wait while we are processing your request...");
-                            
-                            foreach (Delivery a in List.result)
+                            element.latitude = Coordinates.latitude;
+                            element.longitude = Coordinates.longitude;
+                            if(a.delivery_status == "TRUE")
                             {
-
-                                //var customer = JsonConvert.DeserializeObject<Item>(str2);
-                                //element.route_id = 1;
-                                //element.name = customer.customer;
-                                //element.house_address = customer.delivery_street.ToUpper();
-                                //element.city = "";
-                                //element.state = "";
-                                //element.zipcode = "";
-                                //element.email = customer.email;
-                                //element.phone = customer.phone;
-                                //element.latitude = customer.coordinates.latitude;
-                                //element.longitude = customer.coordinates.longitude;
-                                //element.status = "Status: Pending...";
-                                //element.ID = 0;
-                                var element = new DeliveryInfo();
-                                element.name = a.delivery_first_name +" "+ a.delivery_last_name;
-                                element.house_address = a.delivery_street +" " + a.delivery_city + " "+ a.delivery_state+ " " + a.delivery_zip;
-                                //element.city = "";
-                                //element.state = "";
-                                //element.zipcode = "";
-
-                                element.email = a.delivery_email;
-                                element.phone = a.delivery_phone;
-
-                                var Coordinates = JsonConvert.DeserializeObject<Coordinates>(a.delivery_coordinates);
-
-                                element.latitude = Coordinates.latitude;
-                                element.longitude = Coordinates.longitude;
+                                element.status = "Status: Delivered";
+                                element.skipAndUnskip = "Skip";
+                            }
+                            else if (a.delivery_status == "FALSE")
+                            {
                                 element.status = "Status: Pending...";
-                                element.ID = 0;
-                                if (a.delivery_instructions != null && a.delivery_instructions != "")
-                                {
-                                    element.delivery_instructions = a.delivery_instructions;
-                                }
-                                else
-                                {
-                                    element.delivery_instructions = "No delivery instructions for this order";
-                                }
-                                //var element = new DeliveryInfo();
-
-                                //Debug.WriteLine("ROUTE_ID: " + a.route_id);
-                                //Debug.WriteLine("ROUTE_OPTION: " + a.route_option);
-                                //Debug.WriteLine("ROUTE_BUSINESS_ID: " + a.route_business_id);
-                                //Debug.WriteLine("ROUTE_DRIVER_ID: " + a.route_driver_id);
-                                //Debug.WriteLine("ROUTE_DELIVERY_INFO: " + a.route_delivery_info);
-
-                                //string str2 = "";
-                                //var array = a.route_delivery_info.ToCharArray();
-                                //for (int i = 1; i < array.Length - 1; i++)
-                                //{
-                                //    str2 += array[i];
-                                //}
-
-                                //Debug.WriteLine(str2);
-                                //var customer = JsonConvert.DeserializeObject<Item>(str2);
-                                //element.route_id = 1;
-                                //element.name = customer.customer;
-                                //element.house_address = customer.delivery_street.ToUpper();
-                                //element.city = "";
-                                //element.state = "";
-                                //element.zipcode = "";
-                                //element.email = customer.email;
-                                //element.phone = customer.phone;
-                                //element.latitude = customer.coordinates.latitude;
-                                //element.longitude = customer.coordinates.longitude;
-                                //element.status = "Status: Pending...";
-                                //element.ID = 0;
-                                //if (customer.delivery_instructions != null && customer.delivery_instructions != "")
-                                //{
-                                //    element.delivery_instructions = customer.delivery_instructions;
-                                //}
-                                //else
-                                //{
-                                //    element.delivery_instructions = "No delivery instructions for this order";
-                                //}
-                                //Debug.WriteLine(customer.customer);
-                                //Debug.WriteLine(customer.delivery_street);
-                                //Debug.WriteLine(customer.coordinates.latitude);
-                                //Debug.WriteLine(customer.coordinates.longitude);
-                                //Debug.WriteLine(customer.email);
-                                //Debug.WriteLine(customer.phone);
-
-                                //Debug.WriteLine("NUM_DELIVERYES: " + a.num_deliveries);
-                                //Debug.WriteLine("ROUTE_DISTANCE: " + a.route_distance);
-                                //Debug.WriteLine("ROUTE_TIME: " + a.route_time);
-                                //Debug.WriteLine("SHIPMENT_DATE: " + a.shipment_date);
-
-                                LocalDeliveriesList.Add(element);
-                                LocalBackupDeliveriesList.Add(element);
+                                element.skipAndUnskip = "Skip";
                             }
-                            //UserDialogs.Instance.HideLoading();
-
-
-                            CustomerName.Text = LocalDeliveriesList[CurrentIndex].name;
-                            CustomerAddress.Text = LocalDeliveriesList[CurrentIndex].house_address;
-                            DeliveryInstructions.Text = LocalDeliveriesList[CurrentIndex].delivery_instructions;
-                            CurrentDeliveryNumber.Text = CurrentIndex.ToString();
-                            TotalDeliveriesNumber.Text = (LocalDeliveriesList.Count - 1).ToString();
-
-                            SetStartToFirstLocation();
-
-                            var Path = new Polyline();
-                            Path.StrokeColor = Color.Black;
-                            Path.StrokeWidth = 4;
-
-                            for (int i = 1; i < LocalDeliveriesList.Count; i++)
+                            else if (a.delivery_status == "SKIP")
                             {
-                                var Pin = new Pin();
-                                Pin.Label = "Delivery " + i + " For: " + LocalDeliveriesList[i].firstNameAndFirstLetterLastName;
-                                Pin.Address = LocalDeliveriesList[i].house_address;
-                                Pin.Type = PinType.Generic;
-                                Pin.Position = new Position(LocalDeliveriesList[i].latitude, LocalDeliveriesList[i].longitude);
-
-                                Path.Geopath.Add(Pin.Position);
-                                DeliveriesMap.Pins.Add(Pin);
-                                Debug.WriteLine(LocalDeliveriesList[i].parsedPhone);
-                                LocalDeliveriesList[i].ID = i;
-                                BackupDeliveries.Add(LocalDeliveriesList[i]);
+                                element.status = "Status: Skipped";
+                                element.skipAndUnskip = "Unskip";
                             }
 
-                            BackupDeliveriesList.ItemsSource = BackupDeliveries;
-                            DeliveriesMap.MapElements.Add(Path);
-                            BackupDisplay.Margin = new Thickness(0, Application.Current.MainPage.Height, 0, 0);
+                            element.ID = id;
+                            element.placement = id;
+                            if (a.delivery_instructions != null && a.delivery_instructions != "")
+                            {
+                                element.delivery_instructions = a.delivery_instructions;
+                            }
+                            else
+                            {
+                                element.delivery_instructions = "No delivery instructions for this order";
+                            }
 
+                            element.delivery_items = a.delivery_items;
+                            element.customer_uid = a.customer_uid;
+                            element.purchase_uid = a.purchase_uid;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                            UserDialogs.Instance.HideLoading();
-
-                            Debug.WriteLine("GET DELIVERIES");
-                            //try
-                            //{
-                            //    Application.Current.MainPage = new DeliveriesPage();
-
-                            //    var data = JsonConvert.DeserializeObject<UserInfo>(responseContent);
-                            //    //Application.Current.Properties["user_id"] = data.result[0].customer_uid;
-
-                            //    UpdateTokensPost updateTokesPost = new UpdateTokensPost();
-                            //    updateTokesPost.uid = data.result[0].customer_uid;
-                            //    updateTokesPost.mobile_access_token = accessToken;
-                            //    updateTokesPost.mobile_refresh_token = refreshToken;
-
-                            //    var updateTokesPostSerializedObject = JsonConvert.SerializeObject(updateTokesPost);
-                            //    var updateTokesContent = new StringContent(updateTokesPostSerializedObject, Encoding.UTF8, "application/json");
-                            //    var updateTokesResponse = await client.PostAsync(Constant.UpdateTokensUrl, updateTokesContent);
-                            //    var updateTokenResponseContent = await updateTokesResponse.Content.ReadAsStringAsync();
-                            //    System.Diagnostics.Debug.WriteLine(updateTokenResponseContent);
-
-                            //    if (updateTokesResponse.IsSuccessStatusCode)
-                            //    {
-                            //        var GoogleRequest = new RequestUserInfo();
-                            //        GoogleRequest.uid = data.result[0].customer_uid;
-
-                            //        var requestSelializedObject = JsonConvert.SerializeObject(GoogleRequest);
-                            //        var requestContent = new StringContent(requestSelializedObject, Encoding.UTF8, "application/json");
-
-                            //        var clientRequest = await client.PostAsync(Constant.GetUserInfoUrl, requestContent);
-
-                            //        if (clientRequest.IsSuccessStatusCode)
-                            //        {
-                            //            var SFUser = await clientRequest.Content.ReadAsStringAsync();
-                            //            var GoogleUserData = JsonConvert.DeserializeObject<UserInfo>(SFUser);
-
-                            //            DateTime today = DateTime.Now;
-                            //            DateTime expDate = today.AddDays(14);
-
-                            //            Debug.WriteLine("I AM SIGN IN");
-
-
-                            //            //Application.Current.Properties["user_id"] = data.result[0].customer_uid;
-                            //            //Application.Current.Properties["time_stamp"] = expDate;
-                            //            //Application.Current.Properties["platform"] = "GOOGLE";
-                            //            //Application.Current.Properties["user_email"] = GoogleUserData.result[0].customer_email;
-                            //            //Application.Current.Properties["user_first_name"] = GoogleUserData.result[0].customer_first_name;
-                            //            //Application.Current.Properties["user_last_name"] = GoogleUserData.result[0].customer_last_name;
-                            //            //Application.Current.Properties["user_phone_num"] = GoogleUserData.result[0].customer_phone_num;
-                            //            //Application.Current.Properties["user_address"] = GoogleUserData.result[0].customer_address;
-                            //            //Application.Current.Properties["user_unit"] = GoogleUserData.result[0].customer_unit;
-                            //            //Application.Current.Properties["user_city"] = GoogleUserData.result[0].customer_city;
-                            //            //Application.Current.Properties["user_state"] = GoogleUserData.result[0].customer_state;
-                            //            //Application.Current.Properties["user_zip_code"] = GoogleUserData.result[0].customer_zip;
-                            //            //Application.Current.Properties["user_latitude"] = GoogleUserData.result[0].customer_lat;
-                            //            //Application.Current.Properties["user_longitude"] = GoogleUserData.result[0].customer_long;
-
-                            //            //_ = Application.Current.SavePropertiesAsync();
-
-                            //            //if (Device.RuntimePlatform == Device.iOS)
-                            //            //{
-                            //            //    deviceId = Preferences.Get("guid", null);
-                            //            //    if (deviceId != null) { Debug.WriteLine("This is the iOS GUID from Log in: " + deviceId); }
-                            //            //}
-                            //            //else
-                            //            //{
-                            //            //    deviceId = Preferences.Get("guid", null);
-                            //            //    if (deviceId != null) { Debug.WriteLine("This is the Android GUID from Log in " + deviceId); }
-                            //            //}
-
-                            //            //if (deviceId != null)
-                            //            //{
-                            //            //    NotificationPost notificationPost = new NotificationPost();
-
-                            //            //    notificationPost.uid = (string)Application.Current.Properties["user_id"];
-                            //            //    notificationPost.guid = deviceId.Substring(5);
-                            //            //    Application.Current.Properties["guid"] = deviceId.Substring(5);
-                            //            //    notificationPost.notification = "TRUE";
-
-                            //            //    var notificationSerializedObject = JsonConvert.SerializeObject(notificationPost);
-                            //            //    Debug.WriteLine("Notification JSON Object to send: " + notificationSerializedObject);
-
-                            //            //    var notificationContent = new StringContent(notificationSerializedObject, Encoding.UTF8, "application/json");
-
-                            //            //    var clientResponse = await client.PostAsync(Constant.NotificationsUrl, notificationContent);
-
-                            //            //    Debug.WriteLine("Status code: " + clientResponse.IsSuccessStatusCode);
-
-                            //            //    if (clientResponse.IsSuccessStatusCode)
-                            //            //    {
-                            //            //        System.Diagnostics.Debug.WriteLine("We have post the guid to the database");
-                            //            //    }
-                            //            //    else
-                            //            //    {
-                            //            //        await DisplayAlert("Ooops!", "Something went wrong. We are not able to send you notification at this moment", "OK");
-                            //            //    }
-                            //            //}
-
-                            //            //Application.Current.MainPage = new SelectionPage();
-                            //        }
-                            //        else
-                            //        {
-                            //            await DisplayAlert("Alert!", "Our internal system was not able to retrieve your user information. We are working to solve this issue.", "OK");
-                            //        }
-                            //    }
-                            //    else
-                            //    {
-                            //        await DisplayAlert("Oops", "We are facing some problems with our internal system. We weren't able to update your credentials", "OK");
-                            //    }
-                            //}
-                            //catch (Exception second)
-                            //{
-                            //    Debug.WriteLine(second.Message);
-                            //}
+                            deliveryList.Add(element);
+                            id++;
+                            user.route_id = a.route_id;
                         }
-                        if (responseContent.Contains(Constant.ErrorPlatform))
+                        if (deliveryList.Count != 0)
                         {
-                            //var RDSCode = JsonConvert.DeserializeObject<RDSLogInMessage>(responseContent);
-                            //await DisplayAlert("Message", RDSCode.message, "OK");
+                            deliveryListView.ItemsSource = deliveryList;
+                            SaveStartingPoint(deliveryList[0]);
+                            SetStartToFirstLocation(Color.Red);
+                            FindNextDeliveryAvailable(deliveryList);
+                            SetDelivery();
+                            SetHeightWidthOnMap();
+                            SetWidthOnHelpButtonRow();
+                            SetCompleteRouteView();
                         }
-
-                        if (responseContent.Contains(Constant.ErrorUserDirectLogIn))
+                        else
                         {
-                            await DisplayAlert("Oops!", "You have an existing Serving Fresh account. Please use direct login", "OK");
+                            SetHeightWidthOnMap();
+                            SetWidthOnHelpButtonRow();
+                            SetCompleteRouteView();
+                            await DisplayAlert("Oops", "Our system shows that there are no deliveries available for you at this moment. Please check again later.", "OK");
+                            BottomSheet.IsEnabled = false;
                         }
                     }
                 }
+                
             }
             catch (Exception g)
             {
                 Debug.WriteLine("IN side " + g.Message);
-                MyStack.IsEnabled = false;
+                //MyStack.IsEnabled = false;
                 await DisplayAlert("Oops", "Our system shows that there are no deliveries available for you at this moment. Please check again later.", "OK");
+                BottomSheet.IsEnabled = false;
             }
+        }
+
+        void SaveStartingPoint(DeliveryInfo location)
+        {
+            startLocation.house_address = location.house_address;
+            startLocation.latitude = location.latitude;
+            startLocation.longitude = location.longitude;
+            deliveryList.Remove(location);
+            UpdateDeliveryIDs(deliveryList);
+        }
+
+        void UpdateDeliveryIDs(ObservableCollection<DeliveryInfo> deliveryList)
+        {
+            int index = 0;
+            foreach(DeliveryInfo a in deliveryList)
+            {
+                a.placement = index;
+                a.ID = index + 1;
+                index++;
+            }
+        }
+
+
+        public void SetDelivery()
+        {
+            CustomerName.Text = deliveryList[CurrentIndex].name;
+            CustomerAddress.Text = deliveryList[CurrentIndex].house_address;
+            DeliveryInstructions.Text = deliveryList[CurrentIndex].delivery_instructions;
+            CurrentDeliveryNumber.Text = deliveryList[CurrentIndex].ID.ToString();
+            TotalDeliveriesNumber.Text = (deliveryList.Count).ToString();
+
+            var items = JsonConvert.DeserializeObject<ObservableCollection<DeliveryItem>>(deliveryList[CurrentIndex].delivery_items);
+
+            var listOfItems = new ObservableCollection<DisplayItem>();
+            foreach (DeliveryItem item in items)
+            {
+                var el = new DisplayItem();
+                el.img = item.img;
+                el.title = item.name + " (" + item.unit + ") ";
+                el.quantity = item.qty.ToString();
+                listOfItems.Add(el);
+            }
+
+            OrderItemsList.ItemsSource = listOfItems;
+        }
+
+        public void SetCompleteRouteView()
+        {
+            //DeliveriesMap.CustomPins = new List<CustomPin>();
+            //DeliveriesMap.MapElements.Clear();
+            //DeliveriesMap.CustomPins.Clear();
+
+            var Path = new Polyline();
+            Path.StrokeColor = Color.Black;
+            Path.StrokeWidth = 4;
+
+            for (int i = 0; i < deliveryList.Count; i++)
+            {
+                //deliveryList[i].ID
+                
+                var pin = new CustomPin();
+                pin.Label = "Delivery " + (i + 1) + " For: " + deliveryList[i].firstNameAndFirstLetterLastName;
+                pin.Address = deliveryList[i].house_address;
+                pin.Type = PinType.Generic;
+                pin.Position = new Position(deliveryList[i].latitude, deliveryList[i].longitude);
+                pin.Name = (i + 1) + "";
+                pin.Url = "";
+                pin.Number = (i + 1) + "";
+
+                Debug.WriteLine("deliveryList[i].status: " + deliveryList[i].status);
+                pin.Color = SetPinColor(deliveryList[i].status);
+                Path.Geopath.Add(pin.Position);
+                DeliveriesMap.CustomPins.Add(pin);
+                DeliveriesMap.Pins.Add(pin);
+            }
+            DeliveriesMap.MapElements.Add(Path);
+        }
+
+        public void SetCompleteRouteView(string versionB)
+        {
+            
+
+            var Path = new Polyline();
+            Path.StrokeColor = Color.Black;
+            Path.StrokeWidth = 4;
+
+            for (int i = 0; i < deliveryList.Count; i++)
+            {
+                //deliveryList[i].ID
+
+                var pin = new CustomPin();
+                pin.Label = "Delivery " + (i + 1) + " For: " + deliveryList[i].firstNameAndFirstLetterLastName;
+                pin.Address = deliveryList[i].house_address;
+                pin.Type = PinType.Generic;
+                pin.Position = new Position(deliveryList[i].latitude, deliveryList[i].longitude);
+                pin.Name = (i + 1)+ "";
+                pin.Url = "";
+                pin.Number = (i + 1) + "";
+
+                if (i == CurrentIndex)
+                {
+                    pin.Color = "Red";
+
+                }
+                else
+                {
+
+                    Debug.WriteLine("deliveryList[i].status: " + deliveryList[i].status);
+                    pin.Color = SetPinColor(deliveryList[i].status);
+                }
+                
+                
+                Path.Geopath.Add(pin.Position);
+                DeliveriesMap.CustomPins.Add(pin);
+                DeliveriesMap.Pins.Add(pin);
+            }
+            DeliveriesMap.MapElements.Add(Path);
+
+            if (deliveryList.Count > 0)
+            {
+                AdjustMapCenter(deliveryList[0].latitude, deliveryList[0].longitude);
+            }
+        }
+
+
+        string SetPinColor(string status)
+        {
+            string result = "";
+            Debug.WriteLine("COLOR: " + status);
+            if (status == "Status: Delivered")
+            {
+                result = "Green";
+            }
+            else if (status == "Status: Pending...")
+            {
+                result = "Black";
+            }
+            else if (status == "Status: Skipped")
+            {
+                result = "Gray";
+            }
+            Debug.WriteLine("RESULT: " + result);
+            return result;
         }
 
         void SetHeightWidthOnMap()
@@ -631,133 +613,62 @@ namespace JustDelivered.Views
             DeliveriesMap.MoveToRegion(Span);
         }
 
+        void AdjustMapCenter(double lat, double lon)
+        {
+            var Point = new Position(lat, lon);
+            var Span = new MapSpan(Point, 0.10, 0.10);
+            DeliveriesMap.MoveToRegion(Span);
+        }
+
         void SetWidthOnHelpButtonRow()
         {
             HelpButtonRow.WidthRequest = Application.Current.MainPage.Width;
+            menuRow.WidthRequest = Application.Current.MainPage.Width;
         }
 
-        //async void GetDeliveries()
-        //{
-        //    var Client = new HttpClient();
-        //    var DeliveriesEndpoint = await Client.GetAsync("https://uqu7qejuee.execute-api.us-west-1.amazonaws.com/dev/api/v2/getRoutes");
-        //    if (DeliveriesEndpoint.IsSuccessStatusCode)
-        //    {
-        //        var data = await DeliveriesEndpoint.Content.ReadAsStringAsync();
-        //        var DeliveryList = JsonConvert.DeserializeObject<Deliveries>(data);
-        //        Debug.WriteLine("DELIVERY DATA FROM GETROUTES ENDPOINT: " + data);
-
-        //        foreach (DeliveryItem a in DeliveryList.result.result)
-        //        {
-        //            var element = new DeliveryInfo();
-
-        //            Debug.WriteLine("ROUTE_ID: " + a.route_id);
-        //            Debug.WriteLine("ROUTE_OPTION: " + a.route_option);
-        //            Debug.WriteLine("ROUTE_BUSINESS_ID: " + a.route_business_id);
-        //            Debug.WriteLine("ROUTE_DRIVER_ID: " + a.route_driver_id);
-        //            Debug.WriteLine("ROUTE_DELIVERY_INFO: " + a.route_delivery_info);
-
-        //            string str2 = "";
-        //            var array = a.route_delivery_info.ToCharArray();
-        //            for (int i = 1; i < array.Length - 1; i++)
-        //            {
-        //                str2 += array[i];
-        //            }
-
-        //            Debug.WriteLine(str2);
-        //            var customer = JsonConvert.DeserializeObject<Item>(str2);
-        //            element.route_id = 1;
-        //            element.name = customer.customer;
-        //            element.house_address = customer.delivery_street.ToUpper();
-        //            element.city = "";
-        //            element.state = "";
-        //            element.zipcode = "";
-        //            element.email = customer.email;
-        //            element.phone = customer.phone;
-        //            element.latitude = customer.coordinates.latitude;
-        //            element.longitude = customer.coordinates.longitude;
-        //            element.status = "Status: Pending...";
-        //            element.ID = 0;
-        //            if (customer.delivery_instructions != null && customer.delivery_instructions != "")
-        //            {
-        //                element.delivery_instructions = customer.delivery_instructions;
-        //            }
-        //            else
-        //            {
-        //                element.delivery_instructions = "No delivery instructions for this order";
-        //            }
-        //            Debug.WriteLine(customer.customer);
-        //            Debug.WriteLine(customer.delivery_street);
-        //            Debug.WriteLine(customer.coordinates.latitude);
-        //            Debug.WriteLine(customer.coordinates.longitude);
-        //            Debug.WriteLine(customer.email);
-        //            Debug.WriteLine(customer.phone);
-
-        //            Debug.WriteLine("NUM_DELIVERYES: " + a.num_deliveries);
-        //            Debug.WriteLine("ROUTE_DISTANCE: " + a.route_distance);
-        //            Debug.WriteLine("ROUTE_TIME: " + a.route_time);
-        //            Debug.WriteLine("SHIPMENT_DATE: " + a.shipment_date);
-
-        //            LocalDeliveriesList.Add(element);
-        //            LocalBackupDeliveriesList.Add(element);
-        //        }
-
-        //        CustomerName.Text = LocalDeliveriesList[CurrentIndex].name;
-        //        CustomerAddress.Text = LocalDeliveriesList[CurrentIndex].house_address;
-        //        DeliveryInstructions.Text = LocalDeliveriesList[CurrentIndex].delivery_instructions;
-        //        CurrentDeliveryNumber.Text = CurrentIndex.ToString();
-        //        TotalDeliveriesNumber.Text = (LocalDeliveriesList.Count - 1).ToString();
-
-        //        SetStartToFirstLocation();
-
-        //        var Path = new Polyline();
-        //        Path.StrokeColor = Color.Black;
-        //        Path.StrokeWidth = 4;
-
-        //        for (int i = 1; i < LocalDeliveriesList.Count; i++)
-        //        {
-        //            var Pin = new Pin();
-        //            Pin.Label = "Delivery " + i + " For: " + LocalDeliveriesList[i].firstNameAndFirstLetterLastName;
-        //            Pin.Address = LocalDeliveriesList[i].house_address;
-        //            Pin.Type = PinType.Generic;
-        //            Pin.Position = new Position(LocalDeliveriesList[i].latitude, LocalDeliveriesList[i].longitude);
-
-        //            Path.Geopath.Add(Pin.Position);
-        //            DeliveriesMap.Pins.Add(Pin);
-        //            Debug.WriteLine(LocalDeliveriesList[i].parsedPhone);
-        //            LocalDeliveriesList[i].ID = i;
-        //            BackupDeliveries.Add(LocalDeliveriesList[i]);
-        //        }
-
-        //        BackupDeliveriesList.ItemsSource = BackupDeliveries;
-        //        DeliveriesMap.MapElements.Add(Path);
-        //        BackupDisplay.Margin = new Thickness(0, Application.Current.MainPage.Height, 0, 0);
-        //    }
-        //}
-
-        public async void SetStartToFirstLocation()
+        public async void SetStartToFirstLocation(Color pathColor)
         {
-            if (LocalDeliveriesList.Count >= 2)
+            if (deliveryList.Count >= 1)
             {
+
                 var Start = new Polyline();
-                Start.StrokeColor = Color.Red;
+                Start.StrokeColor = pathColor;
                 Start.StrokeWidth = 4;
 
-                var Pin = new Pin();
-                Pin.Label = "Start Location";
-                Pin.Address = LocalDeliveriesList[0].house_address;
-                Pin.Type = PinType.Place;
-                Pin.Position = new Position(LocalDeliveriesList[0].latitude, LocalDeliveriesList[0].longitude);
+                
+                CustomPin pin = new CustomPin
+                {
+                    Type = PinType.Place,
+                    Position = new Position(startLocation.latitude, startLocation.longitude),
+                    Label = "Start Location",
+                    Name ="JD",
+                    Url = "jd",
+                    Address = startLocation.house_address,
+                    Number = "S",
+                    
+                };
 
-                var P1 = new Position(LocalDeliveriesList[0].latitude, LocalDeliveriesList[0].longitude);
-                var P2 = new Position(LocalDeliveriesList[1].latitude, LocalDeliveriesList[1].longitude);
+                if(pathColor == Color.Red)
+                {
+                    pin.Color = "Red";
+                }
+                else
+                {
+                    pin.Color = "Green";
+                }
+
+                DeliveriesMap.CustomPins.Add(pin);
+                DeliveriesMap.Pins.Add(pin);
+              
+                var P1 = new Position(startLocation.latitude, startLocation.longitude);
+                var P2 = new Position(deliveryList[0].latitude, deliveryList[0].longitude);
 
                 Start.Geopath.Add(P1);
                 Start.Geopath.Add(P2);
 
                 DeliveriesMap.MapElements.Add(Start);
-                DeliveriesMap.Pins.Add(Pin);
 
-                var Span = new MapSpan(Pin.Position, 0.1, 0.1);
+                var Span = new MapSpan(pin.Position, 0.1, 0.1);
                 DeliveriesMap.MoveToRegion(Span);
             }
             else
@@ -845,43 +756,175 @@ namespace JustDelivered.Views
             return proportion * Height;
         }
 
+        // problem here
         async void GetDirections(System.Object sender, System.EventArgs e)
         {
-            Debug.WriteLine("GET DIRECTIONS");
+            try
+            {
+                Debug.WriteLine("GET DIRECTIONS");
+                DeliveryInfo currentDelivery = null;
+                if (fullDeliveryListView.IsVisible == false)
+                {
+                    currentDelivery = deliveryList[CurrentIndex];
+                }
+                else
+                {
 
-            var location = new Location(LocalDeliveriesList[CurrentIndex].latitude, LocalDeliveriesList[CurrentIndex].longitude);
-            var options = new MapLaunchOptions { Name = LocalDeliveriesList[CurrentIndex].house_address, NavigationMode = NavigationMode.Driving };
+                    var caller = (ImageButton)sender;
+                    var selectedItem = (DeliveryInfo)caller.CommandParameter;
+                    currentDelivery = selectedItem;
+                }
 
-            await Xamarin.Essentials.Map.OpenAsync(location, options);
-            Application.Current.MainPage = new ConfirmationPage(LocalDeliveriesList[CurrentIndex], CurrentIndex);
+                var location = new Location(currentDelivery.latitude, currentDelivery.longitude);
+                var options = new MapLaunchOptions { Name = currentDelivery.house_address, NavigationMode = NavigationMode.Driving };
+                delivery = currentDelivery;
+                await Xamarin.Essentials.Map.OpenAsync(location, options);
+                Application.Current.MainPage = new VerificationPage();
+            }
+            catch
+            {
+
+            }
+            
         }
 
         void SkipDirections(System.Object sender, System.EventArgs e)
         {
             Debug.WriteLine("SKIP DIRECTIONS");
-            Application.Current.MainPage = new ConfirmationPage(LocalDeliveriesList[CurrentIndex], CurrentIndex);
+            delivery = deliveryList[CurrentIndex];
+            Application.Current.MainPage = new VerificationPage();
         }
 
         async void SkipDelivery(System.Object sender, System.EventArgs e)
         {
             Debug.WriteLine("SKIP DELIVERY");
-            var Result = await DisplayAlert("Are you sure you want to skip this delivery?", "Press 'YES' to skip this delivery. Otherwise, press 'NO' to continue processing this delivery", "YES", "NO");
-            if (Result)
+            DeliveryInfo currentDelivery = null;
+            if (fullDeliveryListView.IsVisible == false)
             {
-                string ReasonToSkipDelivery = await DisplayPromptAsync("", "What's the reason you are not able to complete this delivery?");
-                CurrentIndex++;
-                GetNextDelivery();
+                currentDelivery = deliveryList[CurrentIndex];
             }
+            else
+            {
+                //var caller = (ImageButton)sender;
+                //var selectedItem = (DeliveryInfo)caller.CommandParameter;
+                var caller = (Frame)sender;
+                var gesture = (TapGestureRecognizer)caller.GestureRecognizers[0];
+                var selectedItem = (DeliveryInfo)gesture.CommandParameter;
+                currentDelivery = selectedItem;
+            }
+            Debug.WriteLine("STATUS AT SKIP: " + currentDelivery.status);
+            Debug.WriteLine("Index: " + currentDelivery.placement);
+            if (currentDelivery.status == "Status: Pending...")
+            {
+                var Result = await DisplayAlert("Are you sure you want to skip this delivery?", "Press 'YES' to skip this delivery. Otherwise, press 'NO' to continue processing this delivery", "YES", "NO");
+                if (Result)
+                {
+                    string ReasonToSkipDelivery = await DisplayPromptAsync("", "What's the reason you are not able to complete this delivery?");
+                    if (ReasonToSkipDelivery != null && ReasonToSkipDelivery != "")
+                    {
+                        _ = UpdateDeliveryStatus(currentDelivery.purchase_uid, ReasonToSkipDelivery, "Skip");
+                    }
+
+                    //deliveryList.Remove(currentDelivery);
+                    
+                    currentDelivery.status = "Status: Skipped";
+                    currentDelivery.updateStatus = "Status: Skipped";
+                    currentDelivery.updateSkipText = "Unskip";
+                    //deliveryList.Add(currentDelivery);
+                   
+                    deliveryList[currentDelivery.placement].status = "Status: Skipped";
+                    AddPurchaseIdToArray(currentDelivery.purchase_uid);
+                    FindNextDeliveryAvailable(deliveryList);
+                    SetDelivery();
+                    ResetMap();
+                    SetStartToFirstLocation(Color.Black);
+                    SetCompleteRouteView();
+                }
+                return;
+            }
+            else if(currentDelivery.status == "Status: Skipped")
+            {
+                deliveryList[currentDelivery.placement].status = "Status: Pending...";
+                currentDelivery.updateStatus = "Status: Pending...";
+                currentDelivery.updateSkipText = "Skip";
+
+                _ = UpdateDeliveryStatus(currentDelivery.purchase_uid, "", "Undo");
+                RemovePurchaseIdToArray(currentDelivery.purchase_uid);
+                ResetMap();
+                SetStartToFirstLocation(Color.Black);
+                SetCompleteRouteView();
+            }
+        }
+
+        void ResetMap()
+        {
+            DeliveriesMap.MapElements.Clear();
+            DeliveriesMap.CustomPins.Clear();
+        }
+
+        void AddPurchaseIdToArray(string id)
+        {
+            if (!list.Contains(id))
+            {
+                list.Add(id);
+            }
+        }
+
+        void RemovePurchaseIdToArray(string id)
+        {
+            if (list.Contains(id))
+            {
+                list.Remove(id);
+            }
+        }
+
+        async Task<bool> UpdateDeliveryStatus(string purchaseId, string note, string command)
+        {
+            try
+            {
+                var client = new HttpClient();
+                var delivery = new UpdateDelivery();
+
+                delivery.purchase_uid = purchaseId;
+                delivery.cmd = command;
+                delivery.note = note;
+
+                var deliveryJSON = JsonConvert.SerializeObject(delivery);
+                Debug.WriteLine("DELIVERY JSON: " + deliveryJSON);
+                var content = new StringContent(deliveryJSON, Encoding.UTF8, "application/json");
+
+                var RDSResponse = await client.PostAsync("https://0ig1dbpx3k.execute-api.us-west-1.amazonaws.com/dev/api/v2/UpdateDeliveryStatus", content);
+                Debug.WriteLine("UPDATE DELIVERY STATUS ENDPOINT " + RDSResponse.IsSuccessStatusCode);
+
+            }
+            catch (Exception ErrorUpdatingStatus)
+            {
+                Debug.WriteLine("Exception: " + ErrorUpdatingStatus.Message);
+            }
+            return true;
         }
 
         async void CallCustomer(System.Object sender, System.EventArgs e)
         {
             Debug.WriteLine("CALL CUSTOMER");
+
+            DeliveryInfo currentDelivery = null;
+            if (fullDeliveryListView.IsVisible == false)
+            {
+                currentDelivery = deliveryList[CurrentIndex];
+            }
+            else
+            {
+                var caller = (ImageButton)sender;
+                var selectedItem = (DeliveryInfo)caller.CommandParameter;
+                currentDelivery = selectedItem;
+            }
+
             try
             {
-                if (LocalDeliveriesList[CurrentIndex].parsedPhone != null && LocalDeliveriesList[CurrentIndex].parsedPhone.Length == 10)
+                if (currentDelivery.parsedPhone != null && currentDelivery.parsedPhone.Length == 10)
                 {
-                    PhoneDialer.Open(LocalDeliveriesList[CurrentIndex].parsedPhone);
+                    PhoneDialer.Open(currentDelivery.parsedPhone);
                 }
                 else
                 {
@@ -897,13 +940,24 @@ namespace JustDelivered.Views
 
         async void TextCustomer(System.Object sender, System.EventArgs e)
         {
-            Debug.WriteLine("TEXT CUSTOMER");
+            DeliveryInfo currentDelivery = null;
+            if (fullDeliveryListView.IsVisible == false)
+            {
+                currentDelivery = deliveryList[CurrentIndex];
+            }
+            else
+            {
+                var caller = (ImageButton)sender;
+                var selectedItem = (DeliveryInfo)caller.CommandParameter;
+                currentDelivery = selectedItem;
+            }
             try
             {
-                if (LocalDeliveriesList[CurrentIndex].parsedPhone != null && LocalDeliveriesList[CurrentIndex].parsedPhone.Length == 10)
+                if (currentDelivery.parsedPhone != null && currentDelivery.parsedPhone.Length == 10)
                 {
-                    var message = new SmsMessage(null, new[] { LocalDeliveriesList[CurrentIndex].parsedPhone });
+                    var message = new SmsMessage(null, new[] { currentDelivery.parsedPhone });
                     await Sms.ComposeAsync(message);
+
                 }
                 else
                 {
@@ -918,37 +972,142 @@ namespace JustDelivered.Views
 
         void ShowBackupDeliveriesFrame(System.Object sender, System.EventArgs e)
         {
-            Debug.WriteLine("BACKUP");
-            var y = Application.Current.MainPage.Height / 2;
-            var Width = Application.Current.MainPage.Width;
-            Debug.WriteLine(y);
-            BackupDisplay.Margin = new Thickness(0, y, 0, 0);
-            BackupDisplay.WidthRequest = Width;
-            BackupDeliveriesList.HeightRequest = y - 80;
+            if (fullDeliveryListView.IsVisible == false)
+            {
+                
+                BottomSheet.TranslationY = -800;
+                //var argument = new PanUpdatedEventArgs();
+                PanGestureRecognizer_PanUpdated(sender, new PanUpdatedEventArgs(GestureStatus.Completed, 0));
+                
+
+                sigleDeliveryView.IsVisible = false;
+                fullDeliveryListView.IsVisible = true;
+            }
+            else
+            {
+                fullDeliveryListView.IsVisible = false;
+                sigleDeliveryView.IsVisible = true;
+            }
         }
 
         void HideBackupDeliveriesFrame(System.Object sender, System.EventArgs e)
         {
-            Debug.WriteLine("HIDE");
-            var y = Application.Current.MainPage.Height;
-            Debug.WriteLine(y);
-            BackupDisplay.Margin = new Thickness(0, y, 0, 0);
+            BottomSheet.TranslationY = 0;
+            PanGestureRecognizer_PanUpdated(sender, new PanUpdatedEventArgs(GestureStatus.Completed, 0));
+            fullDeliveryListView.IsVisible = false;
+            sigleDeliveryView.IsVisible = true;
         }
 
-        async void GetDirectionFromBackup(System.Object sender, System.EventArgs e)
+        void ReverseListClick(System.Object sender, System.EventArgs e)
         {
-            var element = (Label)sender;
-            Debug.WriteLine("INDEX TO REFERENCE: " + element.ClassId);
-            var index = Int16.Parse(element.ClassId);
-            if (index < LocalBackupDeliveriesList.Count)
-            {
-                BackupIndex = index;
-                var location = new Location(LocalBackupDeliveriesList[index].latitude, LocalBackupDeliveriesList[index].longitude);
-                var options = new MapLaunchOptions { Name = LocalBackupDeliveriesList[index].house_address, NavigationMode = NavigationMode.Driving };
+            Debug.WriteLine("Reverse List");
+            
+            deliveryListView.ItemsSource = reverseDeliveryList(deliveryList);
+           
+            ResetMap();
+            FindNextDeliveryAvailable(deliveryList);
+            SetDelivery();
+            SetStartToFirstLocation(Color.Black);
+            SetCompleteRouteView();
 
-                await Xamarin.Essentials.Map.OpenAsync(location, options);
-                Application.Current.MainPage = new ConfirmationPage(LocalBackupDeliveriesList[index], -1);
+        }
+
+        ObservableCollection<DeliveryInfo> reverseDeliveryList(ObservableCollection<DeliveryInfo> source)
+        {
+            if(source == null)
+            {
+                return null;
             }
+            else
+            {
+                ObservableCollection<DeliveryInfo> reverseList = new ObservableCollection<DeliveryInfo>();
+                for (int i = source.Count - 1; i >= 0; i--)
+                {
+                    reverseList.Add(source[i]);
+                }
+                //BackupDeliveries = reverseList
+                UpdateDeliveryIDs(reverseList);
+                deliveryList = reverseList;
+                return reverseList;
+            }
+        }
+
+        void DragGestureRecognizer_DragStarting(System.Object sender, Xamarin.Forms.DragStartingEventArgs e)
+        {
+            var f = (sender as Element)?.Parent as Frame;
+            
+            e.Data.Properties.Add("Frame", f);
+        }
+
+        void DropGestureRecognizer_Drop(System.Object sender, Xamarin.Forms.DropEventArgs e)
+        {
+            //var button = (ImageButton)sender;
+            //var itemModelObject = (SingleItem)button.CommandParameter;
+            //var itemSelected = new ItemPurchased();
+
+            var button = (Frame)e.Data.Properties["Frame"];
+            var g = (TapGestureRecognizer)button.GestureRecognizers[1];
+            var itemModelObject = (DeliveryInfo)g.CommandParameter;
+
+            deliveryList.Remove(itemModelObject);
+            deliveryList.Add(itemModelObject);
+            deliveryListView.ItemsSource = deliveryList;
+
+            ResetMap();
+            UpdateDeliveryIDs(deliveryList);
+            FindNextDeliveryAvailable(deliveryList);
+            SetDelivery();
+            SetCompleteRouteView();
+        }
+
+        void ShowMenu(System.Object sender, System.EventArgs e)
+        {
+            if(menuRow.IsVisible == false)
+            {
+                menuRow.IsVisible = true;
+            }
+            else
+            {
+                menuRow.IsVisible = false;
+            }
+        }
+
+        void MenuDirections(System.Object sender, System.EventArgs e)
+        {
+            GetDirections(sender, e);
+        }
+
+        void MenuDetails(System.Object sender, System.EventArgs e)
+        {
+            BottomSheet.TranslationY = -800;
+            sigleDeliveryView.IsVisible = true;
+            fullDeliveryListView.IsVisible = false;
+            PanGestureRecognizer_PanUpdated(sender, new PanUpdatedEventArgs(GestureStatus.Completed, 0));
+        }
+
+        void MenuOverview(System.Object sender, System.EventArgs e)
+        {
+            sigleDeliveryView.IsVisible = false;
+            fullDeliveryListView.IsVisible = true;
+            BottomSheet.TranslationY = -800;
+            PanGestureRecognizer_PanUpdated(sender, new PanUpdatedEventArgs(GestureStatus.Completed, 0));
+        }
+
+        void LogOut(System.Object sender, System.EventArgs e)
+        {
+            user.PrintUser();
+            if (Application.Current.Properties.Keys.Contains(Constant.Autheticator))
+            {
+                user.id = "";
+                user.route_id = "";
+                user.PrintUser();
+                string account = JsonConvert.SerializeObject(user);
+                //Debug.WriteLine("USER: " + account);
+
+                Application.Current.Properties[Constant.Autheticator] = account;
+                Application.Current.SavePropertiesAsync();
+            }
+            Application.Current.MainPage = new LogInPage();
         }
     }
 }

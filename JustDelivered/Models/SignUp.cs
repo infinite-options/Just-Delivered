@@ -1,0 +1,33 @@
+﻿using System;
+namespace JustDelivered.Models
+{
+    public class SignUp
+    {
+        public string first_name { get; set; }
+        public string last_name { get; set; }
+        public string business_uid { get; set; }
+        public string driver_hours { get; set; }
+        public string street { get; set; }
+        public string city { get; set; }
+        public string state { get; set; }
+        public string zipcode { get; set; }
+        public string email { get; set; }
+        public string phone { get; set; }
+        public string ssn { get; set; }
+        public string license_num { get; set; }
+        public string license_exp { get; set; }
+        public string insurance { get; set; }
+        public string contact_name { get; set; }
+        public string contact_phone { get; set; }
+        public string contact_relation { get; set; }
+        public string bank_acc_info { get; set; }
+        public string bank_routing_info { get; set; }
+        public string password { get; set; }
+        public string mobile_access_token { get; set; }
+        public string mobile_refresh_token { get; set; }
+        public string user_access_token { get; set; }
+        public string user_refresh_token { get; set; }
+        public string social_id { get; set; }
+        public string social { get; set; }
+    }
+}

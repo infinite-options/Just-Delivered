@@ -25,7 +25,7 @@ namespace JustDelivered.iOS
         {
             global::Xamarin.Auth.Presenters.XamarinIOS.AuthenticationConfiguration.Init();
             global::Xamarin.Forms.Forms.Init();
-            global::Xamarin.FormsMaps.Init();
+            //global::Xamarin.FormsMaps.Init();
             LoadApplication(new App());
 
             return base.FinishedLaunching(app, options);

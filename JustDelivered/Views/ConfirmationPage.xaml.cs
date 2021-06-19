@@ -109,7 +109,7 @@ namespace JustDelivered.Views
         public void ReturnButton()
         {
 
-            Application.Current.MainPage = new DeliveriesPage(CurrentIndex);
+            //Application.Current.MainPage = new DeliveriesPage(CurrentIndex);
         }
 
 
@@ -155,7 +155,7 @@ namespace JustDelivered.Views
             await DisplayAlert("Alert", message, "OK");
         }
 
-        public async void ReturnHome()
+        public void ReturnHome()
         {
             //await Application.Current.MainPage.Navigation.PopAsync();
         }
