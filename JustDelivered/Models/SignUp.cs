@@ -16,7 +16,12 @@ namespace JustDelivered.Models
         public string ssn { get; set; }
         public string license_num { get; set; }
         public string license_exp { get; set; }
-        public string insurance { get; set; }
+        public string driver_car_year { get; set; }
+        public string driver_car_model { get; set; }
+        public string driver_car_make { get; set; }
+        public string driver_insurance_carrier { get; set; }
+        public string driver_insurance_num { get; set; }
+        public string driver_insurance_exp_date { get; set; }
         public string contact_name { get; set; }
         public string contact_phone { get; set; }
         public string contact_relation { get; set; }

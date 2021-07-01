@@ -16,6 +16,7 @@ using static JustDelivered.Views.DeliveriesPage;
 using System.Net.Http;
 using System.Text;
 using Acr.UserDialogs;
+using JustDelivered.Config;
 
 namespace JustDelivered.Views
 {
@@ -29,6 +30,8 @@ namespace JustDelivered.Views
         public Image f = new Image();
         public string p;
         public ObservableCollection<DisplayItem> Items = new ObservableCollection<DisplayItem>();
+        static ObservableCollection<DeliveryItem> listOfItem = new ObservableCollection<DeliveryItem>();
+        static List<string> itemUIDs = new List<string>();
         private byte[] byteArray;
 
         public VerificationPage(DeliveryInfo Delivery, int Index)
@@ -94,10 +97,12 @@ namespace JustDelivered.Views
             //LocalDelivery = Delivery;
 
             var items = JsonConvert.DeserializeObject<ObservableCollection<DeliveryItem>>(DeliveriesPage.delivery.delivery_items);
+            listOfItem = items;
             int i = 0;
             foreach (DeliveryItem item in items)
             {
                 var el = new DisplayItem();
+                el.itemUID = item.item_uid;
                 el.img = item.img;
                 el.title = item.name + " (" + item.unit + ") ";
                 el.itemName = item.name;
@@ -261,7 +266,9 @@ namespace JustDelivered.Views
                         //deliveryList.Remove(DeliveriesPage.delivery);
 
                         DeliveriesPage.delivery.status = "Status: Delivered";
+                        DeliveriesPage.deliveryList[DeliveriesPage.CurrentIndex].status = "Status: Delivered";
                         //deliveryList.Add(DeliveriesPage.delivery);
+                        CreatePurchaseFromMissingItems(itemUIDs);
                         Application.Current.MainPage = new DeliveriesPage("");
                     }
 
@@ -276,7 +283,9 @@ namespace JustDelivered.Views
                     //deliveryList.Remove(DeliveriesPage.delivery);
 
                     DeliveriesPage.delivery.status = "Status: Delivered";
+                    DeliveriesPage.deliveryList[DeliveriesPage.CurrentIndex].status = "Status: Delivered";
                     //deliveryList.Add(DeliveriesPage.delivery);
+                    CreatePurchaseFromMissingItems(itemUIDs);
                     Application.Current.MainPage = new DeliveriesPage("");
                 }
             }
@@ -286,11 +295,13 @@ namespace JustDelivered.Views
                 //deliveryList.Remove(DeliveriesPage.delivery);
 
                 DeliveriesPage.delivery.status = "Status: Delivered";
+                DeliveriesPage.deliveryList[DeliveriesPage.CurrentIndex].status = "Status: Delivered";
                 //deliveryList.Add(DeliveriesPage.delivery);
                 if (!list.Contains(DeliveriesPage.delivery.purchase_uid))
                 {
                     list.Add(DeliveriesPage.delivery.purchase_uid);
                 }
+                CreatePurchaseFromMissingItems(itemUIDs);
                 Application.Current.MainPage = new DeliveriesPage("");
             }
 
@@ -306,8 +317,8 @@ namespace JustDelivered.Views
                 //deliveryList.Remove(DeliveriesPage.delivery);
 
                 DeliveriesPage.delivery.status = "Status: Delivered";
-                //deliveryList.Add(DeliveriesPage.delivery);
-
+                DeliveriesPage.deliveryList[DeliveriesPage.CurrentIndex].status = "Status: Delivered";
+                CreatePurchaseFromMissingItems(itemUIDs);
                 Application.Current.MainPage = new DeliveriesPage("");
             }
             else if (result == "Cancelled")
@@ -320,9 +331,78 @@ namespace JustDelivered.Views
 
                 DeliveriesPage.delivery.status = "Status: Delivered";
                 //deliveryList.Add(DeliveriesPage.delivery);
-
+                DeliveriesPage.deliveryList[DeliveriesPage.CurrentIndex].status = "Status: Delivered";
+                CreatePurchaseFromMissingItems(itemUIDs);
                 Application.Current.MainPage = new DeliveriesPage("");
             }
+        }
+
+        public static void CreatePurchaseFromMissingItems(List<string> list) 
+        {
+            ObservableCollection<DeliveryItem> purchase = new ObservableCollection<DeliveryItem>();
+            if(list.Count != 0)
+            {
+                foreach(string id in list)
+                {
+                    foreach(DeliveryItem item in listOfItem)
+                    {
+                        if(id == item.item_uid)
+                        {
+                            purchase.Add(item);
+                        }
+                    }
+                }
+                var order = new Purchase();
+                
+                order.pur_customer_uid = delivery.customer_uid;
+                order.pur_business_uid = "JD";
+                order.items = purchase;
+                order.delivery_instructions = delivery.delivery_instructions == null || delivery.delivery_instructions == "No delivery instructions for this order" ? "" : delivery.delivery_instructions;
+                // need to parse first name and last name
+                order.delivery_first_name = delivery.firstName;
+                order.delivery_last_name = delivery.lastName;
+                order.delivery_phone_num = delivery.phone;
+                order.delivery_email = delivery.email;
+                // need to parse address and unit
+                order.delivery_address = delivery.house_address;
+                order.delivery_city = delivery.city;
+                order.delivery_state = delivery.state;
+                order.delivery_zip = delivery.zipcode;
+                order.delivery_latitude = delivery.latitude.ToString();
+                order.delivery_longitude = delivery.longitude.ToString();
+                order.start_delivery_date = UpdateDeliveryDate(delivery.delivery_date);
+
+                _ = SendPurchaseToDatabase(order);
+
+                // send it 
+            }
+        }
+
+
+        public static async Task<bool> SendPurchaseToDatabase(Purchase purchase)
+        {
+            var purchaseString = JsonConvert.SerializeObject(purchase);
+            var purchaseMessage = new StringContent(purchaseString, Encoding.UTF8, "application/json");
+
+            Debug.WriteLine("PURCHASE JSON: " + purchaseString);
+            var client = new System.Net.Http.HttpClient();
+            var Response = await client.PostAsync(Constant.PurchaseUrl, purchaseMessage);
+
+            Debug.WriteLine("JSON TO SEND VIA PURCHASE ENDPOINT: " + purchaseString);
+            Debug.WriteLine("PURCHASE WAS WRITTEN TO DATABASE: " + Response.IsSuccessStatusCode);
+            if (Response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        static string UpdateDeliveryDate(string date)
+        {
+            string result = "";
+            var updatedDate = DateTime.Parse(date).AddDays(7);
+            result = updatedDate.ToString("yyyy-MM-dd 10:00:00");
+            return result;
         }
 
         async Task<bool> SavePhoto(byte [] TargetImageByte,  string purchaseId)
@@ -339,7 +419,7 @@ namespace JustDelivered.Views
 
             var request = new HttpRequestMessage();
 
-            request.RequestUri = new Uri("https://0ig1dbpx3k.execute-api.us-west-1.amazonaws.com/dev/api/v2/GetAWSLink");
+            request.RequestUri = new Uri(Constant.PhotoUrl);
             request.Method = HttpMethod.Post;
             request.Content = content;
 
@@ -362,7 +442,7 @@ namespace JustDelivered.Views
                 Debug.WriteLine("DELIVERY JSON: " + deliveryJSON);
                 var content = new StringContent(deliveryJSON, Encoding.UTF8, "application/json");
 
-                var RDSResponse = await client.PostAsync("https://0ig1dbpx3k.execute-api.us-west-1.amazonaws.com/dev/api/v2/UpdateDeliveryStatus", content);
+                var RDSResponse = await client.PostAsync(Constant.UpdateDeliveryStatus, content);
                 Debug.WriteLine("UPDATE DELIVERY STATUS ENDPOINT " + RDSResponse.IsSuccessStatusCode);
 
             }
@@ -602,11 +682,13 @@ namespace JustDelivered.Views
         public string GetUndeliveredItems()
         {
             var listString = "";
+            itemUIDs.Clear();
             foreach (DisplayItem item in Items)
             {
                 if(item.opacityValue == 1)
                 {
                     listString += item.itemName + ", ";
+                    itemUIDs.Add(item.itemUID);
                 }
             }
             try

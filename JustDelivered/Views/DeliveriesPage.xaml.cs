@@ -25,7 +25,7 @@ namespace JustDelivered.Views
         public static Models.User user = null;
         double y = 0;
 
-        private static int CurrentIndex = 0;
+        public static int CurrentIndex = 0;
         public static readonly DeliveryInfo startLocation = new DeliveryInfo();
         public static List<string> list = new List<string>();
         // list of deliveries
@@ -44,6 +44,7 @@ namespace JustDelivered.Views
             public string quantity { get; set; }
             public double opacityValue { get; set; }
             public int index { get; set; }
+            public string itemUID { get; set; }
 
             public void updateOpacity(double value)
             {
@@ -104,6 +105,7 @@ namespace JustDelivered.Views
             public string purchase_uid { get; set; }
             public string customer_uid { get; set; }
             public string delivery_items { get; set; }
+            public string start_delivery_date { get; set; }
         }
 
         public class DriverInfo
@@ -157,6 +159,9 @@ namespace JustDelivered.Views
             public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
             public int route_id { get; set; }
+            public string firstName { get; set; }
+            public string lastName { get; set; }
+
             public string name { get; set; }
             public string house_address { get; set; }
             public string city { get; set; }
@@ -182,6 +187,15 @@ namespace JustDelivered.Views
                 {
                     status = value;
                     PropertyChanged(this, new PropertyChangedEventArgs("status"));
+                }
+            }
+
+            public int updateID
+            {
+                set
+                {
+                    ID = value;
+                    PropertyChanged(this, new PropertyChangedEventArgs("ID"));
                 }
             }
 
@@ -285,11 +299,11 @@ namespace JustDelivered.Views
 
             if (CurrentIndex < deliveryList.Count)
             {
-                
-                if (deliveryList[CurrentIndex].status == "Status: Pending..." || deliveryList[CurrentIndex].status == "Status: Skipped")
-                {
-                    AddPurchaseIdToArray(deliveryList[CurrentIndex].purchase_uid);
-                }
+
+                Debug.WriteLine("Index: " + CurrentIndex);
+                Debug.WriteLine("deliveryList[CurrentIndex].status: " + deliveryList[CurrentIndex].status);
+                Debug.WriteLine("(deliveryList[CurrentIndex].purchase_uid: " + (deliveryList[CurrentIndex].purchase_uid));
+                AddPurchaseIdToArray(deliveryList[CurrentIndex].purchase_uid);
             }
 
             for (int i = 0; i <  deliveryList.Count; i++)
@@ -348,9 +362,8 @@ namespace JustDelivered.Views
                 routeClient.delivery_date = currentDate.ToString("yyyy-MM-dd 10:00:00");
 
                 //TEST
-
                 //routeClient.uid = user.id;
-                //routeClient.delivery_date = "2021-06-16 10:00:00";
+                //routeClient.delivery_date = "2021-06-23 10:00:00";
 
                 var socialLogInPostSerialized = JsonConvert.SerializeObject(routeClient);
 
@@ -382,9 +395,15 @@ namespace JustDelivered.Views
                             var element = new DeliveryInfo();
                             element.name = a.delivery_first_name + " " + a.delivery_last_name;
                             element.house_address = a.delivery_street + " " + a.delivery_city + " " + a.delivery_state + " " + a.delivery_zip;
-                            element.delivery_date = a.shipment_date;
+                            element.delivery_date = a.start_delivery_date;
                             element.email = a.delivery_email;
                             element.phone = a.delivery_phone;
+
+                            element.firstName = a.delivery_first_name;
+                            element.lastName = a.delivery_last_name;
+                            element.city = a.delivery_city;
+                            element.state = a.delivery_state;
+                            element.zipcode = a.delivery_zip;
 
                             var Coordinates = JsonConvert.DeserializeObject<Coordinates>(a.delivery_coordinates);
 
@@ -429,7 +448,16 @@ namespace JustDelivered.Views
                         {
                             deliveryListView.ItemsSource = deliveryList;
                             SaveStartingPoint(deliveryList[0]);
-                            SetStartToFirstLocation(Color.Red);
+
+                            if (IsOneDeliveryCompleted(deliveryList))
+                            {
+                                SetStartToFirstLocation(Color.Black);
+                            }
+                            else
+                            {
+                                SetStartToFirstLocation(Color.Red);
+                            }
+
                             FindNextDeliveryAvailable(deliveryList);
                             SetDelivery();
                             SetHeightWidthOnMap();
@@ -457,6 +485,20 @@ namespace JustDelivered.Views
             }
         }
 
+        bool IsOneDeliveryCompleted(ObservableCollection<DeliveryInfo> deliveryList)
+        {
+            bool result = false;
+            foreach(DeliveryInfo delivery in deliveryList)
+            {
+                if(delivery.status == "Status: Delivered" || delivery.status == "Status: Skipped")
+                {
+                    result = true;
+                    break;
+                }
+            }
+            return result;
+        }
+
         void SaveStartingPoint(DeliveryInfo location)
         {
             startLocation.house_address = location.house_address;
@@ -473,6 +515,7 @@ namespace JustDelivered.Views
             {
                 a.placement = index;
                 a.ID = index + 1;
+                a.updateID = index + 1; 
                 index++;
             }
         }
@@ -524,13 +567,51 @@ namespace JustDelivered.Views
                 pin.Url = "";
                 pin.Number = (i + 1) + "";
 
-                Debug.WriteLine("deliveryList[i].status: " + deliveryList[i].status);
-                pin.Color = SetPinColor(deliveryList[i].status);
+                if (i == CurrentIndex)
+                {
+                    if (deliveryList[i].status == "Status: Pending...")
+                    {
+                        if (isDeliveryListFullyPending(deliveryList))
+                        {
+                            pin.Color = "Black";
+                        }
+                        else
+                        {
+                            pin.Color = "Red";
+                        }
+                    }
+                    else
+                    {
+                        pin.Color = SetPinColor(deliveryList[i].status);
+                    }
+                }
+                else
+                {
+
+                    Debug.WriteLine("deliveryList[i].status: " + deliveryList[i].status);
+                    pin.Color = SetPinColor(deliveryList[i].status);
+                }
+
                 Path.Geopath.Add(pin.Position);
                 DeliveriesMap.CustomPins.Add(pin);
                 DeliveriesMap.Pins.Add(pin);
             }
             DeliveriesMap.MapElements.Add(Path);
+        }
+
+        public bool isDeliveryListFullyPending(ObservableCollection<DeliveryInfo> deliveryList)
+        {
+            bool result = true;
+
+            foreach(DeliveryInfo delivery in deliveryList)
+            {
+                if(delivery.status != "Status: Pending...")
+                {
+                    result = false;
+                    break;
+                }
+            }
+            return result;
         }
 
         public void SetCompleteRouteView(string versionB)
@@ -556,8 +637,21 @@ namespace JustDelivered.Views
 
                 if (i == CurrentIndex)
                 {
-                    pin.Color = "Red";
-
+                    if(deliveryList[i].status == "Status: Pending...")
+                    {
+                        if (isDeliveryListFullyPending(deliveryList))
+                        {
+                            pin.Color = "Black";
+                        }
+                        else
+                        {
+                            pin.Color = "Red";
+                        }
+                    }
+                    else
+                    {
+                        pin.Color = SetPinColor(deliveryList[i].status);
+                    }
                 }
                 else
                 {
@@ -834,9 +928,9 @@ namespace JustDelivered.Views
                    
                     deliveryList[currentDelivery.placement].status = "Status: Skipped";
                     AddPurchaseIdToArray(currentDelivery.purchase_uid);
+                    ResetMap();
                     FindNextDeliveryAvailable(deliveryList);
                     SetDelivery();
-                    ResetMap();
                     SetStartToFirstLocation(Color.Black);
                     SetCompleteRouteView();
                 }
@@ -860,6 +954,7 @@ namespace JustDelivered.Views
         {
             DeliveriesMap.MapElements.Clear();
             DeliveriesMap.CustomPins.Clear();
+            DeliveriesMap.Pins.Clear();
         }
 
         void AddPurchaseIdToArray(string id)

@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using JustDelivered.Config;
 using JustDelivered.LogIn.Apple;
 using JustDelivered.LogIn.Classes;
+using JustDelivered.Views;
 using Newtonsoft.Json;
 using Xamarin.Auth;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using static JustDelivered.Views.DeliveriesPage;
+using static JustDelivered.Views.SignUpPage;
 
 namespace JustDelivered.Models
 {
@@ -283,7 +285,7 @@ namespace JustDelivered.Models
             {
                 var client = new HttpClient();
                 var socialLogInPost = new SocialLogInPost();
-
+                string dataString = "";
                 if (platform == "GOOGLE")
                 {
                     Debug.WriteLine("IN SIDE GOOGLE PROFILE");
@@ -291,7 +293,7 @@ namespace JustDelivered.Models
                     var request = new OAuth2Request("GET", new Uri(Constant.GoogleUserInfoUrl), null, e.Account);
                     var GoogleResponse = await request.GetResponseAsync();
                     var userData = await GoogleResponse.GetResponseTextAsync();
-
+                    dataString = userData;
                     Debug.WriteLine(userData);
 
                     GoogleResponse googleData = JsonConvert.DeserializeObject<GoogleResponse>(userData);
@@ -308,7 +310,7 @@ namespace JustDelivered.Models
                 {
                     var facebookResponse = client.GetStringAsync(Constant.FacebookUserInfoUrl + accessToken);
                     var userData = facebookResponse.Result;
-
+                    dataString = userData;
                     Debug.WriteLine(userData);
 
                     FacebookResponse facebookData = JsonConvert.DeserializeObject<FacebookResponse>(userData);
@@ -367,6 +369,43 @@ namespace JustDelivered.Models
                         if (message.code.ToString() == Constant.EmailNotFound)
                         {
                             // need to sign up
+                            userToSignUp = new SignUpAccount();
+                           
+                            if (platform == "GOOGLE")
+                            {
+                                GoogleResponse googleData = JsonConvert.DeserializeObject<GoogleResponse>(dataString);
+                                userToSignUp.socialID = googleData.id;
+                                userToSignUp.socialEmail = googleData.email;
+                                userToSignUp.firstName = googleData.given_name;
+                                userToSignUp.lastName = googleData.family_name;
+                                userToSignUp.accessToken = accessToken;
+                                userToSignUp.refreshToken = refreshToken;
+                                userToSignUp.platform = platform;
+                            }
+                            else if (platform == "FACEBOOK")
+                            {
+                                FacebookResponse facebookData = JsonConvert.DeserializeObject<FacebookResponse>(dataString);
+                                userToSignUp.socialID = facebookData.id;
+                                userToSignUp.socialEmail = facebookData.email;
+                                userToSignUp.firstName = facebookData.name;
+                                userToSignUp.accessToken = accessToken;
+                                userToSignUp.refreshToken = refreshToken;
+                                userToSignUp.platform = platform;
+                            }
+                            else if (platform == "APPLE")
+                            {
+                                userToSignUp.socialID = account.UserId;
+                                userToSignUp.socialEmail = account.Email;
+                                userToSignUp.firstName = account.Name;
+                                userToSignUp.accessToken = account.Token;
+                                userToSignUp.refreshToken = account.Token;
+                                userToSignUp.platform = platform;
+                            }
+                            else
+                            {
+                                userToSignUp.platform = "DIRECT";
+                            }
+
                             result = "NEED TO SIGN UP";
                         }
                         if (message.code.ToString() == Constant.AutheticatedSuccesful)

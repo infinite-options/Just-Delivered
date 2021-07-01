@@ -334,7 +334,8 @@ namespace JustDelivered.Views
             }
             else if(code == "NEED TO SIGN UP")
             {
-                await DisplayAlert("Oops","You don't have an account with Just Delivered. Please sign up!","OK");
+                //await DisplayAlert("Oops","You don't have an account with Just Delivered. Please sign up!","OK");
+                Application.Current.MainPage = new NavigationPage(new SignUpPage());
             }
             else if (code == "WRONG PLATFORM")
             {
@@ -642,6 +643,11 @@ namespace JustDelivered.Views
             }
 
             await DisplayAlert("Authentication error: ", e.Message, "OK");
+        }
+
+        void Button_Clicked(System.Object sender, System.EventArgs e)
+        {
+            Application.Current.MainPage = new NavigationPage(new SignUpPage());
         }
     }
 }

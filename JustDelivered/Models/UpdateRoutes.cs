@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
+using JustDelivered.Config;
 using Newtonsoft.Json;
 
 namespace JustDelivered.Models
@@ -23,7 +24,7 @@ namespace JustDelivered.Models
             this.purchase_uids = purchase_uids;
         }
 
-        public void UpdateDeliveryStatus(string route_id, IList<string> purchase_uids)
+        public async void UpdateDeliveryStatus(string route_id, IList<string> purchase_uids)
         {
             try
             {
@@ -32,10 +33,10 @@ namespace JustDelivered.Models
 
                 var deliveryJSON = JsonConvert.SerializeObject(list);
                 Debug.WriteLine("DELIVERY JSON: " + deliveryJSON);
-                //var content = new StringContent(deliveryJSON, Encoding.UTF8, "application/json");
+                var content = new StringContent(deliveryJSON, Encoding.UTF8, "application/json");
 
-                //var RDSResponse = await client.PostAsync("https://0ig1dbpx3k.execute-api.us-west-1.amazonaws.com/dev/api/v2/UpdateDeliveryStatus", content);
-                //Debug.WriteLine("UPDATE DELIVERY STATUS ENDPOINT " + RDSResponse.IsSuccessStatusCode);
+                var RDSResponse = await client.PostAsync(Constant.UpdateRoutes, content);
+                Debug.WriteLine("UPDATE DELIVERY STATUS ENDPOINT " + RDSResponse.IsSuccessStatusCode);
 
             }
             catch (Exception ErrorUpdatingStatus)

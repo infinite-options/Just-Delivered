@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="JustDelivered.Views.SignUpPage"
+    NavigationPage.HasNavigationBar="false">
+    <ContentPage.Content>
+         <Grid>
+             <Grid.RowDefinitions>
+                 <RowDefinition Height="80"></RowDefinition>
+                 <RowDefinition Height="*"></RowDefinition>
+             </Grid.RowDefinitions>
+             <StackLayout Grid.Row="0" BackgroundColor="Red">
+                 <Label HeightRequest="80" Text="Sign Up" TextColor="White" FontSize="Title" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"></Label>
+             </StackLayout>
+             <StackLayout Grid.Row="1">
+                <Label Padding="10" Text="Welcome to Just Delivered!" FontSize="Medium" FontAttributes="Bold" HorizontalOptions="Center"></Label>
+                <Label Padding="20,0,0,0" Text="Please enter all the required information to complete your application." FontSize="Micro" TextColor="Gray" FontAttributes="Bold"></Label>
+                <ScrollView Padding="0,25,0,0">
+                <StackLayout Padding="20,0,20,0">
+                    <Grid HeightRequest="30" ColumnSpacing="0">
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
+                        <Label Grid.Column="1" Text=" Step 1: Personal Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                        
+                    </Grid>
+                    <StackLayout Padding="40,0,0,0">
+                        <Grid>
+                            <Entry Grid.Row="0" Grid.Column="0" x:Name="firstName" Placeholder="First name"></Entry>
+                            <Entry Grid.Row="0" Grid.Column="1" x:Name="lastName" Placeholder="Last name"> </Entry>
+                        </Grid>
+                        <Entry x:Name="phoneNumber" Placeholder="Phone number" Keyboard="Numeric" MaxLength="10"></Entry>
+                        <Entry x:Name="email" Placeholder="carlos@gmail.com"></Entry>
+                        <StackLayout x:Name="directAccount" IsVisible="false">
+                            <Entry x:Name="password1" Placeholder="Create a password"></Entry>
+                            <Entry x:Name="password2" Placeholder="Confirm password"></Entry>
+                        </StackLayout>
+                    </StackLayout>
+                    <Grid HeightRequest="30" ColumnSpacing="0">
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
+                        <Label Grid.Column="1" Text=" Step 2: Select Organization" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                    </Grid>
+                    <StackLayout Padding="40,0,0,0">
+                        <StackLayout Padding="40,0,0,0">
+                            <Button x:Name="showListButton" IsVisible="true" Clicked="showListButton_Clicked" BackgroundColor="Red" TextColor="White" Text="Show List"></Button>
+                        </StackLayout>
+                        <CollectionView x:Name="businessList" IsVisible="false">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackLayout Orientation="Horizontal">
+                                            <StackLayout >
+                                                 <CheckBox Color="Red" IsChecked="{Binding businessSelected}" VerticalOptions="Center" ></CheckBox>
+                                            </StackLayout>
+                                           
+                                            <Label Text="{Binding business_name}" VerticalTextAlignment="Center" ></Label>
+                                            <StackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" CommandParameter="{Binding .}"></TapGestureRecognizer>
+                                            </StackLayout.GestureRecognizers>
+                                        </StackLayout>
+
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        <StackLayout Padding="40,0,0,0">
+                            <Button x:Name="hideListButton" IsVisible="false" Clicked="hideListButton_Clicked" BackgroundColor="Red" TextColor="White" Text="Hide List"></Button>
+                        </StackLayout>
+                    </StackLayout>
+                    <Grid HeightRequest="30" ColumnSpacing="0">
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
+                        <Label Grid.Column="1" Text=" Step 3: Contact Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                    </Grid>
+                    <StackLayout Padding="40,0,0,0">
+
+                        <Entry x:Name="address" Placeholder="Address"></Entry>
+                        <Entry x:Name="unit" Placeholder="Unit"></Entry>
+                        <Grid>
+                            <Entry x:Name="city" Grid.Row="0" Grid.Column="0" Placeholder="City"></Entry>
+                            <Entry x:Name="state" Grid.Row="0" Grid.Column="1" Placeholder="State"> </Entry>
+                            <Entry x:Name="zipcode" Grid.Row="0" Grid.Column="2" Placeholder="Zip"></Entry>
+                        </Grid>
+                    </StackLayout>
+                    <Grid HeightRequest="30" ColumnSpacing="0">
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
+                        <Label Grid.Column="1" Text=" Step 4: Emergency Contact Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                    </Grid>
+                    <StackLayout Padding="40,0,0,0">
+                        <Entry x:Name="emergencyPhone" Placeholder="Phone number" MaxLength="10"></Entry>
+                        <Entry x:Name="emergencyRelationship" Placeholder="Relationship"></Entry>
+                        <Entry x:Name="emergencyAddress" Placeholder="Address" ></Entry>
+                        <Entry x:Name="emergencyUnit" Placeholder="Unit"></Entry>
+                        <Grid>
+                            <Entry x:Name="emergencyCity" Grid.Row="0" Grid.Column="0" Placeholder="City"></Entry>
+                            <Entry x:Name="emergencyState" Grid.Row="0" Grid.Column="1" Placeholder="State"> </Entry>
+                            <Entry x:Name="emergencyZipcode" Grid.Row="0" Grid.Column="2" Placeholder="Zip"></Entry>
+                        </Grid>
+                    </StackLayout>
+                    <Grid HeightRequest="30" ColumnSpacing="0">
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
+                        <Label Grid.Column="1" Text=" Step 5: Social Security Number" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                    </Grid>
+                     <StackLayout Padding="40,0,0,0">
+                        <Entry x:Name="ssNumber" Placeholder="111-22-3333" MaxLength="9" Keyboard="Numeric" IsPassword="True"></Entry>
+                    </StackLayout>
+                    <Grid HeightRequest="30" ColumnSpacing="0">
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
+                        <Label Grid.Column="1" Text=" Step 6: Vehicle Insurance Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                    </Grid>
+
+                    <StackLayout Padding="40,0,0,0">
+                        <Label  Text="Vehicle Year" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                        <Entry x:Name="carYear" Placeholder="2020" MaxLength="4" Keyboard="Numeric" IsPassword="True"></Entry>
+                        <Label  Text="Vehicle Model" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                        <Entry x:Name="carModel" Placeholder="Camry"  Keyboard="Default" IsPassword="True"></Entry>
+                        <Label  Text="Vehicle Make" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                        <Entry x:Name="carMake" Placeholder="Toyota"  Keyboard="Default" IsPassword="True"></Entry>
+                        <Label  Text=" Insurance Carrier" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                        <Entry x:Name="insuranceCarrier" Placeholder="State Farm"  Keyboard="Default" IsPassword="True"></Entry>
+                        <Label  Text="Vehicle Insurance Policy Number" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                        <Entry x:Name="insuranceNumber" Placeholder="4708334-A04-05"  Keyboard="Numeric" IsPassword="True"></Entry>
+                        <Label  Text="Vehicle Insurance Expiration Date" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                        <!--<Entry x:Name="insuranceExpDate" Placeholder="01/04/2022" MaxLength="10" Keyboard="Numeric" IsPassword="True"></Entry>-->
+                        <DatePicker MinimumDate="01/01/2018"
+                                    MaximumDate="12/31/2018"
+                                    Date="06/21/2018" />
+                        <Button BackgroundColor="Red" TextColor="White" Text="Take picture" Clicked="TakePicture"></Button>
+                    </StackLayout>
+                    <Grid HeightRequest="30" ColumnSpacing="0">
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
+                        <Label Grid.Column="1" Text=" Step 7: Driver License Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                    </Grid>
+                    <StackLayout Padding="40,0,0,0">
+                         <Grid>
+                            <Entry x:Name="driverLicense" Grid.Row="0" Grid.Column="0" Placeholder="F1234567" Keyboard="Default"></Entry>
+                            <Entry x:Name="driverLicenseExpiration"  Grid.Row="0" Grid.Column="1" Placeholder="06/12/2024" MaxLength="10" Keyboard="Default"> </Entry>
+                        </Grid>
+                    </StackLayout>
+                    <Grid HeightRequest="30" ColumnSpacing="0">
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
+                        <Label Grid.Column="1" Text=" Step 8: Bank Account Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                    </Grid>
+                    <StackLayout Padding="40,0,0,0">
+                         <Grid>
+                            <Entry x:Name="accountNumber" Grid.Row="0" Grid.Column="0" Placeholder="Account number" Keyboard="Numeric"></Entry>
+                            <Entry x:Name="routingNumber"  Grid.Row="0" Grid.Column="1" Placeholder="Routing number" Keyboard="Numeric"> </Entry>
+                        </Grid>
+                    </StackLayout>
+                    <Button BackgroundColor="Red" Text="Next" TextColor="White" FontSize="Small" FontAttributes="Bold" Clicked="Button_Clicked"></Button>
+                    <Button BackgroundColor="White" Text="Cancel" TextColor="Red" FontSize="Small" FontAttributes="Bold" Clicked="Button_Clicked_1"></Button>
+                </StackLayout>
+             </ScrollView>
+             </StackLayout>
+         </Grid>
+    </ContentPage.Content>
+</ContentPage>

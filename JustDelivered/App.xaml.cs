@@ -78,7 +78,8 @@ namespace JustDelivered
                 var client = new UpdateRoutes();
                 if (list.Count > 0 && user != null)
                 {
-                    if(user.route_id != "1")
+                    Debug.WriteLine("user.route_id: " + user.route_id);
+                    if(user.route_id != "")
                     {
                         client.UpdateDeliveryStatus(user.route_id, list);
                     }

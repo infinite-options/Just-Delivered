@@ -6,10 +6,13 @@
                 <RowDefinition Height="200"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
-            <Image Grid.Row="0"  Source="JustDeliveredIcon.png" VerticalOptions="CenterAndExpand"></Image>
-            <ScrollView Grid.Row="1" Margin="0,-50,0,0">
-            <StackLayout Padding="25,0,25,0">
-                <Label Text="Select Organization" FontSize="Default" FontAttributes="Bold"></Label>
+            <Frame  Grid.Row="0"  HasShadow="False">
+                <Image Source="JustDeliveredIcon.png" VerticalOptions="CenterAndExpand"></Image>
+            </Frame>
+            
+           
+            <StackLayout Grid.Row="1"  Padding="25,0,25,0" >
+                <!--<Label Text="Select Organization" FontSize="Default" FontAttributes="Bold"></Label>
                 <Button 
                     x:Name="organizations"
                  
@@ -20,7 +23,7 @@
                     BackgroundColor="WhiteSmoke"
                     BorderColor="DarkGray"
                     BorderWidth="1">
-                </Button>
+                </Button>-->
                 <Label Text="Email Address" FontSize="Default" FontAttributes="Bold"></Label>
                 <Entry
                     x:Name="userEmailAddress"
@@ -65,9 +68,9 @@
                         Command = "{Binding SignInWithAppleCommand}">
                     </ImageButton>
                 </Grid>
-                <Button Margin="30,0,30,0" Text="Sign up to become a JD Driver"  FontAttributes="Bold" TextColor="Red" BackgroundColor="White" BorderColor="Red" BorderWidth="1"></Button>
+                <Button IsVisible="false" Margin="30,0,30,0" Text="Sign up to become a JD Driver" Clicked="Button_Clicked" FontAttributes="Bold" TextColor="Red" BackgroundColor="White" BorderColor="Red" BorderWidth="1"></Button>
             </StackLayout>
-            </ScrollView>
+         
         </Grid>
     </ContentPage.Content>
 </ContentPage>
