@@ -32,7 +32,7 @@
                             <Entry Grid.Row="0" Grid.Column="0" x:Name="firstName" Placeholder="First name"></Entry>
                             <Entry Grid.Row="0" Grid.Column="1" x:Name="lastName"  Placeholder="Last name"> </Entry>
                         </Grid>
-                        <Entry x:Name="phoneNumber" Placeholder="Phone number" Keyboard="Numeric"></Entry>
+                        <Entry x:Name="phoneNumber" Placeholder="Phone number" MaxLength="10" Keyboard="Numeric"></Entry>
                         <Entry x:Name="email" Placeholder="Email address" ></Entry>
                         <StackLayout x:Name="directSignUp" IsVisible="false">
                             <Entry x:Name="password1" Placeholder="Create password"></Entry>
@@ -54,10 +54,10 @@
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate>
                                         <StackLayout Orientation="Horizontal" HeightRequest="50">
-                                            <CheckBox Color="Red" IsChecked="{Binding businessSelected}" ></CheckBox>
+                                            <CheckBox IsEnabled="False" Color="Red" IsChecked="{Binding businessSelected}" ></CheckBox>
                                             <Label Text="{Binding business_name}" VerticalOptions="Center"></Label>
                                             <StackLayout.GestureRecognizers>
-                                                <TapGestureRecognizer Tapped="SelectBusiness"></TapGestureRecognizer>
+                                                <TapGestureRecognizer Tapped="SelectBusiness" CommandParameter="{Binding .}"></TapGestureRecognizer>
                                             </StackLayout.GestureRecognizers>
                                         </StackLayout>
                                     </DataTemplate>
@@ -92,8 +92,10 @@
                         <Label Grid.Column="1" Text=" Step 5: Emergency Contact Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                     </Grid>
                     <StackLayout Padding="40,0,0,0">
+                        <Entry x:Name="emergencyName" Placeholder="Emergency contact name"></Entry>
                         <Entry x:Name="emergencyRelationship" Placeholder="Relationship"></Entry>
-                        <Entry x:Name="emergencyPhoneNumber" Placeholder="Phone number"></Entry>
+                        <Entry x:Name="emergencyPhoneNumber" Placeholder="Phone number" Keyboard="Numeric" MaxLength="10"></Entry>
+                        <StackLayout IsVisible="false">
                         <Entry x:Name="emergencyAddress" Placeholder="Address"></Entry>
                         <Entry x:Name="emergencyUnit" Placeholder="Unit"></Entry>
                         <Grid>
@@ -101,6 +103,7 @@
                             <Entry Grid.Row="0" Grid.Column="1" x:Name="emergencyState" Placeholder="State"> </Entry>
                             <Entry Grid.Row="0" Grid.Column="2" x:Name="emergencyZipcode" Placeholder="Zip"></Entry>
                         </Grid>
+                        </StackLayout>
                     </StackLayout>
                     <Grid HeightRequest="30" ColumnSpacing="0">
                         <Grid.ColumnDefinitions >
@@ -123,7 +126,7 @@
                     </Grid>
                     <StackLayout Padding="40,0,0,0">
                         <Label Text="Vehicle Year" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
-                        <Entry x:Name="carYear" Placeholder="2020" MaxLength="4"></Entry>
+                        <Entry x:Name="carYear" Placeholder="2020" MaxLength="4" Keyboard="Numeric"></Entry>
                         <Label Text="Vehicle Model" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                         <Entry x:Name="carModel" Placeholder="Cambry"></Entry>
                         <Label Text="Vehicle Make" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
@@ -133,8 +136,9 @@
                         <Label Text="Insurance Policy Number" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                         <Entry x:Name="insuranceNumber" Placeholder="1231234-A04-05"></Entry>
                         <Label Text="Insurance Expiration Date" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
-                        <Entry x:Name="insuranceExpirationDate" Placeholder="07/04/2021"></Entry>
-                        <Button BackgroundColor="Red" TextColor="White" Text="Take picture" Clicked="Button_Clicked"></Button>
+                        <!--<Entry x:Name="insuranceExpirationDate" Placeholder="07/04/2021"></Entry>-->
+                        <DatePicker x:Name="insuranceExpirationDate" MinimumDate="01/01/1996" MaximumDate="12/31/2050" DateSelected="InsuranceExpirationDate_DateSelected"></DatePicker>
+                        <Button BackgroundColor="Red" TextColor="White" Text="Take picture" Clicked="TakePicture"></Button>
                     </StackLayout>
                     <Grid HeightRequest="30" ColumnSpacing="0">
                         <Grid.ColumnDefinitions >
@@ -147,7 +151,8 @@
                     <StackLayout Padding="40,0,0,0">
                          <Grid>
                             <Entry Grid.Row="0" Grid.Column="0" x:Name="driveLicenseNumber" Placeholder="F1234567" Keyboard="Chat"></Entry>
-                            <Entry Grid.Row="0" Grid.Column="1" x:Name="driveLicenseExperirationDate" Placeholder="06/12/2024" MaxLength="10" Keyboard="Numeric"> </Entry>
+                            <!--<Entry Grid.Row="0" Grid.Column="1" x:Name="driveLicenseExperirationDate" Placeholder="06/12/2024" MaxLength="10" Keyboard="Numeric"> </Entry>-->
+                            <DatePicker Grid.Row="0" Grid.Column="1" x:Name="driveLicenseExperirationDate" MinimumDate="01/01/1996" MaximumDate="12/31/2050" DateSelected="DriveLicenseExpirationDate_DateSelected"></DatePicker>
                         </Grid>
                     </StackLayout>
                     <Grid HeightRequest="30" ColumnSpacing="0">

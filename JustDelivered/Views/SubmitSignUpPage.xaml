@@ -111,7 +111,7 @@
                      </CollectionView>
                      <StackLayout Margin="0,0,0,40">
                          <Button Margin="40,0,40,0" CornerRadius="20" Text="Add another availability +" TextColor="White" FontSize="14" FontAttributes="Bold" BackgroundColor="Red" ></Button>
-                         <Button Margin="40,0,40,0" CornerRadius="20" Text="Submit Application" TextColor="White" FontSize="14" FontAttributes="Bold" BackgroundColor="Red" ></Button>
+                         <Button Margin="40,0,40,0" CornerRadius="20" Text="Submit Application" TextColor="White" FontSize="14" FontAttributes="Bold" BackgroundColor="Red" Clicked="SubmitApplication"></Button>
                      </StackLayout>
                  </StackLayout>
          
