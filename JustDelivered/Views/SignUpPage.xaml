@@ -29,14 +29,14 @@
                     </Grid>
                     <StackLayout Padding="40,0,0,0">
                         <Grid>
-                            <Entry Grid.Row="0" Grid.Column="0" Placeholder="First name"></Entry>
-                            <Entry Grid.Row="0" Grid.Column="1" Placeholder="Last name"> </Entry>
+                            <Entry Grid.Row="0" Grid.Column="0" x:Name="firstName" Placeholder="First name"></Entry>
+                            <Entry Grid.Row="0" Grid.Column="1" x:Name="lastName"  Placeholder="Last name"> </Entry>
                         </Grid>
-                        <Entry Placeholder="Phone number"></Entry>
-                        <Entry Placeholder="Email address" ></Entry>
+                        <Entry x:Name="phoneNumber" Placeholder="Phone number" Keyboard="Numeric"></Entry>
+                        <Entry x:Name="email" Placeholder="Email address" ></Entry>
                         <StackLayout x:Name="directSignUp" IsVisible="false">
-                            <Entry Placeholder="Create password"></Entry>
-                            <Entry Placeholder="Confirm password"></Entry>
+                            <Entry x:Name="password1" Placeholder="Create password"></Entry>
+                            <Entry x:Name="password2" Placeholder="Confirm password"></Entry>
                         </StackLayout>
                     </StackLayout>
                     <Grid HeightRequest="30" ColumnSpacing="0">
@@ -45,7 +45,7 @@
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
-                        <Label Grid.Column="1" Text=" Step 2: Select Organization" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                        <Label Grid.Column="1" Text=" Step 3: Select Organization" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                     </Grid>
                     <StackLayout Padding="40,0,0,0">
                         <Button x:Name="showListButton" BackgroundColor="Red" TextColor="White" Text="Show List" Clicked="ShowList"></Button>
@@ -72,15 +72,15 @@
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
-                        <Label Grid.Column="1" Text=" Step 2: Contact Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                        <Label Grid.Column="1" Text=" Step 4: Contact Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                     </Grid>
                     <StackLayout Padding="40,0,0,0">
-                        <Entry Placeholder="Address"></Entry>
-                        <Entry Placeholder="Unit"></Entry>
+                        <Entry x:Name="address" Placeholder="Address"></Entry>
+                        <Entry x:Name="unit" Placeholder="Unit"></Entry>
                         <Grid>
-                            <Entry Grid.Row="0" Grid.Column="0" Placeholder="City"></Entry>
-                            <Entry Grid.Row="0" Grid.Column="1" Placeholder="State"> </Entry>
-                            <Entry Grid.Row="0" Grid.Column="2" Placeholder="Zip"></Entry>
+                            <Entry x:Name="city" Grid.Row="0" Grid.Column="0" Placeholder="City"></Entry>
+                            <Entry x:Name="state" Grid.Row="0" Grid.Column="1" Placeholder="State"> </Entry>
+                            <Entry x:Name="zipcode" Grid.Row="0" Grid.Column="2" Placeholder="Zip"></Entry>
                         </Grid>
                     </StackLayout>
                     <Grid HeightRequest="30" ColumnSpacing="0">
@@ -89,17 +89,17 @@
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
-                        <Label Grid.Column="1" Text=" Step 3: Emergency Contact Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                        <Label Grid.Column="1" Text=" Step 5: Emergency Contact Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                     </Grid>
                     <StackLayout Padding="40,0,0,0">
-                        <Entry Placeholder="Relationship"></Entry>
-                        <Entry Placeholder="Phone number"></Entry>
-                        <Entry Placeholder="Address"></Entry>
-                        <Entry Placeholder="Unit"></Entry>
+                        <Entry x:Name="emergencyRelationship" Placeholder="Relationship"></Entry>
+                        <Entry x:Name="emergencyPhoneNumber" Placeholder="Phone number"></Entry>
+                        <Entry x:Name="emergencyAddress" Placeholder="Address"></Entry>
+                        <Entry x:Name="emergencyUnit" Placeholder="Unit"></Entry>
                         <Grid>
-                            <Entry Grid.Row="0" Grid.Column="0" Placeholder="City"></Entry>
-                            <Entry Grid.Row="0" Grid.Column="1" Placeholder="State"> </Entry>
-                            <Entry Grid.Row="0" Grid.Column="2" Placeholder="Zip"></Entry>
+                            <Entry Grid.Row="0" Grid.Column="0" x:Name="emergencyCity" Placeholder="City"></Entry>
+                            <Entry Grid.Row="0" Grid.Column="1" x:Name="emergencyState" Placeholder="State"> </Entry>
+                            <Entry Grid.Row="0" Grid.Column="2" x:Name="emergencyZipcode" Placeholder="Zip"></Entry>
                         </Grid>
                     </StackLayout>
                     <Grid HeightRequest="30" ColumnSpacing="0">
@@ -108,10 +108,10 @@
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
-                        <Label Grid.Column="1" Text=" Step 4: Social Security Number" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                        <Label Grid.Column="1" Text=" Step 6: Social Security Number" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                     </Grid>
                      <StackLayout Padding="40,0,0,0">
-                        <Entry Placeholder="111-22-3333" MaxLength="9" Keyboard="Numeric" IsPassword="True"></Entry>
+                        <Entry x:Name="ssNumber" Placeholder="111-22-3333" MaxLength="9" Keyboard="Numeric" IsPassword="True"></Entry>
                     </StackLayout>
                     <Grid HeightRequest="30" ColumnSpacing="0">
                         <Grid.ColumnDefinitions >
@@ -119,22 +119,22 @@
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
-                        <Label Grid.Column="1" Text=" Step 5: Vehicle Insurance Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                        <Label Grid.Column="1" Text=" Step 7: Vehicle Insurance Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                     </Grid>
                     <StackLayout Padding="40,0,0,0">
                         <Label Text="Vehicle Year" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
-                        <Entry Placeholder="2020" MaxLength="4"></Entry>
+                        <Entry x:Name="carYear" Placeholder="2020" MaxLength="4"></Entry>
                         <Label Text="Vehicle Model" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
-                        <Entry Placeholder="Cambry"></Entry>
+                        <Entry x:Name="carModel" Placeholder="Cambry"></Entry>
                         <Label Text="Vehicle Make" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
-                        <Entry Placeholder="Toyota"></Entry>
+                        <Entry x:Name="carMake" Placeholder="Toyota"></Entry>
                         <Label Text="Insurance Carrier" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
-                        <Entry Placeholder="State Farm"></Entry>
+                        <Entry x:Name="insuranceCarrier" Placeholder="State Farm"></Entry>
                         <Label Text="Insurance Policy Number" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
-                        <Entry Placeholder="1231234-A04-05"></Entry>
+                        <Entry x:Name="insuranceNumber" Placeholder="1231234-A04-05"></Entry>
                         <Label Text="Insurance Expiration Date" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
-                        <Entry Placeholder="07/04/2021"></Entry>
-                        <Button BackgroundColor="Red" TextColor="White" Text="Take picture"></Button>
+                        <Entry x:Name="insuranceExpirationDate" Placeholder="07/04/2021"></Entry>
+                        <Button BackgroundColor="Red" TextColor="White" Text="Take picture" Clicked="Button_Clicked"></Button>
                     </StackLayout>
                     <Grid HeightRequest="30" ColumnSpacing="0">
                         <Grid.ColumnDefinitions >
@@ -142,12 +142,12 @@
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
-                        <Label Grid.Column="1" Text=" Step 6: Driver License Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
+                        <Label Grid.Column="1" Text=" Step 8: Driver License Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                     </Grid>
                     <StackLayout Padding="40,0,0,0">
                          <Grid>
-                            <Entry Grid.Row="0" Grid.Column="0" Placeholder="F1234567" Keyboard="Chat"></Entry>
-                            <Entry Grid.Row="0" Grid.Column="1" Placeholder="06/12/2024" MaxLength="10" Keyboard="Numeric"> </Entry>
+                            <Entry Grid.Row="0" Grid.Column="0" x:Name="driveLicenseNumber" Placeholder="F1234567" Keyboard="Chat"></Entry>
+                            <Entry Grid.Row="0" Grid.Column="1" x:Name="driveLicenseExperirationDate" Placeholder="06/12/2024" MaxLength="10" Keyboard="Numeric"> </Entry>
                         </Grid>
                     </StackLayout>
                     <Grid HeightRequest="30" ColumnSpacing="0">
@@ -160,8 +160,8 @@
                     </Grid>
                     <StackLayout Padding="40,0,0,0">
                          <Grid>
-                            <Entry Grid.Row="0" Grid.Column="0" Placeholder="Account number" Keyboard="Numeric"></Entry>
-                            <Entry Grid.Row="0" Grid.Column="1" Placeholder="Routing number" Keyboard="Numeric"> </Entry>
+                            <Entry Grid.Row="0" Grid.Column="0" x:Name="accountNumber" Placeholder="Account number" Keyboard="Numeric"></Entry>
+                            <Entry Grid.Row="0" Grid.Column="1" x:Name="routingNumber" Placeholder="Routing number" Keyboard="Numeric"> </Entry>
                         </Grid>
                     </StackLayout>
                     <Button BackgroundColor="Red" Text="Continue" TextColor="White" FontSize="Small" FontAttributes="Bold" Clicked="Continue"></Button>

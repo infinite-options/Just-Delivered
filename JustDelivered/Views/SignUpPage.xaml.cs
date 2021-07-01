@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
 using JustDelivered.Config;
 using JustDelivered.Models;
@@ -13,7 +14,10 @@ namespace JustDelivered.Views
     public partial class SignUpPage : ContentPage
     {
         public static SignUpAccount userToSignUp = null;
+
         public static List<string> businessSelected = new List<string>();
+        public static byte[] insurancePicture = null;
+
         public ObservableCollection<Item> businesSource = new ObservableCollection<Item>();
 
         public SignUpPage()
@@ -21,7 +25,16 @@ namespace JustDelivered.Views
             InitializeComponent();
             if(userToSignUp != null)
             {
-
+                if(userToSignUp.platform != "DIRECT")
+                {
+                    firstName.Text = userToSignUp.firstName;
+                    lastName.Text = userToSignUp.lastName;
+                    email.Text = userToSignUp.socialEmail;
+                }
+                else
+                {
+                    directSignUp.IsVisible = true;
+                }
             }
             SetAvailableBusiness();
         }
@@ -32,6 +45,7 @@ namespace JustDelivered.Views
             {
                 var client = new HttpClient();
                 var endpointCall = await client.GetAsync(Constant.AvailableBusinessList);
+
                 if (endpointCall.IsSuccessStatusCode)
                 {
                     var contentString = await endpointCall.Content.ReadAsStringAsync();
@@ -90,6 +104,7 @@ namespace JustDelivered.Views
 
         void Continue(System.Object sender, System.EventArgs e)
         {
+
             Navigation.PushAsync(new SubmitSignUpPage(), false);
         }
 
@@ -97,5 +112,26 @@ namespace JustDelivered.Views
         {
             Application.Current.MainPage = new LogInPage();
         }
+
+        async void TakePicture(System.Object sender, System.EventArgs e)
+        {
+            try
+            {
+                var photo = await Plugin.Media.CrossMedia.Current.TakePhotoAsync(new Plugin.Media.Abstractions.StoreCameraMediaOptions() { SaveToAlbum = true, Name = "Photo1.png" });
+                if (photo != null)
+                {
+                    var path = photo.Path;
+                    insurancePicture = File.ReadAllBytes(path);
+                 
+                    //f.Source = ImageSource.FromStream(() => { return photo.GetStream(); });
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                await DisplayAlert("Permission required", "We'll need permission to access your camara, so that you can take a photo of the damaged product.", "OK");
+                return;
+            }
+        }   
     }
 }
