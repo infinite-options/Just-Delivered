@@ -20,7 +20,10 @@ namespace JustDelivered.Views
         public ObservableCollection<PickerTimeHour> hourSource = new ObservableCollection<PickerTimeHour>();
         public ObservableCollection<PickerTimeMinute> minuteSource = new ObservableCollection<PickerTimeMinute>();
         public ObservableCollection<PickerTime> timeSource = new ObservableCollection<PickerTime>();
-        public Dictionary<string, List<string>> selectedSchedule = new Dictionary<string, List<string>>();
+        public Dictionary<string, List<List<Time>>> selectedSchedule = new Dictionary<string, List<List<Time>>>();
+        public Dictionary<string, List<string[]>> timesRecorded = new Dictionary<string, List<string[]>>();
+
+        public string dayToAddScheduleTime = "";
 
         public SubmitSignUpPage()
         {
@@ -39,6 +42,9 @@ namespace JustDelivered.Views
             foreach(string day in weekdays)
             {
                 scheduleSource.Add(new Schedule {
+                    colorValue = Color.Black,
+                    isEnabledValue = false,
+                    opacityValue = 0.5,
                     day = day,
                     startHour = hourSource,
                     startMinute = minuteSource,
@@ -46,7 +52,7 @@ namespace JustDelivered.Views
                     endHour = hourSource,
                     endMinute = minuteSource,
                     endTime = timeSource,
-                });;
+                });
             }
             view.ItemsSource = scheduleSource;
         }
@@ -56,7 +62,7 @@ namespace JustDelivered.Views
             string[] weekdays = new[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
             foreach (string day in weekdays)
             {
-                selectedSchedule.Add(day, new List<string>());
+                selectedSchedule.Add(day, new List<List<Time>>());
             }
 
         }
@@ -123,22 +129,64 @@ namespace JustDelivered.Views
             Navigation.PopAsync(false);
         }
 
-        void hourList_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
+        void hourListStart_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
         {
             var list = (CollectionView)sender;
             list.ScrollTo(hourSource[e.CenterItemIndex]);
+            if(dayToAddScheduleTime != "")
+            {
+                selectedSchedule[dayToAddScheduleTime][0][0].hour = hourSource[e.CenterItemIndex].hour;
+            }
         }
 
-        void minuteList_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
+        void minuteListStart_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
         {
             var list = (CollectionView)sender;
             list.ScrollTo(minuteSource[e.CenterItemIndex]);
+            if (dayToAddScheduleTime != "")
+            {
+                selectedSchedule[dayToAddScheduleTime][0][0].minute = minuteSource[e.CenterItemIndex].minute;
+            }
         }
 
-        void timeList_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
+        void timeListStart_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
         {
             var list = (CollectionView)sender;
             list.ScrollTo(timeSource[e.CenterItemIndex]);
+            if (dayToAddScheduleTime != "")
+            {
+                selectedSchedule[dayToAddScheduleTime][0][0].time = timeSource[e.CenterItemIndex].time;
+            }
+        }
+
+        void hourListEnd_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
+        {
+            var list = (CollectionView)sender;
+            list.ScrollTo(hourSource[e.CenterItemIndex]);
+            if (dayToAddScheduleTime != "")
+            {
+                selectedSchedule[dayToAddScheduleTime][0][1].hour = hourSource[e.CenterItemIndex].hour;
+            }
+        }
+
+        void minuteListEnd_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
+        {
+            var list = (CollectionView)sender;
+            list.ScrollTo(minuteSource[e.CenterItemIndex]);
+            if (dayToAddScheduleTime != "")
+            {
+                selectedSchedule[dayToAddScheduleTime][0][1].minute = minuteSource[e.CenterItemIndex].minute;
+            }
+        }
+
+        void timeListEnd_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
+        {
+            var list = (CollectionView)sender;
+            list.ScrollTo(timeSource[e.CenterItemIndex]);
+            if (dayToAddScheduleTime != "")
+            {
+                selectedSchedule[dayToAddScheduleTime][0][1].time = timeSource[e.CenterItemIndex].time;
+            }
         }
 
         async Task<bool> ProcessRequest()
@@ -147,15 +195,49 @@ namespace JustDelivered.Views
             var content = new MultipartFormDataContent();
             var scheduleToSubmit = new ScheduleToSubmit();
 
-            scheduleToSubmit.sunday = selectedSchedule["Sunday"];
-            scheduleToSubmit.monday = selectedSchedule["Monday"];
-            scheduleToSubmit.tuesday = selectedSchedule["Tuesday"];
-            scheduleToSubmit.wednesday = selectedSchedule["Wednesday"];
-            scheduleToSubmit.thursday = selectedSchedule["Thursday"];
-            scheduleToSubmit.friday = selectedSchedule["Friday"];
-            scheduleToSubmit.saturday = selectedSchedule["Saturday"];
+           
+
+            foreach (string day in selectedSchedule.Keys)
+            {
+                if(selectedSchedule[day].Count != 0)
+                {
+                    DateTime today = DateTime.Now;
+                    string todayString = today.ToString("yyyy-MM-dd");
+                    string startTime = todayString;
+                    string endTime = todayString;
+
+                    startTime += " " + selectedSchedule[day][0][0].hour + ":" + selectedSchedule[day][0][0].minute + " " + selectedSchedule[day][0][0].time;
+                    endTime += " " + selectedSchedule[day][0][1].hour + ":" + selectedSchedule[day][0][1].minute + " " + selectedSchedule[day][0][1].time;
+
+                    Debug.WriteLine("START:" + startTime);
+                    Debug.WriteLine("END: " + endTime);
+
+                    string mStartTime = DateTime.Parse(startTime).ToString("HH:mm:ss");
+                    string mEndTime = DateTime.Parse(endTime).ToString("HH:mm:ss");
+
+                    var array = new List<string>();
+                    array.Add(mStartTime);
+                    array.Add(mEndTime);
+                    var list = new List<string[]>();
+                    list.Add(array.ToArray());
+                    timesRecorded.Add(day, list);
+                }
+                else
+                {
+                    timesRecorded.Add(day, new List<string[]>());
+                }
+            }
+
+            scheduleToSubmit.sunday = timesRecorded["Sunday"];
+            scheduleToSubmit.monday = timesRecorded["Monday"];
+            scheduleToSubmit.tuesday = timesRecorded["Tuesday"];
+            scheduleToSubmit.wednesday = timesRecorded["Wednesday"];
+            scheduleToSubmit.thursday = timesRecorded["Thursday"];
+            scheduleToSubmit.friday = timesRecorded["Friday"];
+            scheduleToSubmit.saturday = timesRecorded["Saturday"];
 
             var scheduleToSubmitString = JsonConvert.SerializeObject(scheduleToSubmit);
+            Debug.WriteLine("TIMES: " + scheduleToSubmitString);
             var businessIDs = "";
             foreach(string id in businessSelected)
             {
@@ -266,6 +348,46 @@ namespace JustDelivered.Views
             {
                 await DisplayAlert("Oops", "Unfortunately, we weren't able to sign you up. Please try again later.", "OK");
             }
+        }
+
+        void SelectDay(System.Object sender, System.EventArgs e)
+        {
+            var frame = (Frame)sender;
+            var gesture = (TapGestureRecognizer)frame.GestureRecognizers[0];
+            var selected = (Schedule)gesture.CommandParameter;
+
+            if(selected.colorValue == Color.Black)
+            {
+                selected.updateColorValue = Color.Red;
+                selected.updateIsEnabledValue = true;
+                selected.updateOpacityValue = 1;
+
+                var times = new List<Time>();
+                var startTime = new Time { hour = selected.startHour[0].hour, minute = selected.startMinute[0].minute, time = selected.startTime[0].time };
+                var endTime = new Time { hour = selected.endHour[0].hour, minute = selected.endMinute[0].minute, time = selected.endTime[0].time };
+
+                times.Add(startTime);
+                times.Add(endTime);
+                selectedSchedule[selected.day].Add(times);
+                
+            }
+            else
+            {
+                selected.updateColorValue = Color.Black;
+                selected.updateIsEnabledValue = false;
+                selected.updateOpacityValue = 0.5;
+                selectedSchedule[selected.day].Clear();
+                
+            }
+        }
+
+        void GetDay(System.Object sender, System.EventArgs e)
+        {
+            var stack = (StackLayout)sender;
+            var gesture = (TapGestureRecognizer)stack.GestureRecognizers[0];
+            var selected = (Schedule)gesture.CommandParameter;
+
+            dayToAddScheduleTime = selected.day;
         }
     }
 }

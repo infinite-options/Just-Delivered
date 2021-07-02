@@ -196,6 +196,7 @@ namespace JustDelivered.Views
               || String.IsNullOrEmpty(ssNumber.Text)
               || String.IsNullOrEmpty(carYear.Text)
               || String.IsNullOrEmpty(carModel.Text)
+              || String.IsNullOrEmpty(carMake.Text)
               || String.IsNullOrEmpty(insuranceCarrier.Text)
               || String.IsNullOrEmpty(insuranceNumber.Text)
               || String.IsNullOrEmpty(insuraceExpDate)
