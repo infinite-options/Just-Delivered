@@ -9,10 +9,12 @@ using System.Threading.Tasks;
 using Acr.UserDialogs;
 using JustDelivered.Config;
 using JustDelivered.Controls;
+using JustDelivered.Interfaces;
 using JustDelivered.LogIn.Apple;
 using JustDelivered.LogIn.Classes;
 using JustDelivered.Models;
 using Newtonsoft.Json;
+using Plugin.LatestVersion;
 using Xamarin.Auth;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -275,6 +277,7 @@ namespace JustDelivered.Views
             InitializeComponent();
             SetDefaultLocationOnMap();
             VerifyUserAccount();
+            //CheckVersion();
         }
 
         public DeliveriesPage(string back)
@@ -291,6 +294,27 @@ namespace JustDelivered.Views
             SetStartToFirstLocation(Color.Black);
             SetCompleteRouteView("versionB");
 
+        }
+
+        public async Task CheckVersion()
+        {
+            try
+            {
+                var client = new AppVersion();
+                string versionStr = DependencyService.Get<IAppVersionAndBuild>().GetVersionNumber();
+                var result = await client.isRunningLatestVersion(versionStr);
+                Debug.WriteLine("isRunningLatestVersion: " + result);
+
+                if (result == "FALSE")
+                {
+                    await DisplayAlert("Just Delivered\nhas gotten even better!", "Please visit the App Store to get the latest version.", "OK");
+                    await CrossLatestVersion.Current.OpenAppInStore();
+                }
+            }
+            catch (Exception issueVersionChecking)
+            {
+                string str = issueVersionChecking.Message;
+            }
         }
 
         async void FindNextDeliveryAvailable(ObservableCollection<DeliveryInfo> deliveryList)
@@ -363,7 +387,7 @@ namespace JustDelivered.Views
 
                 //TEST
                 //routeClient.uid = user.id;
-                //routeClient.delivery_date = "2021-06-23 10:00:00";
+                //routeClient.delivery_date = currentDate.ToString("yyyy-MM-dd 10:00:00");
 
                 var socialLogInPostSerialized = JsonConvert.SerializeObject(routeClient);
 

@@ -74,8 +74,25 @@
                         <CheckBox Grid.Column="0" Color="Red" ></CheckBox>
                         <Label Grid.Column="1" Text=" Step 4: Contact Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                     </Grid>
-                    <StackLayout Padding="40,0,0,0">
-                        <Entry x:Name="address" Placeholder="Address"></Entry>
+                    <StackLayout Padding="40,0,0,0" >
+                    <Entry x:Name="AddressEntry" FontSize="15" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" Placeholder="Search for your address" PlaceholderColor="Gray"  Keyboard="Text" TextColor="Black" TextChanged="OnAddressChanged" Focused="addressEntryFocused" Unfocused="addressEntryUnfocused"/>
+                        <Frame Margin="0,0,0,0" Padding="2" HorizontalOptions="CenterAndExpand" BackgroundColor="Red" HasShadow="False" CornerRadius="0" x:Name="addressFrame" IsVisible="false">
+                            <ListView x:Name="addressList" IsVisible="false" HasUnevenRows="True" SeparatorVisibility="None" RowHeight="40" BackgroundColor="White" HorizontalOptions="CenterAndExpand" HeightRequest="80" ItemSelected="addressSelected">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <ViewCell Height="40">
+                                            <StackLayout HeightRequest="53" VerticalOptions="CenterAndExpand">
+                                                    <Label HeightRequest="53" VerticalTextAlignment="Center" Text="{Binding Address}" FontSize="12" TextColor="Black" LineBreakMode="WordWrap"/>
+                                                <BoxView HeightRequest="1" Color="Red"></BoxView>
+                                            </StackLayout>
+                                        </ViewCell>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </Frame>
+                     </StackLayout>
+                    <StackLayout Padding="40,0,0,0" IsVisible="false" x:Name="addressView">
+                        <Entry x:Name="address" Placeholder="Address" IsVisible="false"></Entry>
                         <Entry x:Name="unit" Placeholder="Unit"></Entry>
                         <Grid>
                             <Entry x:Name="city" Grid.Row="0" Grid.Column="0" Placeholder="City"></Entry>
@@ -92,7 +109,10 @@
                         <Label Grid.Column="1" Text=" Step 5: Emergency Contact Information" FontSize="Small" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                     </Grid>
                     <StackLayout Padding="40,0,0,0">
-                        <Entry x:Name="emergencyName" Placeholder="Emergency contact name"></Entry>
+                         <Grid>
+                            <Entry Grid.Row="0" Grid.Column="0" x:Name="emergencyFirstName" Placeholder="First name"></Entry>
+                            <Entry Grid.Row="0" Grid.Column="1" x:Name="emergencyLastName"  Placeholder="Last name"> </Entry>
+                        </Grid>
                         <Entry x:Name="emergencyRelationship" Placeholder="Relationship"></Entry>
                         <Entry x:Name="emergencyPhoneNumber" Placeholder="Phone number" Keyboard="Numeric" MaxLength="10"></Entry>
                         <StackLayout IsVisible="false">

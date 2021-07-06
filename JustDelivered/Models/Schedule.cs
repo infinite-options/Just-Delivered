@@ -10,6 +10,7 @@ namespace JustDelivered.Models
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
     
         public string day { get; set; }
+        public string row { get; set; }
         public ObservableCollection<PickerTimeHour> startHour { get; set; }
         public ObservableCollection<PickerTimeMinute> startMinute { get; set; }
         public ObservableCollection<PickerTime> startTime { get; set; }

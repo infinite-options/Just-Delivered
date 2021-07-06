@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using JustDelivered.Config;
+using JustDelivered.Interfaces;
 using JustDelivered.Models;
 using Newtonsoft.Json;
 using Xamarin.Forms;
@@ -20,6 +21,7 @@ namespace JustDelivered.Views
         public static string accountString = "";
         public string insuraceExpDate = "";
         public string licenseExpDate = "";
+        private AddressAutocomplete addressToValidate = null;
 
         public ObservableCollection<Item> businesSource = new ObservableCollection<Item>();
 
@@ -125,10 +127,11 @@ namespace JustDelivered.Views
                 account.business_uid = "";
                 account.driver_hours = "";
                 account.street = address.Text.Trim();
+                account.unit = unit.Text == null ? "" : unit.Text;
                 account.city = city.Text.Trim();
                 account.state = state.Text.Trim();
                 account.email = email.Text.Trim();
-                account.zipcode = zipcode.Text == null? "": zipcode.Text.Trim();
+                account.zipcode = zipcode.Text.Trim();
                 account.phone = phoneNumber.Text.Trim();
                 account.ssn = ssNumber.Text.Trim();
                 account.license_num = driveLicenseNumber.Text.Trim();
@@ -139,11 +142,14 @@ namespace JustDelivered.Views
                 account.driver_insurance_carrier = insuranceCarrier.Text.Trim();
                 account.driver_insurance_num = insuranceNumber.Text.Trim();
                 account.driver_insurance_exp_date = insuraceExpDate.Trim();
-                account.contact_name = emergencyName.Text.Trim();
+                account.contact_name = emergencyFirstName.Text.Trim() + " " + emergencyLastName.Text;
                 account.contact_phone = emergencyPhoneNumber.Text.Trim();
                 account.contact_relation = emergencyRelationship.Text.Trim();
                 account.bank_acc_info = accountNumber.Text.Trim();
                 account.bank_routing_info = routingNumber.Text.Trim();
+                account.latitude = addressToValidate.Latitude.ToString();
+                account.longitude = addressToValidate.Longitude.ToString();
+                account.referral_source = GetDeviceInformation() + GetAppVersion();
 
                 if (userToSignUp.platform == "DIRECT")
                 {
@@ -177,6 +183,40 @@ namespace JustDelivered.Views
             //Navigation.PushAsync(new SubmitSignUpPage(), false);
         }
 
+        public static string GetAppVersion()
+        {
+
+            string versionStr = "";
+            string buildStr = "";
+            try
+            {
+                versionStr = DependencyService.Get<IAppVersionAndBuild>().GetVersionNumber();
+                buildStr = DependencyService.Get<IAppVersionAndBuild>().GetBuildNumber();
+            }
+            catch
+            {
+
+            }
+
+            return versionStr + ", " + buildStr;
+        }
+
+        public static string GetDeviceInformation()
+        {
+            var device = "";
+            if (Device.RuntimePlatform == Device.Android)
+            {
+                device = "MOBILE: ANDROID, ";
+            }
+            else
+            {
+                device = "MOBILE: IOS, ";
+            }
+            return device;
+        }
+
+
+
         bool ValidateEntries()
         {
           
@@ -190,7 +230,8 @@ namespace JustDelivered.Views
               || String.IsNullOrEmpty(city.Text)
               || String.IsNullOrEmpty(state.Text)
               || String.IsNullOrEmpty(zipcode.Text)
-              || String.IsNullOrEmpty(emergencyName.Text)
+              || String.IsNullOrEmpty(emergencyFirstName.Text)
+              || String.IsNullOrEmpty(emergencyLastName.Text)
               || String.IsNullOrEmpty(emergencyRelationship.Text)
               || String.IsNullOrEmpty(emergencyPhoneNumber.Text)
               || String.IsNullOrEmpty(ssNumber.Text)
@@ -211,7 +252,10 @@ namespace JustDelivered.Views
                 {
                     if(insurancePicture != null)
                     {
-                        result = true;
+                        if(addressToValidate != null && addressToValidate.isValidated == true)
+                        {
+                            result = true; 
+                        }
                     }
                 }
 
@@ -273,5 +317,142 @@ namespace JustDelivered.Views
         {
             licenseExpDate = e.NewDate.ToString("yyyy-MM-dd");
         }
+
+        Models.Address addr = new Models.Address();
+
+        async void OnAddressChanged(object sender, EventArgs eventArgs)
+        {
+            if (!String.IsNullOrEmpty(AddressEntry.Text))
+            {
+                if (addressToValidate != null)
+                {
+                    if (addressToValidate.Street != AddressEntry.Text)
+                    {
+                        addressList.ItemsSource = await addr.GetPlacesPredictionsAsync(AddressEntry.Text);
+                        addressEntryFocused(sender, eventArgs);
+                    }
+                }
+                else
+                {
+                    addressList.ItemsSource = await addr.GetPlacesPredictionsAsync(AddressEntry.Text);
+                    addressEntryFocused(sender, eventArgs);
+                }
+            }
+            else
+            {
+                addressEntryUnfocused(sender, eventArgs);
+                addressToValidate = null;
+            }
+        }
+
+        void addressEntryFocused(object sender, EventArgs eventArgs)
+        {
+            if (!String.IsNullOrEmpty(AddressEntry.Text))
+            {
+                addr.addressEntryFocused(addressList, addressFrame);
+            }
+        }
+
+        void addressEntryUnfocused(object sender, EventArgs eventArgs)
+        {
+            addr.addressEntryUnfocused(addressList, addressFrame);
+            if(addressToValidate != null && addressToValidate.isValidated == true)
+            {
+                addressView.IsVisible = true;
+               
+            }
+            else
+            {
+                addressView.IsVisible = false;
+            }
+        }
+
+        async void addressSelected(System.Object sender, SelectedItemChangedEventArgs e)
+        {
+            AddressEntry.TextChanged -= OnAddressChanged;
+            addressToValidate = addr.addressSelected(addressList, AddressEntry, addressFrame);
+            addressToValidate.isValidated = false;
+            AddressEntry.Text = addressToValidate.Street;
+            string zipcode = await addr.getZipcode(addressToValidate.PredictionID);
+            if (zipcode != null)
+            {
+                addressToValidate.ZipCode = zipcode;
+            }
+            AddressEntry.TextChanged += OnAddressChanged;
+            ValidateAddress(sender, e);
+        }
+
+        async void ValidateAddress(System.Object sender, System.EventArgs e)
+        {
+            try
+            {
+                if (addressToValidate != null)
+                {
+                    if (!String.IsNullOrEmpty(AddressEntry.Text))
+                    {
+                        var client = new AddressValidation();
+                        var addressStatus = client.ValidateAddressString(addressToValidate.Street, addressToValidate.Unit, addressToValidate.City, addressToValidate.State, addressToValidate.ZipCode);
+
+                        if (addressStatus != null)
+                        {
+                            var location = await client.ConvertAddressToGeoCoordiantes(addressToValidate.Street, addressToValidate.City, addressToValidate.State);
+                            if (location != null)
+                            {
+                                
+                                addressToValidate.Latitude = location.Latitude;
+                                addressToValidate.Longitude = location.Longitude;
+                               
+
+                                if (addressStatus == "Y" || addressStatus == "S")
+                                {
+                                    await DisplayAlert("Great!", "Your address is valid. Please continue with your application", "OK");
+                                    address.Text = addressToValidate.Street;
+                                    unit.Text = addressToValidate.Unit;
+                                    city.Text = addressToValidate.City;
+                                    state.Text = addressToValidate.State;
+                                    zipcode.Text = addressToValidate.ZipCode;
+                                    addressToValidate.isValidated = true;
+                                }
+                                else if (addressStatus == "D")
+                                {
+                                    var unit1 = await DisplayPromptAsync("It looks like your address is missing its unit number", "Please enter your address unit number in the space below", "OK", "Cancel");
+                                    if (unit1 != null)
+                                    {
+                                        await DisplayAlert("Great!", "Your address is valid. Please continue with your application", "OK");
+                                        addressToValidate.Unit = unit1;
+                                        address.Text = addressToValidate.Street;
+                                        unit.Text = addressToValidate.Unit;
+                                        city.Text = addressToValidate.City;
+                                        state.Text = addressToValidate.State;
+                                        zipcode.Text = addressToValidate.ZipCode;
+                                        addressToValidate.isValidated = true;
+                                    }
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                await DisplayAlert("Oops", "We weren't able to find your address", "OK");
+                            }
+
+                         
+                        }
+                        else
+                        {
+                            await DisplayAlert("Oops", "The address you enter is not valid. Please enter another address to continue.", "OK");
+                        }
+                    }
+                }
+                else
+                {
+                    await DisplayAlert("Oops","Please select an address to validate","OK");
+                }
+            }
+            catch (Exception errorFindLocalProduceBaseOnLocation)
+            {
+                Debug.WriteLine(errorFindLocalProduceBaseOnLocation.Message);
+            }
+        }
+
     }
 }

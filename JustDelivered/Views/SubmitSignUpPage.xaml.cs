@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Acr.UserDialogs;
 using JustDelivered.Config;
 using JustDelivered.Models;
 using Newtonsoft.Json;
@@ -17,11 +18,15 @@ namespace JustDelivered.Views
     {
         public ObservableCollection<Schedule> scheduleSource = new ObservableCollection<Schedule>();
 
-        public ObservableCollection<PickerTimeHour> hourSource = new ObservableCollection<PickerTimeHour>();
+        public ObservableCollection<PickerTimeHour> hourSourceStart = new ObservableCollection<PickerTimeHour>();
+        public ObservableCollection<PickerTimeHour> hourSourceEnd = new ObservableCollection<PickerTimeHour>();
         public ObservableCollection<PickerTimeMinute> minuteSource = new ObservableCollection<PickerTimeMinute>();
-        public ObservableCollection<PickerTime> timeSource = new ObservableCollection<PickerTime>();
+        public ObservableCollection<PickerTime> timeSourceStart = new ObservableCollection<PickerTime>();
+        public ObservableCollection<PickerTime> timeSourceEnd = new ObservableCollection<PickerTime>();
         public Dictionary<string, List<List<Time>>> selectedSchedule = new Dictionary<string, List<List<Time>>>();
         public Dictionary<string, List<string[]>> timesRecorded = new Dictionary<string, List<string[]>>();
+
+        public DateTime today = DateTime.Now;
 
         public string dayToAddScheduleTime = "";
 
@@ -34,27 +39,39 @@ namespace JustDelivered.Views
 
         void SetSchedule(CollectionView view) 
         {
-            SetHours();
+            SetHoursStart();
+        
+            SetTimeStart();
+
             SetMinutes();
-            SetTime();
+
+            SetHoursEnd();
+    
+            SetTimeEnd();
 
             string[] weekdays = new[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
             foreach(string day in weekdays)
             {
+                var position = new DayRow { key = day, row = 0 };
+                var positionString = JsonConvert.SerializeObject(position);
+                Debug.WriteLine("POSITION: " + positionString);
                 scheduleSource.Add(new Schedule {
                     colorValue = Color.Black,
                     isEnabledValue = false,
                     opacityValue = 0.5,
                     day = day,
-                    startHour = hourSource,
+                    row = positionString,
+                    startHour = hourSourceStart,
                     startMinute = minuteSource,
-                    startTime = timeSource,
-                    endHour = hourSource,
+                    startTime = timeSourceStart,
+                    endHour = hourSourceEnd,
                     endMinute = minuteSource,
-                    endTime = timeSource,
+                    endTime = timeSourceEnd,
                 });
             }
             view.ItemsSource = scheduleSource;
+            view.HeightRequest = scheduleSource.Count * 55;
+
         }
 
         void SetDictionary()
@@ -67,10 +84,11 @@ namespace JustDelivered.Views
 
         }
 
-        void SetHours()
+        void SetHoursStart()
         {
             try
             {
+                hourSourceStart.Add(new PickerTimeHour { hour = "08" });
                 for (int i = 1; i <= 12; i++)
                 {
                     string value = "";
@@ -82,7 +100,7 @@ namespace JustDelivered.Views
                     {
                         value = i + "";
                     }
-                    hourSource.Add(new PickerTimeHour { hour = value });
+                    hourSourceStart.Add(new PickerTimeHour { hour = value });
                 }
                 
             }
@@ -91,6 +109,33 @@ namespace JustDelivered.Views
                 Debug.WriteLine("Error: " + setHourIssue.Message);
             }
             
+        }
+
+        void SetHoursEnd()
+        {
+            try
+            {
+                hourSourceEnd.Add(new PickerTimeHour { hour = "05" });
+                for (int i = 1; i <= 12; i++)
+                {
+                    string value = "";
+                    if (i <= 9)
+                    {
+                        value = "0" + i;
+                    }
+                    else
+                    {
+                        value = i + "";
+                    }
+                    hourSourceEnd.Add(new PickerTimeHour { hour = value });
+                }
+
+            }
+            catch (Exception setHourIssue)
+            {
+                Debug.WriteLine("Error: " + setHourIssue.Message);
+            }
+
         }
 
         void SetMinutes()
@@ -110,13 +155,28 @@ namespace JustDelivered.Views
            
         }
 
-       void  SetTime()
+       void  SetTimeStart()
         {
             try
             {
-                timeSource.Add(new PickerTime { time = "AM" });
-                timeSource.Add(new PickerTime { time = "PM" });
+                timeSourceStart.Add(new PickerTime { time = "AM" });
+                timeSourceStart.Add(new PickerTime { time = "PM" });
                
+            }
+            catch (Exception setHourIssue)
+            {
+                Debug.WriteLine("Error: " + setHourIssue.Message);
+            }
+        }
+
+
+        void SetTimeEnd()
+        {
+            try
+            {
+                timeSourceEnd.Add(new PickerTime { time = "PM" });
+                timeSourceEnd.Add(new PickerTime { time = "AM" });
+
             }
             catch (Exception setHourIssue)
             {
@@ -129,64 +189,75 @@ namespace JustDelivered.Views
             Navigation.PopAsync(false);
         }
 
+
         void hourListStart_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
         {
             var list = (CollectionView)sender;
-            list.ScrollTo(hourSource[e.CenterItemIndex]);
-            if(dayToAddScheduleTime != "")
-            {
-                selectedSchedule[dayToAddScheduleTime][0][0].hour = hourSource[e.CenterItemIndex].hour;
-            }
+            list.ScrollTo(hourSourceStart[e.CenterItemIndex]);
+            //Debug.WriteLine("CLASS ID: " + list.ClassId);
+
+            var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
+            
+            selectedSchedule[position.key][position.row][0].hour = hourSourceStart[e.CenterItemIndex].hour;
+
         }
 
         void minuteListStart_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
         {
             var list = (CollectionView)sender;
             list.ScrollTo(minuteSource[e.CenterItemIndex]);
-            if (dayToAddScheduleTime != "")
-            {
-                selectedSchedule[dayToAddScheduleTime][0][0].minute = minuteSource[e.CenterItemIndex].minute;
-            }
+            //Debug.WriteLine("CLASS ID: " + list.ClassId);
+
+            var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
+
+            selectedSchedule[position.key][position.row][0].minute = minuteSource[e.CenterItemIndex].minute;
+
         }
 
         void timeListStart_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
         {
             var list = (CollectionView)sender;
-            list.ScrollTo(timeSource[e.CenterItemIndex]);
-            if (dayToAddScheduleTime != "")
-            {
-                selectedSchedule[dayToAddScheduleTime][0][0].time = timeSource[e.CenterItemIndex].time;
-            }
+            list.ScrollTo(timeSourceStart[e.CenterItemIndex]);
+            //Debug.WriteLine("CLASS ID: " + list.ClassId);
+
+            var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
+
+            selectedSchedule[position.key][position.row][0].time = timeSourceStart[e.CenterItemIndex].time;
+
         }
 
         void hourListEnd_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
         {
             var list = (CollectionView)sender;
-            list.ScrollTo(hourSource[e.CenterItemIndex]);
-            if (dayToAddScheduleTime != "")
-            {
-                selectedSchedule[dayToAddScheduleTime][0][1].hour = hourSource[e.CenterItemIndex].hour;
-            }
+            list.ScrollTo(hourSourceEnd[e.CenterItemIndex]);
+            //Debug.WriteLine("CLASS ID: " + list.ClassId);
+
+            var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
+
+            selectedSchedule[position.key][position.row][1].hour = hourSourceEnd[e.CenterItemIndex].hour;
+
         }
 
         void minuteListEnd_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
         {
             var list = (CollectionView)sender;
             list.ScrollTo(minuteSource[e.CenterItemIndex]);
-            if (dayToAddScheduleTime != "")
-            {
-                selectedSchedule[dayToAddScheduleTime][0][1].minute = minuteSource[e.CenterItemIndex].minute;
-            }
+            //Debug.WriteLine("CLASS ID: " + list.ClassId);
+
+            var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
+
+            selectedSchedule[position.key][position.row][1].minute = minuteSource[e.CenterItemIndex].minute;
         }
 
         void timeListEnd_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
         {
             var list = (CollectionView)sender;
-            list.ScrollTo(timeSource[e.CenterItemIndex]);
-            if (dayToAddScheduleTime != "")
-            {
-                selectedSchedule[dayToAddScheduleTime][0][1].time = timeSource[e.CenterItemIndex].time;
-            }
+            list.ScrollTo(timeSourceEnd[e.CenterItemIndex]);
+            //Debug.WriteLine("CLASS ID: " + list.ClassId);
+
+            var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
+
+            selectedSchedule[position.key][position.row][1].time = timeSourceEnd[e.CenterItemIndex].time;
         }
 
         async Task<bool> ProcessRequest()
@@ -195,32 +266,42 @@ namespace JustDelivered.Views
             var content = new MultipartFormDataContent();
             var scheduleToSubmit = new ScheduleToSubmit();
 
-           
-
             foreach (string day in selectedSchedule.Keys)
             {
                 if(selectedSchedule[day].Count != 0)
                 {
-                    DateTime today = DateTime.Now;
+                    //DateTime today = DateTime.Now;
                     string todayString = today.ToString("yyyy-MM-dd");
-                    string startTime = todayString;
-                    string endTime = todayString;
+                    
+                    foreach(List<Time> interval in selectedSchedule[day])
+                    {
+                        string startTime = todayString;
+                        string endTime = todayString;
 
-                    startTime += " " + selectedSchedule[day][0][0].hour + ":" + selectedSchedule[day][0][0].minute + " " + selectedSchedule[day][0][0].time;
-                    endTime += " " + selectedSchedule[day][0][1].hour + ":" + selectedSchedule[day][0][1].minute + " " + selectedSchedule[day][0][1].time;
+                        startTime += " " + interval[0].hour + ":" + interval[0].minute + " " + interval[0].time;
+                        endTime += " " + interval[1].hour + ":" + interval[1].minute + " " + interval[1].time;
 
-                    Debug.WriteLine("START:" + startTime);
-                    Debug.WriteLine("END: " + endTime);
+                        Debug.WriteLine("START:" + startTime);
+                        Debug.WriteLine("END: " + endTime);
 
-                    string mStartTime = DateTime.Parse(startTime).ToString("HH:mm:ss");
-                    string mEndTime = DateTime.Parse(endTime).ToString("HH:mm:ss");
+                        string mStartTime = DateTime.Parse(startTime).ToString("HH:mm:ss");
+                        string mEndTime = DateTime.Parse(endTime).ToString("HH:mm:ss");
 
-                    var array = new List<string>();
-                    array.Add(mStartTime);
-                    array.Add(mEndTime);
-                    var list = new List<string[]>();
-                    list.Add(array.ToArray());
-                    timesRecorded.Add(day, list);
+                        var array = new List<string>();
+                        array.Add(mStartTime);
+                        array.Add(mEndTime);
+                        var list = new List<string[]>();
+                        list.Add(array.ToArray());
+                        if (timesRecorded.ContainsKey(day))
+                        {
+                            timesRecorded[day].Add(array.ToArray());
+                        }
+                        else
+                        {
+                            timesRecorded.Add(day, list);
+                        }
+                       
+                    }
                 }
                 else
                 {
@@ -254,11 +335,15 @@ namespace JustDelivered.Views
             var first_name = new StringContent(account.first_name, Encoding.UTF8);
             var last_name = new StringContent(account.last_name, Encoding.UTF8);
             var business_uid = new StringContent(businessIDs, Encoding.UTF8);
+            var referral_source = new StringContent(account.referral_source, Encoding.UTF8);
             var driver_hours = new StringContent(scheduleToSubmitString, Encoding.UTF8);
             var street = new StringContent(account.street, Encoding.UTF8);
+            var unit = new StringContent(account.unit, Encoding.UTF8);
             var city = new StringContent(account.city, Encoding.UTF8);
             var state = new StringContent(account.state, Encoding.UTF8);
             var zipcode = new StringContent(account.zipcode, Encoding.UTF8);
+            var latitude = new StringContent(account.latitude, Encoding.UTF8);
+            var longitude = new StringContent(account.longitude, Encoding.UTF8);
             var email = new StringContent(account.email, Encoding.UTF8);
             var phone = new StringContent(account.phone, Encoding.UTF8);
             var ssn = new StringContent(account.ssn, Encoding.UTF8);
@@ -284,15 +369,20 @@ namespace JustDelivered.Views
             var social_id = new StringContent(account.social_id, Encoding.UTF8);
             var userImageContent = new ByteArrayContent(insurancePicture);
 
+
             // CONTENT, NAME
             content.Add(first_name, "first_name");
             content.Add(last_name, "last_name");
             content.Add(business_uid, "business_uid");
+            content.Add(referral_source, "referral_source");
             content.Add(driver_hours, "driver_hours");
             content.Add(street, "street");
+            content.Add(unit, "unit");
             content.Add(city, "city");
             content.Add(state, "state");
             content.Add(zipcode, "zipcode");
+            content.Add(latitude, "latitude");
+            content.Add(longitude, "longitude");
             content.Add(email, "email");
             content.Add(phone, "phone");
             content.Add(ssn, "ssn");
@@ -338,19 +428,74 @@ namespace JustDelivered.Views
 
         async void SubmitApplication(System.Object sender, System.EventArgs e)
         {
-            var result = await ProcessRequest();
-            if (result)
+            UserDialogs.Instance.ShowLoading("We are processing your request and checking that all schedule entries are valid...");
+            var timesAreInvalid = false;
+            foreach(string day in selectedSchedule.Keys)
             {
-                await DisplayAlert("Congratulations!", "Your application is in process. We will notify you of your result via email.", "OK");
-                Application.Current.MainPage = new LogInPage();
+                if (!timesValidation(selectedSchedule[day]))
+                {
+                    timesAreInvalid = true;
+                    break;
+                }
+            }
+
+            
+
+            if (!timesAreInvalid)
+            {
+
+                if (isScheduleEmpty())
+                {
+                    UserDialogs.Instance.HideLoading();
+                    await DisplayAlert("Oops", "Your schedule is empty. We can't process your request. Please add a valid entry to your schedule.", "OK");
+                }
+                else
+                {
+                    var result = await ProcessRequest();
+                    if (result)
+                    {
+                        UserDialogs.Instance.HideLoading();
+                        await DisplayAlert("Congratulations!", "Your application is in process. We will notify you of your result via email.", "OK");
+                        Application.Current.MainPage = new LogInPage();
+                    }
+                    else
+                    {
+                        UserDialogs.Instance.HideLoading();
+                        await DisplayAlert("Oops", "Unfortunately, we weren't able to sign you up. Please try again later.", "OK");
+                    }
+                }
             }
             else
             {
-                await DisplayAlert("Oops", "Unfortunately, we weren't able to sign you up. Please try again later.", "OK");
+                UserDialogs.Instance.HideLoading();
+                await DisplayAlert("Oops", "We see that one or more times in your schedule are not valid entries. Please make sure no time in your schedule overlaps.", "OK");
             }
+            
         }
 
-        void SelectDay(System.Object sender, System.EventArgs e)
+        bool isScheduleEmpty()
+        {
+            // string[] weekdays = new[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+            var result = false;
+            if (
+                   selectedSchedule["Sunday"].Count == 0
+                && selectedSchedule["Monday"].Count == 0
+                && selectedSchedule["Tuesday"].Count == 0
+                && selectedSchedule["Wednesday"].Count == 0
+                && selectedSchedule["Thursday"].Count == 0
+                && selectedSchedule["Friday"].Count == 0
+                && selectedSchedule["Saturday"].Count == 0)
+            {
+                result = true;
+            }
+            else
+            {
+                result = false;
+            }
+            return result;
+        }
+
+        async void SelectDay(System.Object sender, System.EventArgs e)
         {
             var frame = (Frame)sender;
             var gesture = (TapGestureRecognizer)frame.GestureRecognizers[0];
@@ -369,16 +514,104 @@ namespace JustDelivered.Views
                 times.Add(startTime);
                 times.Add(endTime);
                 selectedSchedule[selected.day].Add(times);
-                
+                if (!timesValidation(selectedSchedule[selected.day]))
+                {
+                    await DisplayAlert("Oops", "We see that one or more times in your schedule are not valid entries. Please make sure no time in your schedule overlaps.", "OK");
+                }
             }
             else
             {
                 selected.updateColorValue = Color.Black;
                 selected.updateIsEnabledValue = false;
                 selected.updateOpacityValue = 0.5;
-                selectedSchedule[selected.day].Clear();
-                
+                var position = JsonConvert.DeserializeObject<DayRow>(selected.row);
+                if(position.row < selectedSchedule[selected.day].Count)
+                {
+                    selectedSchedule[selected.day].RemoveAt(position.row);
+                }
             }
+        }
+
+        // We are procressing your request and checking that all times in your schedule are valid...
+        // Oops we see that one or more times in your schedule are not valid entries. Please make sure no time in your schedule overlops. 
+
+        List<DateTime> CovertTimeToDateTime(string sTime, string eTime)
+        {
+            var list = new List<DateTime>();
+
+            string todayString = today.ToString("yyyy-MM-dd");
+            string startTime = todayString;
+            string endTime = todayString;
+
+            startTime += sTime;
+            endTime += eTime;
+
+            Debug.WriteLine("START:" + startTime);
+            Debug.WriteLine("END: " + endTime);
+
+            var mStartTime = DateTime.Parse(startTime);
+            var mEndTime = DateTime.Parse(endTime);
+
+            list.Add(mStartTime);
+            list.Add(mEndTime);
+            
+            return list;
+        }
+
+        bool timesValidation(List<List<Time>> collection) 
+        {
+            var result = false;
+            var listDateTimes = new List<List<DateTime>>();
+            // Step 1. Covert Time struct to DateTime for comparisons
+            foreach(List<Time> interval in collection)
+            {
+                var sTime = " " + interval[0].hour + ":" + interval[0].minute + " " + interval[0].time;
+                var eTime = " " + interval[1].hour + ":" + interval[1].minute + " " + interval[1].time;
+                var dateTimeInterval = CovertTimeToDateTime(sTime, eTime);
+                listDateTimes.Add(dateTimeInterval);
+            }
+
+            if(listDateTimes.Count == 0)
+            {
+                result =  true;
+            }
+            else
+            {
+                for(int i = 0; i < listDateTimes.Count; i++)
+                {
+                    for(int j = 0; j < listDateTimes.Count; j++)
+                    {
+                        if(i != j)
+                        {
+                            var oldStart = listDateTimes[i][0];
+                            var oldEnd = listDateTimes[i][1];
+                            var newStart = listDateTimes[j][0];
+                            var newEnd = listDateTimes[j][1];
+
+                            if (
+                                   oldStart != newStart
+                                && !(oldStart < newStart && newStart < oldEnd)
+                                && oldEnd != newEnd
+                                && !(oldStart < newEnd && newEnd < oldEnd)
+                                && newEnd > newStart)
+                            {
+                                result = true;
+                            }
+                            else
+                            {
+                                result = false;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            result = true;
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
 
         void GetDay(System.Object sender, System.EventArgs e)
@@ -388,6 +621,74 @@ namespace JustDelivered.Views
             var selected = (Schedule)gesture.CommandParameter;
 
             dayToAddScheduleTime = selected.day;
+        }
+
+        async void AddAnoherTime(System.Object sender, System.EventArgs e)
+        {
+            var day = await DisplayActionSheet("Select one of the following days when you would like to add another available time.", "Cancel", null, new string[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" });
+            if(day != null && day != "" && day != "Cancel")
+            {
+                UserDialogs.Instance.ShowLoading("Updating your schedule...");
+                var position = new DayRow { key = day, row = 0 };
+                var positionString = JsonConvert.SerializeObject(position);
+                Debug.WriteLine("POSITION: " + positionString);
+                scheduleSource.Add(new Schedule
+                {
+                    colorValue = Color.Black,
+                    isEnabledValue = false,
+                    opacityValue = 0.5,
+                    day = day,
+                    row = positionString,
+                    startHour = hourSourceStart,
+                    startMinute = minuteSource,
+                    startTime = timeSourceStart,
+                    endHour = hourSourceEnd,
+                    endMinute = minuteSource,
+                    endTime = timeSourceEnd,
+                });
+
+                var tempSource = new ObservableCollection<Schedule>();
+
+                foreach (Schedule s in scheduleSource)
+                {
+                    Debug.WriteLine("DAY: " + s.day);
+                }
+
+                string[] weekdays = new[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+
+                foreach(string dayToSort in weekdays)
+                {
+                    var rowIndex = 0;
+                    foreach(Schedule schedule in scheduleSource)
+                    {
+                        if(schedule.day == dayToSort)
+                        {
+                            var p = new DayRow { key = dayToSort, row = rowIndex };
+                            var pString = JsonConvert.SerializeObject(p);
+                            schedule.row = pString;
+                            tempSource.Add(schedule);
+                            rowIndex++;
+                        }
+                    }
+                }
+
+                scheduleSource.Clear();
+
+                foreach (Schedule schedule in tempSource)
+                {
+                    scheduleSource.Add(schedule);
+                }
+
+                scheduleView.ItemsSource = scheduleSource;
+                scheduleView.HeightRequest = scheduleSource.Count * 55;
+                if (!timesValidation(selectedSchedule[day]))
+                {
+                    //Oops, we see that one or more times in your schedule are not valid entries. Please make sure no time in your schedule overlaps.
+                    await DisplayAlert("Oops", "We see that one or more times in your schedule are not valid entries. Please make sure no time in your schedule overlaps.", "OK");
+                }
+                UserDialogs.Instance.HideLoading();
+
+            }
         }
     }
 }
