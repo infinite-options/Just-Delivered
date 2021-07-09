@@ -17,6 +17,8 @@ using Xamarin.Essentials;
 using Xamarin.Forms;
 using static JustDelivered.Views.DeliveriesPage;
 
+using static JustDelivered.Views.SignUpPage;
+
 namespace JustDelivered.Views
 {
     public partial class LogInPage : ContentPage
@@ -367,107 +369,148 @@ namespace JustDelivered.Views
                 {
                     var loginAttempt = await LogInUser(userEmailAddress.Text.ToLower().Trim(), userPassword.Text, accountSalt);
 
-                    if (loginAttempt != null && loginAttempt.message != "Request failed, wrong password.")
+                    if (loginAttempt != null)
                     {
-                        var client = new HttpClient();
-                        var request = new RequestUserInfo();
-                        request.uid = loginAttempt.result[0].customer_uid;
 
-                        var requestSelializedObject = JsonConvert.SerializeObject(request);
-                        var requestContent = new StringContent(requestSelializedObject, Encoding.UTF8, "application/json");
 
-                        var clientRequest = await client.PostAsync(Constant.GetUserInfoUrl, requestContent);
+                        //var client = new HttpClient();
+                        //var request = new RequestUserInfo();
+                        //request.uid = loginAttempt.result[0].customer_uid;
 
-                        if (clientRequest.IsSuccessStatusCode)
+                        //var requestSelializedObject = JsonConvert.SerializeObject(request);
+                        //var requestContent = new StringContent(requestSelializedObject, Encoding.UTF8, "application/json");
+
+                        //var clientRequest = await client.PostAsync(Constant.GetUserInfoUrl, requestContent);
+
+                        //if (clientRequest.IsSuccessStatusCode)
+                        //{
+                        //    try
+                        //    {
+                        //        var SFUser = await clientRequest.Content.ReadAsStringAsync();
+                        //        Debug.WriteLine("DATA FROM LOGIN ENDPOINT (DIRECT): " + SFUser);
+
+
+
+                        //        // needs to implement direct log in...
+
+
+
+                        //        //Application.Current.MainPage = new DeliveriesPage("", "", null,null, "");
+                        //        //var userData = JsonConvert.DeserializeObject<UserInfo>(SFUser);
+
+                        //        //DateTime today = DateTime.Now;
+                        //        //DateTime expDate = today.AddDays(14);
+
+                        //        //Application.Current.Properties["user_id"] = userData.result[0].customer_uid;
+                        //        //Application.Current.Properties["time_stamp"] = expDate;
+                        //        //Application.Current.Properties["platform"] = "DIRECT";
+                        //        //Application.Current.Properties["user_email"] = userData.result[0].customer_email;
+                        //        //Application.Current.Properties["user_first_name"] = userData.result[0].customer_first_name;
+                        //        //Application.Current.Properties["user_last_name"] = userData.result[0].customer_last_name;
+                        //        //Application.Current.Properties["user_phone_num"] = userData.result[0].customer_phone_num;
+                        //        //Application.Current.Properties["user_address"] = userData.result[0].customer_address;
+                        //        //Application.Current.Properties["user_unit"] = userData.result[0].customer_unit;
+                        //        //Application.Current.Properties["user_city"] = userData.result[0].customer_city;
+                        //        //Application.Current.Properties["user_state"] = userData.result[0].customer_state;
+                        //        //Application.Current.Properties["user_zip_code"] = userData.result[0].customer_zip;
+                        //        //Application.Current.Properties["user_latitude"] = userData.result[0].customer_lat;
+                        //        //Application.Current.Properties["user_longitude"] = userData.result[0].customer_long;
+                        //        //Application.Current.Properties["user_delivery_instructions"] = "";
+
+                        //        //_ = Application.Current.SavePropertiesAsync();
+
+                        //        //if (Device.RuntimePlatform == Device.iOS)
+                        //        //{
+                        //        //    deviceId = Preferences.Get("guid", null);
+                        //        //    if (deviceId != null) { Debug.WriteLine("This is the iOS GUID from Log in: " + deviceId); }
+                        //        //}
+                        //        //else
+                        //        //{
+                        //        //    deviceId = Preferences.Get("guid", null);
+                        //        //    if (deviceId != null) { Debug.WriteLine("This is the Android GUID from Log in " + deviceId); }
+                        //        //}
+
+                        //        //if (deviceId != null)
+                        //        //{
+                        //        //    NotificationPost notificationPost = new NotificationPost();
+
+                        //        //    notificationPost.uid = (string)Application.Current.Properties["user_id"];
+                        //        //    notificationPost.guid = deviceId.Substring(5);
+                        //        //    Application.Current.Properties["guid"] = deviceId.Substring(5);
+                        //        //    notificationPost.notification = "TRUE";
+
+                        //        //    var notificationSerializedObject = JsonConvert.SerializeObject(notificationPost);
+                        //        //    Debug.WriteLine("Notification JSON Object to send: " + notificationSerializedObject);
+
+                        //        //    var notificationContent = new StringContent(notificationSerializedObject, Encoding.UTF8, "application/json");
+
+                        //        //    var clientResponse = await client.PostAsync(Constant.NotificationsUrl, notificationContent);
+
+                        //        //    Debug.WriteLine("Status code: " + clientResponse.IsSuccessStatusCode);
+
+                        //        //    if (clientResponse.IsSuccessStatusCode)
+                        //        //    {
+                        //        //        System.Diagnostics.Debug.WriteLine("We have post the guid to the database");
+                        //        //    }
+                        //        //    else
+                        //        //    {
+                        //        //        await DisplayAlert("Ooops!", "Something went wrong. We are not able to send you notification at this moment", "OK");
+                        //        //    }
+                        //        //}
+
+
+
+                        //        //Application.Current.MainPage = new SelectionPage();
+                        //    }
+                        //    catch (Exception ex)
+                        //    {
+
+                        //        System.Diagnostics.Debug.WriteLine(ex.Message);
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    await DisplayAlert("Alert!", "Our internal system was not able to retrieve your user information. We are working to solve this issue.", "OK");
+                        //}
+                        var result = "";
+
+                        if (loginAttempt.code.ToString() == Constant.EmailNotFound)
                         {
-                            try
-                            {
-                                var SFUser = await clientRequest.Content.ReadAsStringAsync();
-                                Debug.WriteLine("DATA FROM LOGIN ENDPOINT (DIRECT): " + SFUser);
+                            // need to sign up
+                            userToSignUp = new SignUpAccount();
 
+                            userToSignUp.platform = "DIRECT";
+                            
 
-
-                                // needs to implement direct log in...
-
-
-
-                                //Application.Current.MainPage = new DeliveriesPage("", "", null,null, "");
-                                //var userData = JsonConvert.DeserializeObject<UserInfo>(SFUser);
-
-                                //DateTime today = DateTime.Now;
-                                //DateTime expDate = today.AddDays(14);
-
-                                //Application.Current.Properties["user_id"] = userData.result[0].customer_uid;
-                                //Application.Current.Properties["time_stamp"] = expDate;
-                                //Application.Current.Properties["platform"] = "DIRECT";
-                                //Application.Current.Properties["user_email"] = userData.result[0].customer_email;
-                                //Application.Current.Properties["user_first_name"] = userData.result[0].customer_first_name;
-                                //Application.Current.Properties["user_last_name"] = userData.result[0].customer_last_name;
-                                //Application.Current.Properties["user_phone_num"] = userData.result[0].customer_phone_num;
-                                //Application.Current.Properties["user_address"] = userData.result[0].customer_address;
-                                //Application.Current.Properties["user_unit"] = userData.result[0].customer_unit;
-                                //Application.Current.Properties["user_city"] = userData.result[0].customer_city;
-                                //Application.Current.Properties["user_state"] = userData.result[0].customer_state;
-                                //Application.Current.Properties["user_zip_code"] = userData.result[0].customer_zip;
-                                //Application.Current.Properties["user_latitude"] = userData.result[0].customer_lat;
-                                //Application.Current.Properties["user_longitude"] = userData.result[0].customer_long;
-                                //Application.Current.Properties["user_delivery_instructions"] = "";
-
-                                //_ = Application.Current.SavePropertiesAsync();
-
-                                //if (Device.RuntimePlatform == Device.iOS)
-                                //{
-                                //    deviceId = Preferences.Get("guid", null);
-                                //    if (deviceId != null) { Debug.WriteLine("This is the iOS GUID from Log in: " + deviceId); }
-                                //}
-                                //else
-                                //{
-                                //    deviceId = Preferences.Get("guid", null);
-                                //    if (deviceId != null) { Debug.WriteLine("This is the Android GUID from Log in " + deviceId); }
-                                //}
-
-                                //if (deviceId != null)
-                                //{
-                                //    NotificationPost notificationPost = new NotificationPost();
-
-                                //    notificationPost.uid = (string)Application.Current.Properties["user_id"];
-                                //    notificationPost.guid = deviceId.Substring(5);
-                                //    Application.Current.Properties["guid"] = deviceId.Substring(5);
-                                //    notificationPost.notification = "TRUE";
-
-                                //    var notificationSerializedObject = JsonConvert.SerializeObject(notificationPost);
-                                //    Debug.WriteLine("Notification JSON Object to send: " + notificationSerializedObject);
-
-                                //    var notificationContent = new StringContent(notificationSerializedObject, Encoding.UTF8, "application/json");
-
-                                //    var clientResponse = await client.PostAsync(Constant.NotificationsUrl, notificationContent);
-
-                                //    Debug.WriteLine("Status code: " + clientResponse.IsSuccessStatusCode);
-
-                                //    if (clientResponse.IsSuccessStatusCode)
-                                //    {
-                                //        System.Diagnostics.Debug.WriteLine("We have post the guid to the database");
-                                //    }
-                                //    else
-                                //    {
-                                //        await DisplayAlert("Ooops!", "Something went wrong. We are not able to send you notification at this moment", "OK");
-                                //    }
-                                //}
-
-
-
-                                //Application.Current.MainPage = new SelectionPage();
-                            }
-                            catch (Exception ex)
-                            {
-
-                                System.Diagnostics.Debug.WriteLine(ex.Message);
-                            }
+                            result = "NEED TO SIGN UP";
                         }
-                        else
+                        if (loginAttempt.code.ToString() == Constant.AutheticatedSuccesful)
                         {
-                            await DisplayAlert("Alert!", "Our internal system was not able to retrieve your user information. We are working to solve this issue.", "OK");
+
+                            // authenticated
+                            result = "AUTHENTICATED";
+                            user = new Models.User();
+                            user.id = loginAttempt.result[0].driver_uid;
+                            user.email = "";
+                            user.socialId = "";
+                            user.platform = "";
+                            user.route_id = "";
+                            SaveUser(user);
+
                         }
+                        if (loginAttempt.code.ToString() == Constant.ErrorPlatform)
+                        {
+                            result = "WRONG PLATFORM";
+                            //var RDSCode = JsonConvert.DeserializeObject<RDSLogInMessage>(responseContent);
+                            //await DisplayAlert("Message", RDSCode.message, "OK");
+                        }
+
+                        if (loginAttempt.code.ToString() == Constant.ErrorUserDirectLogIn)
+                        {
+                            result = "LOG IN USING DIRECT LOG IN";
+                            //await DisplayAlert("Oops!", "You have an existing Serving Fresh account. Please use direct login", "OK");
+                        }
+                        ProcessRequest(result);
                     }
                     else
                     {
@@ -516,6 +559,9 @@ namespace JustDelivered.Views
                     else if (DRSMessage.Contains(Constant.EmailNotFound))
                     {
                         await DisplayAlert("Oops!", "Our records show that you don't have an accout. Please sign up!", "OK");
+                        userToSignUp = new SignUpAccount();
+                        userToSignUp.platform = "DIRECT";
+                        Application.Current.MainPage = new NavigationPage(new SignUpPage());
                     }
                     else
                     {
@@ -536,7 +582,7 @@ namespace JustDelivered.Views
             }
         }
 
-        public async Task<LogInResponse> LogInUser(string userEmail, string userPassword, AccountSalt accountSalt)
+        public async Task<RDSAuthentication> LogInUser(string userEmail, string userPassword, AccountSalt accountSalt)
         {
             try
             {
@@ -563,7 +609,7 @@ namespace JustDelivered.Views
                 {
 
                     var responseContent = await response.Content.ReadAsStringAsync();
-                    var loginResponse = JsonConvert.DeserializeObject<LogInResponse>(responseContent);
+                    var loginResponse = JsonConvert.DeserializeObject<RDSAuthentication>(responseContent);
                     return loginResponse;
                 }
                 else
@@ -602,6 +648,22 @@ namespace JustDelivered.Views
             authenticator.Error += FacebookAutheticatorError;
 
             presenter.Login(authenticator);
+        }
+
+        void SaveUser(Models.User user)
+        {
+            string account = JsonConvert.SerializeObject(user);
+
+            if (Application.Current.Properties.Keys.Contains(Constant.Autheticator))
+            {
+                Application.Current.Properties[Constant.Autheticator] = account;
+            }
+            else
+            {
+                Application.Current.Properties.Add(Constant.Autheticator, account);
+            }
+
+            Application.Current.SavePropertiesAsync();
         }
 
         public async void FacebookAuthenticatorCompletedAsync(object sender, AuthenticatorCompletedEventArgs e)

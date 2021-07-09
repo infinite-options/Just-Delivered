@@ -274,7 +274,7 @@ namespace JustDelivered.Views
         {
             bool result = false;
             if(!(String.IsNullOrEmpty(password1.Text) || String.IsNullOrEmpty(password2.Text))){
-                if(password1 == password2)
+                if(password1.Text == password2.Text)
                 {
                     result = true;
                 }

@@ -33,7 +33,7 @@
                             <Entry Grid.Row="0" Grid.Column="1" x:Name="lastName"  Placeholder="Last name"> </Entry>
                         </Grid>
                         <Entry x:Name="phoneNumber" Placeholder="Phone number" MaxLength="10" Keyboard="Numeric"></Entry>
-                        <Entry x:Name="email" Placeholder="Email address" ></Entry>
+                        <Entry x:Name="email" Placeholder="Email address" Keyboard="Email"  ></Entry>
                         <StackLayout x:Name="directSignUp" IsVisible="false">
                             <Entry x:Name="password1" Placeholder="Create password"></Entry>
                             <Entry x:Name="password2" Placeholder="Confirm password"></Entry>
