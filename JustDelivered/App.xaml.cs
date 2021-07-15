@@ -21,7 +21,7 @@ namespace JustDelivered
         public App()
         {
             InitializeComponent();
-
+            
             if (Application.Current.Properties.Keys.Contains(Constant.Autheticator))
             {
                 var tempUser = JsonConvert.DeserializeObject<Models.User>(Application.Current.Properties[Constant.Autheticator].ToString());
@@ -72,23 +72,23 @@ namespace JustDelivered
 
         protected override void OnSleep()
         {
-            Debug.WriteLine("WHEN APP IS CLOSE BUT RUNNING ON BACKGROUND");
-            try
-            {
-                var client = new UpdateRoutes();
-                if (list.Count > 0 && user != null)
-                {
-                    Debug.WriteLine("user.route_id: " + user.route_id);
-                    if(user.route_id != "")
-                    {
-                        client.UpdateDeliveryStatus(user.route_id, list);
-                    }
-                }
-            }
-            catch
-            {
+            //Debug.WriteLine("WHEN APP IS CLOSE BUT RUNNING ON BACKGROUND");
+            //try
+            //{
+            //    var client = new UpdateRoutes();
+            //    if (list.Count > 0 && user != null)
+            //    {
+            //        Debug.WriteLine("user.route_id: " + user.route_id);
+            //        if(user.route_id != "")
+            //        {
+            //            client.UpdateDeliveryStatus(user.route_id, list);
+            //        }
+            //    }
+            //}
+            //catch
+            //{
 
-            }
+            //}
         }
 
         protected override void OnResume()

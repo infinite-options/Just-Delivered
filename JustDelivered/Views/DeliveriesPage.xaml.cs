@@ -321,15 +321,15 @@ namespace JustDelivered.Views
         {
             bool found = false;
 
-            if (CurrentIndex < deliveryList.Count)
-            {
+            //if (CurrentIndex < deliveryList.Count)
+            //{
 
-                Debug.WriteLine("Index: " + CurrentIndex);
-                Debug.WriteLine("deliveryList[CurrentIndex].status: " + deliveryList[CurrentIndex].status);
-                Debug.WriteLine("(deliveryList[CurrentIndex].purchase_uid: " + (deliveryList[CurrentIndex].purchase_uid));
-                AddPurchaseIdToArray(deliveryList[CurrentIndex].purchase_uid);
-            }
-
+            //    Debug.WriteLine("Index: " + CurrentIndex);
+            //    Debug.WriteLine("deliveryList[CurrentIndex].status: " + deliveryList[CurrentIndex].status);
+            //    Debug.WriteLine("(deliveryList[CurrentIndex].purchase_uid: " + (deliveryList[CurrentIndex].purchase_uid));
+            //    AddPurchaseIdToArray(deliveryList[CurrentIndex].purchase_uid);
+            //}
+            list.Clear();
             for (int i = 0; i <  deliveryList.Count; i++)
             {
                 if(deliveryList[i].status == "Status: Pending...")
@@ -337,7 +337,7 @@ namespace JustDelivered.Views
                     SetStartToFirstLocation(Color.Black);
                     CurrentIndex = i;
                     found = true;
-                   
+                    AddPurchaseIdToArray(deliveryList[CurrentIndex].purchase_uid);
                     break;
                 }
             }
@@ -382,12 +382,12 @@ namespace JustDelivered.Views
 
 
                 //LIFE
-                //routeClient.uid = user.id;
-                //routeClient.delivery_date = currentDate.ToString("yyyy-MM-dd 10:00:00");
-
-                //TEST
                 routeClient.uid = user.id;
                 routeClient.delivery_date = currentDate.ToString("yyyy-MM-dd 10:00:00");
+
+                //TEST
+                //routeClient.uid = user.id;
+                //routeClient.delivery_date = currentDate.ToString("yyyy-MM-dd 10:00:00");
 
                 var socialLogInPostSerialized = JsonConvert.SerializeObject(routeClient);
 
@@ -951,7 +951,7 @@ namespace JustDelivered.Views
                     //deliveryList.Add(currentDelivery);
                    
                     deliveryList[currentDelivery.placement].status = "Status: Skipped";
-                    AddPurchaseIdToArray(currentDelivery.purchase_uid);
+                    //AddPurchaseIdToArray(currentDelivery.purchase_uid);
                     ResetMap();
                     FindNextDeliveryAvailable(deliveryList);
                     SetDelivery();
@@ -967,7 +967,7 @@ namespace JustDelivered.Views
                 currentDelivery.updateSkipText = "Skip";
 
                 _ = UpdateDeliveryStatus(currentDelivery.purchase_uid, "", "Undo");
-                RemovePurchaseIdToArray(currentDelivery.purchase_uid);
+                //RemovePurchaseIdToArray(currentDelivery.purchase_uid);
                 ResetMap();
                 SetStartToFirstLocation(Color.Black);
                 SetCompleteRouteView();
@@ -1227,6 +1227,11 @@ namespace JustDelivered.Views
                 Application.Current.SavePropertiesAsync();
             }
             Application.Current.MainPage = new LogInPage();
+        }
+
+        void NavigateToProductsPage(System.Object sender, System.EventArgs e)
+        {
+            Application.Current.MainPage = new ProductsPage();
         }
     }
 }

@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="JustDelivered.Views.SummaryPage">
+    <ContentPage.Content>
+        <Frame Padding="10" Margin="0,25,0,0" CornerRadius="15">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="80"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Frame Grid.Row="0" Padding="0" HasShadow="False" IsClippedToBounds="True" BackgroundColor="Red">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="55"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="55"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <StackLayout Grid.Column="0" HeightRequest="80">
+                            <StackLayout Margin="5,0,0,0" VerticalOptions="CenterAndExpand">
+                                <ImageButton  Source="backIcon" HeightRequest="30" Clicked="NavigateToProductsPage"></ImageButton>
+                            </StackLayout>
+                        </StackLayout>
+                        <Label Grid.Column="1" HeightRequest="80" Text="Order Summary" TextColor="White" FontSize="Title" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"></Label>
+                        
+                    </Grid>
+                </Frame>
+                <StackLayout Grid.Row="1">
+                    <StackLayout Margin="20,20,20,0" VerticalOptions="CenterAndExpand">
+                        <Label x:Name="message" TextColor="Black" FontSize="Small" FontAttributes="Bold"></Label>
+                    </StackLayout>
+                    <CollectionView x:Name="summaryList"  Margin="20,20,5,0">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <StackLayout>
+                                    <Label Text="{Binding businessName}" TextColor="Black" FontSize="Header" FontAttributes="Bold"></Label>
+                                    <!--<ListView ItemsSource="{Binding productToGet}" HasUnevenRows="True">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <ViewCell>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="80"></ColumnDefinition>
+                                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                                            <ColumnDefinition Width="80"></ColumnDefinition>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Frame Grid.Column="0" Padding="0" HeightRequest="80">
+                                                            <Image Source="{Binding productImage}"></Image>
+                                                        </Frame>
+                                                        <StackLayout Grid.Column="1" HeightRequest="80">
+                                                            <Label Text="{Binding productName}"></Label>
+                                                        </StackLayout>
+                                                        <StackLayout Grid.Column="2" HeightRequest="80">
+                                                            <Label Text="{Binding productQuantity}" TextColor="Black"></Label>
+                                                        </StackLayout>
+                                                    </Grid>
+                                                </ViewCell>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>-->
+
+                                    <StackLayout BindableLayout.ItemsSource="{Binding productToGet}" Margin="0,0,0,20">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="80"></ColumnDefinition>
+                                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                                        <ColumnDefinition Width="80"></ColumnDefinition>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Frame Grid.Column="0" Padding="1" HeightRequest="80" BorderColor="Red" HasShadow="False">
+                                                        <Image Source="{Binding productImage}" Aspect="AspectFill"></Image>
+                                                    </Frame>
+                                                    <StackLayout Grid.Column="1" HeightRequest="80">
+                                                        <StackLayout VerticalOptions="CenterAndExpand">
+                                                            <Label Text="{Binding productName}" TextColor="Black" FontSize="Medium" FontAttributes="Bold" VerticalOptions="Center"></Label>
+                                                        </StackLayout>
+                                                    </StackLayout>
+                                                    <StackLayout Grid.Column="2" HeightRequest="80">
+                                                        <StackLayout VerticalOptions="CenterAndExpand">
+                                                        <Label Text="{Binding productQuantity}" TextColor="Black" FontSize="Medium" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"></Label>
+                                                        </StackLayout>
+                                                    </StackLayout>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </StackLayout>
+                               
+                                </StackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Button Text="Continue" TextColor="Red" FontSize="Small" FontAttributes="Bold" Clicked="ProcessRequest"> </Button>
+                </StackLayout>
+            </Grid>
+        </Frame>
+    </ContentPage.Content>
+</ContentPage>

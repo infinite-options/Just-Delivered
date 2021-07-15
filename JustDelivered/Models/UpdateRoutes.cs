@@ -32,7 +32,7 @@ namespace JustDelivered.Models
                 var list = new UpdateRoutes(route_id, purchase_uids);
 
                 var deliveryJSON = JsonConvert.SerializeObject(list);
-                Debug.WriteLine("DELIVERY JSON: " + deliveryJSON);
+                Debug.WriteLine("JSON FOR JD TO UPDATE DELIVERY STATUS: " + deliveryJSON);
                 var content = new StringContent(deliveryJSON, Encoding.UTF8, "application/json");
 
                 var RDSResponse = await client.PostAsync(Constant.UpdateRoutes, content);

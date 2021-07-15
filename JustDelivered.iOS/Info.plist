@@ -52,12 +52,12 @@
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1</string>
+	<string>1.1.2</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Turning on location services allows us to display your current timezone, city and state.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Turning on location services allows us to display your current timezone, city and state.</string>
 	<key>CFBundleVersion</key>
-	<string>30</string>
+	<string>33</string>
 </dict>
 </plist>

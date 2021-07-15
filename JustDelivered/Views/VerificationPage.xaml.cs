@@ -192,7 +192,7 @@ namespace JustDelivered.Views
                     catch (Exception ex)
                     {
                         Debug.WriteLine(ex.Message);
-                        await DisplayAlert("Permission required", "We'll need permission to access your camara, so that you can take a photo of the damaged product.", "OK");
+                        await DisplayAlert("Permission required", "We'll need permission to access your camara, so that you can take a photo of the delivered product", "OK");
                         return;
                     }
                 }
@@ -259,10 +259,7 @@ namespace JustDelivered.Views
                     {
                         var result = await SendSMS(recipients.ToArray(), GetMessageContent(names.ToArray()));
 
-                        if (!list.Contains(DeliveriesPage.delivery.purchase_uid))
-                        {
-                            list.Add(DeliveriesPage.delivery.purchase_uid);
-                        }
+                       
                         //deliveryList.Remove(DeliveriesPage.delivery);
 
                         DeliveriesPage.delivery.status = "Status: Delivered";
@@ -276,10 +273,7 @@ namespace JustDelivered.Views
                 else
                 {
                     var result = await SendSMS(recipients.ToArray(), GetMessageContent(names.ToArray()));
-                    if (!list.Contains(DeliveriesPage.delivery.purchase_uid))
-                    {
-                        list.Add(DeliveriesPage.delivery.purchase_uid);
-                    }
+                   
                     //deliveryList.Remove(DeliveriesPage.delivery);
 
                     DeliveriesPage.delivery.status = "Status: Delivered";
@@ -297,16 +291,14 @@ namespace JustDelivered.Views
                 DeliveriesPage.delivery.status = "Status: Delivered";
                 DeliveriesPage.deliveryList[DeliveriesPage.CurrentIndex].status = "Status: Delivered";
                 //deliveryList.Add(DeliveriesPage.delivery);
-                if (!list.Contains(DeliveriesPage.delivery.purchase_uid))
-                {
-                    list.Add(DeliveriesPage.delivery.purchase_uid);
-                }
+                
                 CreatePurchaseFromMissingItems(itemUIDs);
                 Application.Current.MainPage = new DeliveriesPage("");
             }
 
             _ = SavePhoto(t, DeliveriesPage.delivery.purchase_uid);
-            _ = UpdateDeliveryStatus(DeliveriesPage.delivery.purchase_uid);
+            UpdateDeliveryStatus(DeliveriesPage.delivery.purchase_uid);
+            JDDataBase();
         }
 
         public static void UIMessageDispose(string result)
@@ -427,7 +419,7 @@ namespace JustDelivered.Views
             return true;
         }
 
-        async Task<bool> UpdateDeliveryStatus(string purchaseId)
+        async void UpdateDeliveryStatus(string purchaseId)
         {
             try
             {
@@ -450,7 +442,27 @@ namespace JustDelivered.Views
             {
                 Debug.WriteLine("Exception: " + ErrorUpdatingStatus.Message);
             }
-            return true;
+            
+        }
+
+        void JDDataBase()
+        {
+            try
+            {
+                var client = new UpdateRoutes();
+                if (list.Count > 0 && user != null)
+                {
+                    Debug.WriteLine("user.route_id: " + user.route_id);
+                    if (user.route_id != "")
+                    {
+                        client.UpdateDeliveryStatus(user.route_id, list);
+                    }
+                }
+            }
+            catch
+            {
+
+            }
         }
 
 
@@ -608,8 +620,6 @@ namespace JustDelivered.Views
 
         public async void Send()
         {
-
-
 
             try
             {

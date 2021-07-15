@@ -18,7 +18,7 @@
                     </Grid.ColumnDefinitions>
                     <ImageButton  Grid.Row="0" Grid.Column="2" Source="MenuVerticalIcon.png" Scale="0.5" Clicked="ShowMenu" VerticalOptions="End"></ImageButton>
                 </Grid>
-                <Grid x:Name="menuRow" Margin="0,100,0,0" HeightRequest="225" IsVisible="false">
+                <Grid x:Name="menuRow" Margin="0,100,0,0" IsVisible="false">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
@@ -40,6 +40,10 @@
                                     <Label Text="Overview" FontSize="12" HorizontalTextAlignment="Center"></Label>
                                 </StackLayout>
                                 <StackLayout>
+                                    <ImageButton Margin="0,0,0,0" HeightRequest="25" Source="sortingIcon" Clicked="NavigateToProductsPage"></ImageButton>
+                                    <Label Text="Sorting" FontSize="12" HorizontalTextAlignment="Center"></Label>
+                                </StackLayout>
+                                <StackLayout Margin="0,0,0,10">
                                     <ImageButton Margin="0,0,0,0" HeightRequest="25" Source="logoutIcon" Clicked="LogOut"></ImageButton>
                                     <Label Text="Log out" FontSize="12" HorizontalTextAlignment="Center"></Label>
                                 </StackLayout>
