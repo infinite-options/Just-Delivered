@@ -356,8 +356,9 @@ namespace JustDelivered.Views
                 order.delivery_phone_num = delivery.phone;
                 order.delivery_email = delivery.email;
                 // need to parse address and unit
-                order.delivery_address = delivery.house_address;
+                order.delivery_address = delivery.address;
                 order.delivery_city = delivery.city;
+                order.delivery_unit = delivery.unit;
                 order.delivery_state = delivery.state;
                 order.delivery_zip = delivery.zipcode;
                 order.delivery_latitude = delivery.latitude.ToString();

@@ -10,6 +10,7 @@ using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using static JustDelivered.Views.DeliveriesPage;
+using static JustDelivered.Views.ProductsPage;
 
 namespace JustDelivered
 {
@@ -89,11 +90,26 @@ namespace JustDelivered
             //{
 
             //}
+
+            try
+            {
+                if (routeID != "")
+                {
+                    if(isProductionSave != null && isProductionSave != "TRUE")
+                    {
+                        UpdateSavedProductsWhenClosingApp();
+                    }
+                }
+            }
+            catch
+            {
+
+            }
         }
 
         protected override void OnResume()
         {
-
+            
         }
     }
 }

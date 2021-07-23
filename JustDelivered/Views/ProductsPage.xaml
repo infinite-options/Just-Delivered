@@ -32,7 +32,7 @@
                                     <DataTemplate>
                                         <StackLayout Margin="5,0,5,0" HeightRequest="120">
                                             <Frame Padding="0" IsClippedToBounds="true"  BorderColor="red" HeightRequest="80" HasShadow="False" >
-                                                <StackLayout BackgroundColor="Gray">
+                                                <StackLayout>
                                                     <RelativeLayout
                                                         RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=1}"
                                                         RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=1}">
@@ -40,8 +40,14 @@
                                                             RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=1}"
                                                             RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=1}">
                                                             <Image Source="{Binding img}" Aspect="Fill"></Image>
+                                                            
                                                         </Frame>
-                                                         <Label WidthRequest="30" Text="{Binding quantityStr}" TextColor="{Binding color}"  BackgroundColor="White" HorizontalTextAlignment="Center" FontSize="Default" FontAttributes="Bold"></Label>
+                                                        <Label WidthRequest="30" Text="{Binding quantityStr}" TextColor="{Binding color}"  BackgroundColor="White" HorizontalTextAlignment="Center" FontSize="Default" FontAttributes="Bold"></Label>
+                                                        <StackLayout IsVisible="{Binding isEnable}"
+                                                            RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=1}"
+                                                            RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=1}">
+                                                            <Image HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Source="{Binding sortedStatusIcon}" HeightRequest="30"></Image>
+                                                        </StackLayout>
                                                     </RelativeLayout>
                                                 </StackLayout>
                                             </Frame>

@@ -10,6 +10,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Maps;
 using Xamarin.Forms.Maps.iOS;
 using Xamarin.Forms.Platform.iOS;
+using static JustDelivered.Views.DeliveriesPage;
 
 [assembly: ExportRenderer(typeof(CustomMap), typeof(CustomMapRenderer))]
 namespace JustDelivered.iOS
@@ -94,7 +95,14 @@ namespace JustDelivered.iOS
 
                     //annotationView.CalloutOffset = new CGPoint(0, 0);
                     //annotationView.LeftCalloutAccessoryView = new UIImageView(UIImage.FromFile("monkey.png"));
-                    //annotationView.RightCalloutAccessoryView = UIButton.FromType(UIButtonType.DetailDisclosure);
+                    var icon = new UIButton();
+                    icon.Frame = new CGRect(0,0, 45, 45);
+                    icon.SetBackgroundImage(UIImage.FromFile("goIcon.png"),UIControlState.Normal);
+                    icon.TouchDown += Icon_TouchDown;
+                    icon.FocusGroupIdentifier = label.Text;
+
+                    annotationView.RightCalloutAccessoryView = icon;
+
                     //((CustomMKAnnotationView)annotationView).Name = customPin.Name;
                     //((CustomMKAnnotationView)annotationView).Url = customPin.Url;
 
@@ -109,6 +117,16 @@ namespace JustDelivered.iOS
             
 
             return annotationView;
+        }
+
+        public void Icon_TouchDown(object sender, EventArgs e)
+        {
+            var button = (UIButton)sender;
+            var num = button.GetFocusGroupIdentifier();
+            Debug.WriteLine("num: " + num);
+            Debug.WriteLine("You touch the go button");
+
+            GetDirectionsFromIOSProject(num);
         }
 
         private void OnDidDeselectAnnotationView(object sender, MKAnnotationViewEventArgs e)
@@ -129,6 +147,7 @@ namespace JustDelivered.iOS
 
         private void OnDidSelectAnnotationView(object sender, MKAnnotationViewEventArgs e)
         {
+            
             //CustomMKAnnotationView customView = e.View as CustomMKAnnotationView;
             //if (!string.IsNullOrWhiteSpace(customView.Url))
             //{

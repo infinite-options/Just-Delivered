@@ -27,6 +27,8 @@ namespace JustDelivered.Views
         public static Models.User user = null;
         double y = 0;
 
+
+        public static string routeID = "";
         public static int CurrentIndex = 0;
         public static readonly DeliveryInfo startLocation = new DeliveryInfo();
         public static List<string> list = new List<string>();
@@ -99,6 +101,7 @@ namespace JustDelivered.Views
             public string delivery_phone { get; set; }
             public string delivery_coordinates { get; set; }
             public string delivery_street { get; set; }
+            public string delivery_unit { get; set; }
             public string delivery_city { get; set; }
             public string delivery_state { get; set; }
             public string delivery_zip { get; set; }
@@ -147,7 +150,6 @@ namespace JustDelivered.Views
             public string sql { get; set; }
         }
 
-
         public class Deliveries
         {
             public string message { get; set; }
@@ -160,11 +162,13 @@ namespace JustDelivered.Views
         {
             public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
-            public int route_id { get; set; }
+            public string route_id { get; set; }
             public string firstName { get; set; }
             public string lastName { get; set; }
 
             public string name { get; set; }
+            public string address { get; set; }
+            public string unit { get; set; }
             public string house_address { get; set; }
             public string city { get; set; }
             public string state { get; set; }
@@ -269,8 +273,6 @@ namespace JustDelivered.Views
             public string delivery_street { get; set; }
             public string delivery_instructions { get; set; }
         }
-
-
 
         public DeliveriesPage()
         {
@@ -387,7 +389,7 @@ namespace JustDelivered.Views
 
                 //TEST
                 //routeClient.uid = user.id;
-                //routeClient.delivery_date = currentDate.ToString("yyyy-MM-dd 10:00:00");
+                //routeClient.delivery_date = currentDate.ToString("2021-07-18 10:00:00");
 
                 var socialLogInPostSerialized = JsonConvert.SerializeObject(routeClient);
 
@@ -418,6 +420,8 @@ namespace JustDelivered.Views
                         {
                             var element = new DeliveryInfo();
                             element.name = a.delivery_first_name + " " + a.delivery_last_name;
+                            element.address = a.delivery_street;
+                            element.unit = a.delivery_unit == null ? "" : a.delivery_unit;
                             element.house_address = a.delivery_street + " " + a.delivery_city + " " + a.delivery_state + " " + a.delivery_zip;
                             element.delivery_date = a.start_delivery_date;
                             element.email = a.delivery_email;
@@ -525,9 +529,25 @@ namespace JustDelivered.Views
 
         void SaveStartingPoint(DeliveryInfo location)
         {
-            startLocation.house_address = location.house_address;
+            routeID = user.route_id;
+            startLocation.email = location.email;
+            startLocation.email = location.delivery_items;
+            startLocation.phone = location.phone;
+            startLocation.customer_uid = location.customer_uid;
+            startLocation.zipcode = location.zipcode;
+            startLocation.purchase_uid = location.purchase_uid;
+            startLocation.city = location.city;
+            startLocation.unit = location.unit;
+            startLocation.state = location.state;
+            startLocation.status = "";
+            startLocation.address = location.address;
+            startLocation.lastName = location.lastName;
+            startLocation.firstName = location.firstName;
+            startLocation.delivery_date = location.delivery_date;
+            startLocation.delivery_instructions = location.delivery_instructions;
             startLocation.latitude = location.latitude;
             startLocation.longitude = location.longitude;
+
             deliveryList.Remove(location);
             UpdateDeliveryIDs(deliveryList);
         }
@@ -906,6 +926,23 @@ namespace JustDelivered.Views
             
         }
 
+        // problem here
+        public static void GetDirectionsFromIOSProject(string index)
+        {
+            if(index != null && index != "")
+            {
+                var i = Int16.Parse(index) - 1;
+                CurrentIndex = i;
+                delivery = deliveryList[CurrentIndex];
+
+                var location = new Location(delivery.latitude, delivery.longitude);
+                var options = new MapLaunchOptions { Name = delivery.house_address, NavigationMode = NavigationMode.Driving };
+                Xamarin.Essentials.Map.OpenAsync(location, options);
+                Application.Current.MainPage = new VerificationPage();
+            }
+        }
+                
+
         void SkipDirections(System.Object sender, System.EventArgs e)
         {
             Debug.WriteLine("SKIP DIRECTIONS");
@@ -1115,6 +1152,100 @@ namespace JustDelivered.Views
             PanGestureRecognizer_PanUpdated(sender, new PanUpdatedEventArgs(GestureStatus.Completed, 0));
             fullDeliveryListView.IsVisible = false;
             sigleDeliveryView.IsVisible = true;
+
+
+            var structToSave = new Dictionary<string, List<DeliveryItemToSave>>();
+
+            var start = new DeliveryItemToSave();
+            start.email = "";
+            start.items = new List<ItemToSave>();
+            start.phone = startLocation.phone;
+
+            var c = new Models.Coordinates();
+            c.latitude = startLocation.latitude;
+            c.longitude = startLocation.longitude;
+
+            start.coordinates = c;
+            start.customer_uid = startLocation.customer_uid;
+            start.delivery_zip = startLocation.zipcode;
+            start.purchase_uid = startLocation.customer_uid;
+            start.delivery_city = startLocation.city;
+            start.delivery_unit = startLocation.unit;
+            start.delivery_state = startLocation.state;
+            start.delivery_street = startLocation.address;
+            start.delivery_last_name = startLocation.lastName;
+            start.delivery_first_name = startLocation.firstName;
+            start.start_delivery_date = startLocation.delivery_date;
+            start.delivery_instructions = startLocation.delivery_instructions;
+            start.delivery_status = startLocation.status;
+
+
+            var starList = new List<DeliveryItemToSave>();
+            starList.Add(start);
+            structToSave.Add("1", starList);
+            int i = 2;
+            foreach(DeliveryInfo delivery in deliveryList)
+            {
+                var list = new List<DeliveryItemToSave>();
+                var deliveryToSave = new DeliveryItemToSave();
+
+                deliveryToSave.email = delivery.email;
+                deliveryToSave.items = JsonConvert.DeserializeObject<List<ItemToSave>>(delivery.delivery_items);
+                deliveryToSave.phone = delivery.phone;
+
+                var saveCoordinates = new Models.Coordinates();
+                saveCoordinates.latitude = delivery.latitude;
+                saveCoordinates.longitude = delivery.longitude;
+
+                deliveryToSave.coordinates = saveCoordinates;
+                deliveryToSave.customer_uid = delivery.customer_uid; 
+                deliveryToSave.delivery_zip = delivery.zipcode; 
+                deliveryToSave.purchase_uid = delivery.purchase_uid; 
+                deliveryToSave.delivery_city = delivery.city;
+                deliveryToSave.delivery_unit = delivery.unit;
+                if(delivery.status == "Status: Delivered")
+                {
+                    deliveryToSave.delivery_status = "TRUE";
+                }
+                else if (delivery.status == "Status: Pending...")
+                {
+                    deliveryToSave.delivery_status = "FALSE";
+                }
+                else if (delivery.status == "Status: Skipped")
+                {
+                    deliveryToSave.delivery_status = "SKIP";
+                }
+
+                deliveryToSave.delivery_state = delivery.state; 
+                deliveryToSave.delivery_street = delivery.address; 
+                deliveryToSave.delivery_last_name = delivery.lastName; 
+                deliveryToSave.delivery_first_name = delivery.firstName; 
+                deliveryToSave.start_delivery_date = delivery.delivery_date; 
+                deliveryToSave.delivery_instructions = delivery.delivery_instructions;
+                list.Add(deliveryToSave);
+                structToSave.Add(i.ToString(),list);
+                i++;
+            }
+
+            //var contentString = JsonConvert.SerializeObject(structToSave);
+            SaveChanges(structToSave);
+        }
+
+        public static async void SaveChanges(Dictionary<string, List<DeliveryItemToSave>> route)
+        {
+            var data = new UpdateDeliveryRoute();
+
+            data.route = route;
+            data.route_id = routeID;
+
+            var contentString = JsonConvert.SerializeObject(data);
+            var content = new StringContent(contentString, Encoding.UTF8, "application/json");
+
+            var client = new HttpClient();
+            var endpointCall = await client.PostAsync(Constant.UpdateRouteOrder, content);
+
+            Debug.WriteLine("JSON TO SEND: " + contentString);
+            Debug.WriteLine("CALL STATUS: " + endpointCall.IsSuccessStatusCode);
         }
 
         void ReverseListClick(System.Object sender, System.EventArgs e)

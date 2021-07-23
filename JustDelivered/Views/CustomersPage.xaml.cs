@@ -50,7 +50,61 @@ namespace JustDelivered.Views
 
         void NavigateBackToProductsPage(System.Object sender, System.EventArgs e)
         {
+            if (productSelected != null)
+            {
+                if (AllCustomersNotSorted(customerSource))
+                {
+                    productSelected.isEnableUpdate = false;
+                    productSelected.sortedStatusIconUpdate = "";
+                }
+                else
+                {
+                    productSelected.isEnableUpdate = true;
+
+                    if (AllCustomersSorted(customerSource))
+                    {
+                        productSelected.sortedStatusIconUpdate = "completedIcon.png";
+                    }
+                    else
+                    {
+                        productSelected.sortedStatusIconUpdate = "inprogressIcon.png";
+                    }
+                }
+            }
+
             Navigation.PopModalAsync();
+        }
+
+        bool AllCustomersNotSorted(IList<Customer> customers)
+        {
+            var status = true;
+
+            foreach(Customer customer in customers)
+            {
+                if(customer.borderColor == Color.Red)
+                {
+                    status = false;
+                    break;
+                }
+            }
+
+            return status;
+        }
+
+        bool AllCustomersSorted(IList<Customer> customers)
+        {
+            var status = true;
+
+            foreach (Customer customer in customers)
+            {
+                if (customer.borderColor == Color.Black)
+                {
+                    status = false;
+                    break;
+                }
+            }
+
+            return status;
         }
     }
 }
