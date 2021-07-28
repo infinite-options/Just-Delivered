@@ -28,158 +28,161 @@ namespace JustDelivered.Views
 
         async void GetProducts()
         {
-            isProductionSave = "FALSE";
-            businessSource.Clear();
-            businesses.Clear();
-            var currentDate = DateTime.Now;
-
-            for (int i = 0; i < 7; i++)
+            try
             {
-                if (currentDate.DayOfWeek == DayOfWeek.Wednesday || currentDate.DayOfWeek == DayOfWeek.Sunday)
+                isProductionSave = "FALSE";
+                businessSource.Clear();
+                businesses.Clear();
+                var currentDate = DateTime.Now;
+
+                for (int i = 0; i < 7; i++)
                 {
-                    break;
-                }
-                currentDate = currentDate.AddDays(1);
-            }
-
-            // LIVE
-            string date = currentDate.ToString("yyyy-MM-dd");
-
-            // TEST
-            //string date = currentDate.ToString("2021-07-25");
-
-            var client = new HttpClient();
-            var endpointCall = await client.GetAsync(Constant.AllProductToBeSorted + date);
-
-            if (endpointCall.IsSuccessStatusCode)
-            {
-                var contentString = await endpointCall.Content.ReadAsStringAsync();
-                Debug.WriteLine(contentString);
-                var data = JsonConvert.DeserializeObject<ItemsToSort>(contentString);
-
-                foreach(Details details in data.result)
-                {
-
-                    if (businesses.ContainsKey(details.business_uid))
+                    if (currentDate.DayOfWeek == DayOfWeek.Wednesday || currentDate.DayOfWeek == DayOfWeek.Sunday)
                     {
-                        var color = Color.Black;
-                        if (details.qty > 1)
-                        {
-                            color = Color.Red;
-                        }
-                        foreach (Customer customer in details.customers)
-                        {
-                            customer.borderColor = Color.Black;
-                            customer.backgroundColor = Color.White;
-                        }
-
-                        businesses[details.business_uid].productSource.Add(new ProductItem
-                        {
-                            color = color,
-                            quantityInt = details.qty,
-                            quantityStr = details.qty.ToString(),
-                            title = details.item,
-                            img = details.item_img,
-                            customers = details.customers,
-                            item_uid = details.item_uid,
-                            isEnable = false,
-                            sortedStatusIcon = ""
-                        });
+                        break;
                     }
-                    else
-                    {
-                        var color = Color.Black;
-                        if (details.qty > 1)
-                        {
-                            color = Color.Red;
-                        }
-                        foreach (Customer customer in details.customers)
-                        {
-                            customer.borderColor = Color.Black;
-                            customer.backgroundColor = Color.White;
-                        }
-
-                        businesses.Add(details.business_uid, new ProductionDetails
-                        {
-                            businessID = details.business_uid,
-                            bussinessName = details.business_name,
-                            productSource = new ObservableCollection<ProductItem>()
-                        });
-
-                        businesses[details.business_uid].productSource.Add(new ProductItem
-                        {
-                            color = color,
-                            quantityInt = details.qty,
-                            quantityStr = details.qty.ToString(),
-                            title = details.item,
-                            img = details.item_img,
-                            customers = details.customers,
-                            item_uid = details.item_uid,
-                            isEnable = false,
-                            sortedStatusIcon = "",
-                        });
-
-                    }
+                    currentDate = currentDate.AddDays(1);
                 }
 
-                foreach(string ID in businesses.Keys)
+                // LIVE
+                string date = currentDate.ToString("yyyy-MM-dd");
+
+                // TEST
+                //string date = currentDate.ToString("2021-07-28");
+
+                var client = new HttpClient();
+                var endpointCall = await client.GetAsync(Constant.AllProductToBeSorted + date + "," + user.id);
+
+                if (endpointCall.IsSuccessStatusCode)
                 {
-                    float size = businesses[ID].productSource.Count;
-                    float rows = 0;
-                    float d = 4;
-                    if (size != 0)
+                    var contentString = await endpointCall.Content.ReadAsStringAsync();
+                    Debug.WriteLine(contentString);
+                    var data = JsonConvert.DeserializeObject<ItemsToSort>(contentString);
+
+                    foreach (Details details in data.result)
                     {
-                        if (size > 0 && size <= 4)
+
+                        if (businesses.ContainsKey(details.business_uid))
                         {
-                             rows = 1;
+                            var color = Color.Black;
+                            if (details.qty > 1)
+                            {
+                                color = Color.Red;
+                            }
+                            foreach (Customer customer in details.customers)
+                            {
+                                customer.borderColor = Color.Black;
+                                customer.backgroundColor = Color.White;
+                            }
+
+                            businesses[details.business_uid].productSource.Add(new ProductItem
+                            {
+                                color = color,
+                                quantityInt = details.qty,
+                                quantityStr = details.qty.ToString(),
+                                title = details.item,
+                                img = details.item_img,
+                                customers = details.customers,
+                                item_uid = details.item_uid,
+                                isEnable = false,
+                                sortedStatusIcon = ""
+                            });
                         }
                         else
                         {
-                            rows = size / d;
+                            var color = Color.Black;
+                            if (details.qty > 1)
+                            {
+                                color = Color.Red;
+                            }
+                            foreach (Customer customer in details.customers)
+                            {
+                                customer.borderColor = Color.Black;
+                                customer.backgroundColor = Color.White;
+                            }
+
+                            businesses.Add(details.business_uid, new ProductionDetails
+                            {
+                                businessID = details.business_uid,
+                                bussinessName = details.business_name,
+                                productSource = new ObservableCollection<ProductItem>()
+                            });
+
+                            businesses[details.business_uid].productSource.Add(new ProductItem
+                            {
+                                color = color,
+                                quantityInt = details.qty,
+                                quantityStr = details.qty.ToString(),
+                                title = details.item,
+                                img = details.item_img,
+                                customers = details.customers,
+                                item_uid = details.item_uid,
+                                isEnable = false,
+                                sortedStatusIcon = "",
+                            });
+
                         }
                     }
 
-                    double height = (double)(Math.Ceiling(rows) * 130);
-                    businesses[ID].viewHeight = height;
-                    businessSource.Add(businesses[ID]);
-                }
-
-                var result = await GetSavedProduction();
-
-                if(result != null)
-                {
-                    foreach(string ID in businesses.Keys)
+                    foreach (string ID in businesses.Keys)
                     {
-                        foreach(ProductItem product in businesses[ID].productSource)
+                        float size = businesses[ID].productSource.Count;
+                        float rows = 0;
+                        float d = 4;
+                        if (size != 0)
                         {
-                            if (result.ContainsKey(ID))
+                            if (size > 0 && size <= 4)
                             {
-                                var savedProduction = result[ID].productSource;
-                                if(savedProduction.Count != 0)
+                                rows = 1;
+                            }
+                            else
+                            {
+                                rows = size / d;
+                            }
+                        }
+
+                        double height = (double)(Math.Ceiling(rows) * 130);
+                        businesses[ID].viewHeight = height;
+                        businessSource.Add(businesses[ID]);
+                    }
+
+                    var result = await GetSavedProduction();
+
+                    if (result != null)
+                    {
+                        foreach (string ID in businesses.Keys)
+                        {
+                            foreach (ProductItem product in businesses[ID].productSource)
+                            {
+                                if (result.ContainsKey(ID))
                                 {
-                                    if (savedProduction.ContainsKey(product.item_uid))
+                                    var savedProduction = result[ID].productSource;
+                                    if (savedProduction.Count != 0)
                                     {
-                                        if (savedProduction[product.item_uid].isEnable == "FALSE")
+                                        if (savedProduction.ContainsKey(product.item_uid))
                                         {
-                                            product.isEnableUpdate = false;
-                                        }
-                                        else if(savedProduction[product.item_uid].isEnable == "TRUE")
-                                        {
-                                            product.isEnableUpdate = true;
-                                        }
-
-                                        product.sortedStatusIconUpdate = savedProduction[product.item_uid].icon;
-
-                                        var savedCustomers = savedProduction[product.item_uid].customersSource;
-
-                                        foreach(CustomerToSave savedCustomer in savedCustomers)
-                                        {
-                                            foreach(Customer customer in product.customers)
+                                            if (savedProduction[product.item_uid].isEnable == "FALSE")
                                             {
-                                                if(savedCustomer.customer_uid == customer.customer_uid)
+                                                product.isEnableUpdate = false;
+                                            }
+                                            else if (savedProduction[product.item_uid].isEnable == "TRUE")
+                                            {
+                                                product.isEnableUpdate = true;
+                                            }
+
+                                            product.sortedStatusIconUpdate = savedProduction[product.item_uid].icon;
+
+                                            var savedCustomers = savedProduction[product.item_uid].customersSource;
+
+                                            foreach (CustomerToSave savedCustomer in savedCustomers)
+                                            {
+                                                foreach (Customer customer in product.customers)
                                                 {
-                                                    customer.borderColor = Color.Red;
-                                                    customer.backgroundColor = Color.LightGray;
+                                                    if (savedCustomer.customer_uid == customer.customer_uid)
+                                                    {
+                                                        customer.borderColor = Color.Red;
+                                                        customer.backgroundColor = Color.FromHex("#54C66A");
+                                                    }
                                                 }
                                             }
                                         }
@@ -188,48 +191,64 @@ namespace JustDelivered.Views
                             }
                         }
                     }
-                }
 
-                ItemList.ItemsSource = businessSource;
+                    ItemList.ItemsSource = businessSource;
+                }
+            }
+            catch (Exception issueOnGetProducts)
+            {
+               await DisplayAlert("Oops",issueOnGetProducts.Message, "OK");
             }
         }
 
         async Task<Dictionary<string, ProductionDetailsToSave>> GetSavedProduction()
         {
-            Dictionary<string, ProductionDetailsToSave> data = null;
-
-            var client = new HttpClient();
-            var postClient = new SavedProduction();
-
-            postClient.action = "get";
-            postClient.route_id = routeID;
-
-            var contentString = JsonConvert.SerializeObject(postClient);
-            var content = new StringContent(contentString, Encoding.UTF8, "application/json");
-
-            var endpointCall = await client.PostAsync(Constant.SaveSortedProducts, content);
-
-            Debug.WriteLine("JSON TO GET SAVED PRODUCTION: " + contentString);
-            Debug.WriteLine("ENDPOINT CALL RESULT: " + endpointCall.IsSuccessStatusCode);
-
-            if (endpointCall.IsSuccessStatusCode)
+            try
             {
-                var returnedContentString = await endpointCall.Content.ReadAsStringAsync();
+                Dictionary<string, ProductionDetailsToSave> data = null;
 
-                Debug.WriteLine("RESULT CONTENT: "+ returnedContentString);
-
-                var result = JsonConvert.DeserializeObject<StoredProduction>(returnedContentString);
-
-                if(result.result.Count != 0)
+                if (routeID != "")
                 {
-                    if (result.result[0].sorted_produce != null)
+                    var client = new HttpClient();
+                    var postClient = new SavedProduction();
+
+                    postClient.action = "get";
+                    postClient.route_id = routeID;
+
+                    var contentString = JsonConvert.SerializeObject(postClient);
+                    var content = new StringContent(contentString, Encoding.UTF8, "application/json");
+
+                    var endpointCall = await client.PostAsync(Constant.SaveSortedProducts, content);
+
+                    Debug.WriteLine("JSON TO GET SAVED PRODUCTION: " + contentString);
+                    Debug.WriteLine("ENDPOINT CALL RESULT: " + endpointCall.IsSuccessStatusCode);
+
+                    if (endpointCall.IsSuccessStatusCode)
                     {
-                        data = JsonConvert.DeserializeObject<Dictionary<string, ProductionDetailsToSave>>(result.result[0].sorted_produce);
+                        var returnedContentString = await endpointCall.Content.ReadAsStringAsync();
+
+                        Debug.WriteLine("RESULT CONTENT: " + returnedContentString);
+
+                        var result = JsonConvert.DeserializeObject<StoredProduction>(returnedContentString);
+
+                        if (result.result.Count != 0)
+                        {
+                            if (result.result[0].sorted_produce != null)
+                            {
+                                data = JsonConvert.DeserializeObject<Dictionary<string, ProductionDetailsToSave>>(result.result[0].sorted_produce);
+                            }
+                        }
                     }
                 }
+
+                return data;
+            }
+            catch (Exception issueOnGetSavedProduction)
+            {
+                await DisplayAlert("Oops",issueOnGetSavedProduction.Message,"OK");
+                return null;
             }
 
-            return data;
         }
 
         void SelectItemToSort(System.Object sender, System.EventArgs e)
@@ -245,134 +264,156 @@ namespace JustDelivered.Views
 
        void NavigateToSummaryPage(System.Object sender, System.EventArgs e)
         {
-           
-            var sortedProducts = new Dictionary<string, ProductionDetailsToSave>();
-            
-            foreach (string ID in businesses.Keys)
+            try
             {
-                if (!sortedProducts.ContainsKey(ID))
+                var sortedProducts = new Dictionary<string, ProductionDetailsToSave>();
+
+                foreach (string ID in businesses.Keys)
                 {
-                    var productionToSave = new ProductionDetailsToSave()
+                    if (!sortedProducts.ContainsKey(ID))
                     {
-                        productSource = new Dictionary<string, ProductToSave>()
-                    };
-
-                    foreach(ProductItem product in businesses[ID].productSource)
-                    {
-                        var productDetailsToSave = new ProductToSave();
-
-                        if(product.isEnable == true)
+                        var productionToSave = new ProductionDetailsToSave()
                         {
-                            productDetailsToSave.isEnable = "TRUE";
-                        }
-                        else if (product.isEnable == false)
+                            productSource = new Dictionary<string, ProductToSave>()
+                        };
+
+                        foreach (ProductItem product in businesses[ID].productSource)
                         {
-                            productDetailsToSave.isEnable = "FALSE";
-                        }
-                        productDetailsToSave.icon = product.sortedStatusIcon;
+                            var productDetailsToSave = new ProductToSave();
 
-                        var customerList = new List<CustomerToSave>();
-
-                        foreach(Customer customer in product.customers)
-                        {
-                            var customerToSave = new CustomerToSave();
-                            customerToSave.customer_first_name = customer.customer_first_name;
-                            customerToSave.customer_last_name = customer.customer_last_name;
-                            customerToSave.customer_uid = customer.customer_uid;
-                            customerToSave.qty = customer.qty;
-
-                            if (customer.borderColor == Color.Red)
+                            if (product.isEnable == true)
                             {
-                                customerList.Add(customerToSave);
+                                productDetailsToSave.isEnable = "TRUE";
                             }
+                            else if (product.isEnable == false)
+                            {
+                                productDetailsToSave.isEnable = "FALSE";
+                            }
+                            productDetailsToSave.icon = product.sortedStatusIcon;
+
+                            var customerList = new List<CustomerToSave>();
+
+                            foreach (Customer customer in product.customers)
+                            {
+                                var customerToSave = new CustomerToSave();
+                                customerToSave.customer_first_name = customer.customer_first_name;
+                                customerToSave.customer_last_name = customer.customer_last_name;
+                                customerToSave.customer_uid = customer.customer_uid;
+                                customerToSave.qty = customer.qty;
+
+                                if (customer.borderColor == Color.Red)
+                                {
+                                    customerList.Add(customerToSave);
+                                }
+                            }
+
+                            productDetailsToSave.customersSource = customerList;
+
+                            productionToSave.productSource.Add(product.item_uid, productDetailsToSave);
                         }
 
-                        productDetailsToSave.customersSource = customerList;
-
-                        productionToSave.productSource.Add(product.item_uid, productDetailsToSave);
+                        sortedProducts.Add(ID, productionToSave);
                     }
-
-                    sortedProducts.Add(ID, productionToSave);
                 }
-            }
 
-            SaveChanges(sortedProducts);
-            isProductionSave = "TRUE";
-            Navigation.PushModalAsync(new SummaryPage());
+                SaveChanges(sortedProducts);
+                isProductionSave = "TRUE";
+                Navigation.PushModalAsync(new SummaryPage());
+            }
+            catch(Exception issueOnNavigateToSummaryPage) 
+            {
+                Application.Current.MainPage.DisplayAlert("Oops", issueOnNavigateToSummaryPage.Message, "OK");
+            }
         }
 
         public static void UpdateSavedProductsWhenClosingApp()
         {
-            var sortedProducts = new Dictionary<string, ProductionDetailsToSave>();
-
-            foreach (string ID in businesses.Keys)
+            try
             {
-                if (!sortedProducts.ContainsKey(ID))
+                var sortedProducts = new Dictionary<string, ProductionDetailsToSave>();
+
+                foreach (string ID in businesses.Keys)
                 {
-                    var productionToSave = new ProductionDetailsToSave()
+                    if (!sortedProducts.ContainsKey(ID))
                     {
-                        productSource = new Dictionary<string, ProductToSave>()
-                    };
-
-                    foreach (ProductItem product in businesses[ID].productSource)
-                    {
-                        var productDetailsToSave = new ProductToSave();
-
-                        if (product.isEnable == true)
+                        var productionToSave = new ProductionDetailsToSave()
                         {
-                            productDetailsToSave.isEnable = "TRUE";
-                            productDetailsToSave.icon = product.sortedStatusIcon;
-                        }
-                        else if (product.isEnable == false)
+                            productSource = new Dictionary<string, ProductToSave>()
+                        };
+
+                        foreach (ProductItem product in businesses[ID].productSource)
                         {
-                            productDetailsToSave.isEnable = "FALSE";
-                            productDetailsToSave.icon = "";
-                        }
+                            var productDetailsToSave = new ProductToSave();
 
-                        var customerList = new List<CustomerToSave>();
-
-                        foreach (Customer customer in product.customers)
-                        {
-                            var customerToSave = new CustomerToSave();
-                            customerToSave.customer_first_name = customer.customer_first_name;
-                            customerToSave.customer_last_name = customer.customer_last_name;
-                            customerToSave.customer_uid = customer.customer_uid;
-                            customerToSave.qty = customer.qty;
-
-                            if (customer.borderColor == Color.Red)
+                            if (product.isEnable == true)
                             {
-                                customerList.Add(customerToSave);
+                                productDetailsToSave.isEnable = "TRUE";
+                                productDetailsToSave.icon = product.sortedStatusIcon;
                             }
+                            else if (product.isEnable == false)
+                            {
+                                productDetailsToSave.isEnable = "FALSE";
+                                productDetailsToSave.icon = "";
+                            }
+
+                            var customerList = new List<CustomerToSave>();
+
+                            foreach (Customer customer in product.customers)
+                            {
+                                var customerToSave = new CustomerToSave();
+                                customerToSave.customer_first_name = customer.customer_first_name;
+                                customerToSave.customer_last_name = customer.customer_last_name;
+                                customerToSave.customer_uid = customer.customer_uid;
+                                customerToSave.qty = customer.qty;
+
+                                if (customer.borderColor == Color.Red)
+                                {
+                                    customerList.Add(customerToSave);
+                                }
+                            }
+
+                            productDetailsToSave.customersSource = customerList;
+
+                            productionToSave.productSource.Add(product.item_uid, productDetailsToSave);
                         }
 
-                        productDetailsToSave.customersSource = customerList;
-
-                        productionToSave.productSource.Add(product.item_uid, productDetailsToSave);
+                        sortedProducts.Add(ID, productionToSave);
                     }
-
-                    sortedProducts.Add(ID, productionToSave);
                 }
-            }
 
-            SaveChanges(sortedProducts);
+                SaveChanges(sortedProducts);
+            }catch(Exception issueOnUpdateSavedProductsWhenClosingApp)
+            {
+                Application.Current.MainPage.DisplayAlert("Oops", issueOnUpdateSavedProductsWhenClosingApp.Message, "OK");
+            }
         }
 
         public static async void SaveChanges(Dictionary<string, ProductionDetailsToSave> production)
         {
-            var data = new SortedItemsToSave();
+            try
+            {
+                if (production != null && routeID != "")
+                {
+                    var data = new SortedItemsToSave();
 
-            data.action = "post";
-            data.sorted_produce = production;
-            data.route_id = routeID;
+                    data.action = "post";
+                    data.sorted_produce = production;
+                    data.route_id = routeID;
 
-            var contentString = JsonConvert.SerializeObject(data);
-            var content = new StringContent(contentString, Encoding.UTF8, "application/json");
+                    var contentString = JsonConvert.SerializeObject(data);
+                    var content = new StringContent(contentString, Encoding.UTF8, "application/json");
 
-            var client = new HttpClient();
-            var endpointCall = await client.PostAsync(Constant.SaveSortedProducts, content);
+                    var client = new HttpClient();
+                    var endpointCall = await client.PostAsync(Constant.SaveSortedProducts, content);
 
-            Debug.WriteLine("JSON TO SEND: " + contentString);
-            Debug.WriteLine("CALL STATUS: " + endpointCall.IsSuccessStatusCode);
+                    //Debug.WriteLine("JSON TO SEND: " + contentString);
+                    //Debug.WriteLine("CALL STATUS: " + endpointCall.IsSuccessStatusCode);
+                }
+            }
+            catch (Exception issueOnSaveChanges)
+            {
+                await Application.Current.MainPage.DisplayAlert("Oops",issueOnSaveChanges.Message,"OK");
+            }
         }
     }
 }

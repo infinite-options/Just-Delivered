@@ -34,6 +34,8 @@ namespace JustDelivered.Views
         static List<string> itemUIDs = new List<string>();
         private byte[] byteArray;
 
+        public bool isPictureAvailable = false;
+
         public VerificationPage(DeliveryInfo Delivery, int Index)
         {
             InitializeComponent();
@@ -125,13 +127,21 @@ namespace JustDelivered.Views
         }
 
 
-        public async void TakePicture(System.Object sender, System.EventArgs e)
+        public async void TakePictureOrSkipPicture(System.Object sender, System.EventArgs e)
+        {
+            var result = await DisplayAlert("","Please select one of the following options.","Skip Picture","Take Picture");
+           
+            TakePicture(!result);
+            
+        }
+
+        public async void TakePicture(bool takePicture)
         {
             string option = await DisplayActionSheet("Select the recipient(s) for this confirmation message", "Cancel", null, new string[] {"Seller", "Customer", "Seller And Customer"});
             Debug.WriteLine("Option: " + option);
-            if (option != null && option != "")
+            if (option != null && option != "" && option != "Cancel")
             {
-                if (option != "Cancel")
+                if (takePicture)
                 {
                     try
                     {
@@ -166,6 +176,7 @@ namespace JustDelivered.Views
                             
                             var ar = File.ReadAllBytes(path);
                             t = ar;
+                            isPictureAvailable = true;
                             f.Source = ImageSource.FromStream(() => { return photo.GetStream(); });
 
                             //f.Rotation = 90;
@@ -195,6 +206,11 @@ namespace JustDelivered.Views
                         await DisplayAlert("Permission required", "We'll need permission to access your camara, so that you can take a photo of the delivered product", "OK");
                         return;
                     }
+                }
+                else
+                {
+                    isPictureAvailable = false;
+                    ProcessRequest(option);
                 }
             }
         }
@@ -248,35 +264,49 @@ namespace JustDelivered.Views
 
             if (method == "Message")
             {
-                if(Device.RuntimePlatform == Device.iOS)
+                if (isPictureAvailable)
                 {
-                    // call ios interface to send message
-                    UserDialogs.Instance.ShowLoading("Preparing the confirmation message...");
-                    await WaitAndApologizeAsync();
-                    UserDialogs.Instance.HideLoading();
-                    string test = DependencyService.Get<IMessageSendRequest>().SendMessage(photoStream, recipients.ToArray(), GetMessageContent(names.ToArray()));
-                    if(test == "CANNOT SEND TEXT MESSAGE")
+                    if (Device.RuntimePlatform == Device.iOS)
+                    {
+                        // call ios interface to send message
+                        UserDialogs.Instance.ShowLoading("Preparing the confirmation message...");
+                        await WaitAndApologizeAsync();
+                        UserDialogs.Instance.HideLoading();
+                        string test = DependencyService.Get<IMessageSendRequest>().SendMessage(photoStream, recipients.ToArray(), GetMessageContent(names.ToArray()));
+                        if (test == "CANNOT SEND TEXT MESSAGE")
+                        {
+                            var result = await SendSMS(recipients.ToArray(), GetMessageContent(names.ToArray()));
+
+
+                            //deliveryList.Remove(DeliveriesPage.delivery);
+
+                            DeliveriesPage.deliveryList[DeliveriesPage.CurrentIndex].status = "Status: Delivered";
+                            //deliveryList.Add(DeliveriesPage.delivery);
+                            CreatePurchaseFromMissingItems(itemUIDs);
+                            Application.Current.MainPage = new DeliveriesPage("");
+                        }
+
+                    }
+                    else
                     {
                         var result = await SendSMS(recipients.ToArray(), GetMessageContent(names.ToArray()));
 
-                       
                         //deliveryList.Remove(DeliveriesPage.delivery);
 
-                        DeliveriesPage.delivery.status = "Status: Delivered";
+
                         DeliveriesPage.deliveryList[DeliveriesPage.CurrentIndex].status = "Status: Delivered";
                         //deliveryList.Add(DeliveriesPage.delivery);
                         CreatePurchaseFromMissingItems(itemUIDs);
                         Application.Current.MainPage = new DeliveriesPage("");
                     }
-
                 }
                 else
                 {
                     var result = await SendSMS(recipients.ToArray(), GetMessageContent(names.ToArray()));
-                   
+
                     //deliveryList.Remove(DeliveriesPage.delivery);
 
-                    DeliveriesPage.delivery.status = "Status: Delivered";
+
                     DeliveriesPage.deliveryList[DeliveriesPage.CurrentIndex].status = "Status: Delivered";
                     //deliveryList.Add(DeliveriesPage.delivery);
                     CreatePurchaseFromMissingItems(itemUIDs);
@@ -288,7 +318,6 @@ namespace JustDelivered.Views
                 ComposeEmail(recipients, GetMessageContent(names.ToArray()));
                 //deliveryList.Remove(DeliveriesPage.delivery);
 
-                DeliveriesPage.delivery.status = "Status: Delivered";
                 DeliveriesPage.deliveryList[DeliveriesPage.CurrentIndex].status = "Status: Delivered";
                 //deliveryList.Add(DeliveriesPage.delivery);
                 
@@ -296,9 +325,13 @@ namespace JustDelivered.Views
                 Application.Current.MainPage = new DeliveriesPage("");
             }
 
-            _ = SavePhoto(t, DeliveriesPage.delivery.purchase_uid);
-            UpdateDeliveryStatus(DeliveriesPage.delivery.purchase_uid);
-            JDDataBase();
+            if (isPictureAvailable)
+            {
+                _ = SavePhoto(t, DeliveriesPage.deliveryList[DeliveriesPage.CurrentIndex].purchase_uid);
+            }
+
+            UpdateDeliveryStatus(DeliveriesPage.deliveryList[DeliveriesPage.CurrentIndex].purchase_uid);
+            JDDataBase(DeliveriesPage.deliveryList[DeliveriesPage.CurrentIndex].purchase_uid);
         }
 
         public static void UIMessageDispose(string result)
@@ -308,7 +341,7 @@ namespace JustDelivered.Views
             {
                 //deliveryList.Remove(DeliveriesPage.delivery);
 
-                DeliveriesPage.delivery.status = "Status: Delivered";
+                
                 DeliveriesPage.deliveryList[DeliveriesPage.CurrentIndex].status = "Status: Delivered";
                 CreatePurchaseFromMissingItems(itemUIDs);
                 Application.Current.MainPage = new DeliveriesPage("");
@@ -321,7 +354,7 @@ namespace JustDelivered.Views
             {
                 //deliveryList.Remove(DeliveriesPage.delivery);
 
-                DeliveriesPage.delivery.status = "Status: Delivered";
+                
                 //deliveryList.Add(DeliveriesPage.delivery);
                 DeliveriesPage.deliveryList[DeliveriesPage.CurrentIndex].status = "Status: Delivered";
                 CreatePurchaseFromMissingItems(itemUIDs);
@@ -446,16 +479,18 @@ namespace JustDelivered.Views
             
         }
 
-        void JDDataBase()
+        void JDDataBase(string purchaseID)
         {
             try
             {
                 var client = new UpdateRoutes();
-                if (list.Count > 0 && user != null)
+                if (user != null)
                 {
                     Debug.WriteLine("user.route_id: " + user.route_id);
                     if (user.route_id != "")
                     {
+                        var list = new List<string>();
+                        list.Add(purchaseID);
                         client.UpdateDeliveryStatus(user.route_id, list);
                     }
                 }

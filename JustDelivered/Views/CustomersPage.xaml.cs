@@ -39,7 +39,7 @@ namespace JustDelivered.Views
             if(customer.borderColor == Color.Black)
             {
                 customer.updateBorderColor = Color.Red;
-                customer.updateBackgroundColor = Color.LightGray;
+                customer.updateBackgroundColor = Color.FromHex("#54C66A");
             }
             else
             {
@@ -67,7 +67,7 @@ namespace JustDelivered.Views
                     }
                     else
                     {
-                        productSelected.sortedStatusIconUpdate = "inprogressIcon.png";
+                        productSelected.sortedStatusIconUpdate = "inprogressYellowIcon.png";
                     }
                 }
             }

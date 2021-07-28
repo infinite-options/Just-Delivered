@@ -23,7 +23,6 @@ namespace JustDelivered.Views
 {
     public partial class LogInPage : ContentPage
     {
-
         public event EventHandler SignIn;
         public bool createAccount = false;
         INotifications appleNotification = DependencyService.Get<INotifications>();
@@ -154,9 +153,6 @@ namespace JustDelivered.Views
                 //    //AppleError?.Invoke(this, default(EventArgs));
 
                 //}
-
-
-
 
                 IAppleSignInService appleSignInService = DependencyService.Get<IAppleSignInService>();
                 var account = await appleSignInService.SignInAsync();

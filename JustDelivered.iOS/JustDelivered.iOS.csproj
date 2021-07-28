@@ -64,9 +64,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <MtouchArch>ARM64</MtouchArch>
-    <CodesignKey>Apple Distribution: Infinite Options, LLC (8V66NC2T37)</CodesignKey>
+    <CodesignKey>Apple Development: Oscar Torres (HS4TL94K2Y)</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <CodesignProvision>Carlos Torres (Just Delivered Publish)</CodesignProvision>
+    <CodesignProvision>VS: com.InfiniteOptions.JustDelivered Development</CodesignProvision>
     <MtouchLink>SdkOnly</MtouchLink>
   </PropertyGroup>
   <ItemGroup>
@@ -169,7 +169,7 @@
     <BundleResource Include="Resources\sortingIcon.png" />
     <BundleResource Include="Resources\goIcon.png" />
     <BundleResource Include="Resources\completedIcon.png" />
-    <BundleResource Include="Resources\inprogressIcon.png" />
+    <BundleResource Include="Resources\inprogressYellowIcon.png" />
   </ItemGroup>
   <ItemGroup>
     <ITunesArtwork Include="iTunesArtwork" />

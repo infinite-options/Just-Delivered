@@ -31,7 +31,6 @@ namespace JustDelivered.Views
         public static string routeID = "";
         public static int CurrentIndex = 0;
         public static readonly DeliveryInfo startLocation = new DeliveryInfo();
-        public static List<string> list = new List<string>();
         // list of deliveries
         public static ObservableCollection<DeliveryInfo> deliveryList = new ObservableCollection<DeliveryInfo>();
         public static DeliveryInfo delivery = null;
@@ -187,6 +186,26 @@ namespace JustDelivered.Views
             public string customer_uid { get; set; }
             public string delivery_date { get; set; }
 
+            //public bool isDraggedOver { get; set; }
+
+            //public bool isDraggedOverUpdate
+            //{
+            //    set
+            //    {
+            //        isDraggedOver = value;
+            //        PropertyChanged(this, new PropertyChangedEventArgs("isDraggedOver"));
+            //    }
+            //}
+
+            public int IDUpdate
+            {
+                set
+                {
+                    ID = value;
+                    PropertyChanged(this, new PropertyChangedEventArgs("ID"));
+                }
+            }
+
             public string updateStatus
             {
                 set
@@ -331,7 +350,7 @@ namespace JustDelivered.Views
             //    Debug.WriteLine("(deliveryList[CurrentIndex].purchase_uid: " + (deliveryList[CurrentIndex].purchase_uid));
             //    AddPurchaseIdToArray(deliveryList[CurrentIndex].purchase_uid);
             //}
-            list.Clear();
+            
             for (int i = 0; i <  deliveryList.Count; i++)
             {
                 if(deliveryList[i].status == "Status: Pending...")
@@ -339,7 +358,6 @@ namespace JustDelivered.Views
                     SetStartToFirstLocation(Color.Black);
                     CurrentIndex = i;
                     found = true;
-                    AddPurchaseIdToArray(deliveryList[CurrentIndex].purchase_uid);
                     break;
                 }
             }
@@ -388,8 +406,8 @@ namespace JustDelivered.Views
                 routeClient.delivery_date = currentDate.ToString("yyyy-MM-dd 10:00:00");
 
                 //TEST
-                //routeClient.uid = user.id;
-                //routeClient.delivery_date = currentDate.ToString("2021-07-18 10:00:00");
+                //routeClient.uid = "930-000001";
+                //routeClient.delivery_date = currentDate.ToString("2021-07-28 10:00:00");
 
                 var socialLogInPostSerialized = JsonConvert.SerializeObject(routeClient);
 
@@ -911,6 +929,7 @@ namespace JustDelivered.Views
                     var caller = (ImageButton)sender;
                     var selectedItem = (DeliveryInfo)caller.CommandParameter;
                     currentDelivery = selectedItem;
+                    CurrentIndex = selectedItem.ID - 1 > 0 ? selectedItem.ID - 1 : 0;
                 }
 
                 var location = new Location(currentDelivery.latitude, currentDelivery.longitude);
@@ -1016,22 +1035,6 @@ namespace JustDelivered.Views
             DeliveriesMap.MapElements.Clear();
             DeliveriesMap.CustomPins.Clear();
             DeliveriesMap.Pins.Clear();
-        }
-
-        void AddPurchaseIdToArray(string id)
-        {
-            if (!list.Contains(id))
-            {
-                list.Add(id);
-            }
-        }
-
-        void RemovePurchaseIdToArray(string id)
-        {
-            if (list.Contains(id))
-            {
-                list.Remove(id);
-            }
         }
 
         async Task<bool> UpdateDeliveryStatus(string purchaseId, string note, string command)
@@ -1288,26 +1291,119 @@ namespace JustDelivered.Views
             
             e.Data.Properties.Add("Frame", f);
         }
+        public int index = 0;
 
         void DropGestureRecognizer_Drop(System.Object sender, Xamarin.Forms.DropEventArgs e)
         {
+
             //var button = (ImageButton)sender;
             //var itemModelObject = (SingleItem)button.CommandParameter;
             //var itemSelected = new ItemPurchased();
 
-            var button = (Frame)e.Data.Properties["Frame"];
-            var g = (TapGestureRecognizer)button.GestureRecognizers[1];
-            var itemModelObject = (DeliveryInfo)g.CommandParameter;
+            //var button = (Frame)e.Data.Properties["Frame"];
+            //var g = (TapGestureRecognizer)button.GestureRecognizers[1];
+            //var itemModelObject = (DeliveryInfo)g.CommandParameter;
 
-            deliveryList.Remove(itemModelObject);
-            deliveryList.Add(itemModelObject);
-            deliveryListView.ItemsSource = deliveryList;
+            //deliveryList.Remove(itemModelObject);
+            //deliveryList.Add(itemModelObject);
+            //deliveryListView.ItemsSource = deliveryList;
 
-            ResetMap();
-            UpdateDeliveryIDs(deliveryList);
-            FindNextDeliveryAvailable(deliveryList);
-            SetDelivery();
-            SetCompleteRouteView();
+            //ResetMap();
+            //UpdateDeliveryIDs(deliveryList);
+            //FindNextDeliveryAvailable(deliveryList);
+            //SetDelivery();
+            //SetCompleteRouteView();
+
+
+            Debug.WriteLine("NEW INDEX: " + index);
+
+
+            //var frame = (Frame)sender;
+            //var g1 = (TapGestureRecognizer)frame.GestureRecognizers[1];
+            //var itemModelObject1 = (DeliveryInfo)g1.CommandParameter;
+
+            //Debug.WriteLine("itemModelObject1 before: " + itemModelObject1.ID);
+
+            //var button = (Frame)e.Data.Properties["Frame"];
+            //var g = (TapGestureRecognizer)button.GestureRecognizers[1];
+            //var itemModelObject = (DeliveryInfo)g.CommandParameter;
+
+
+            //Debug.WriteLine("itemModelObject item to drop: " + itemModelObject.ID);
+
+            //deliveryList.Remove(itemModelObject);
+            //deliveryList.Add(itemModelObject);
+            //deliveryListView.ItemsSource = deliveryList;
+
+
+
+
+            //var button = (Frame)e.Data.Properties["Frame"];
+            //var g1 = (TapGestureRecognizer)button.GestureRecognizers[2];
+            //var itemModelObject = (DeliveryInfo)g1.CommandParameter;
+
+            //deliveryList.Insert(newIndex, itemModelObject);
+
+            //var button = (Frame)e.Data.Properties["Frame"];
+            //var g1 = (TapGestureRecognizer)button.GestureRecognizers[2];
+            //var itemModelObject = (DeliveryInfo)g1.CommandParameter;
+            //var oldIndex = itemModelObject.ID;
+
+            //if (newIndex >= 0 && newIndex < deliveryList.Count) {
+
+            //    //var button = (Frame)e.Data.Properties["Frame"];
+            //    //var g1 = (TapGestureRecognizer)button.GestureRecognizers[2];
+            //    //var itemModelObject = (DeliveryInfo)g1.CommandParameter;
+            //    //var oldIndex = itemModelObject.ID;
+
+            //    //deliveryList.RemoveAt(oldIndex - 1);
+
+            //    var tempList = new ObservableCollection<DeliveryInfo>();
+
+            //    for (int i = 0; i < deliveryList.Count; i++)
+            //    {
+            //        if (i != newIndex)
+            //        {
+            //            tempList.Add(deliveryList[i]);
+            //        }
+            //        else
+            //        {
+            //            tempList.Add(itemModelObject);
+            //            for(int j = i + 1; i < deliveryList.Count; i++)
+            //            {
+            //                tempList.Add(deliveryList[j]);
+            //            }
+            //            break;
+            //        }
+
+            //    }
+
+            //    for (int i = 0; i < tempList.Count; i++)
+            //    {
+            //        deliveryList[i].IDUpdate = i + 1;
+            //    }
+
+            //    deliveryList.Clear();
+
+            //    foreach(DeliveryInfo d in tempList)
+            //    {
+            //        deliveryList.Add(d);
+            //    }
+            //    //f1.isDraggedOverUpdate = true;
+            //    Debug.WriteLine("Test");
+
+            //    newIndex = 0;
+            //}
+
+            //deliveryListView.ItemsSource = deliveryList;
+            //deliveryList.Insert()
+
+            //ResetMap();
+            //UpdateDeliveryIDs(deliveryList);
+            //FindNextDeliveryAvailable(deliveryList);
+            //SetDelivery();
+            //SetCompleteRouteView();
+
         }
 
         void ShowMenu(System.Object sender, System.EventArgs e)
@@ -1363,6 +1459,67 @@ namespace JustDelivered.Views
         void NavigateToProductsPage(System.Object sender, System.EventArgs e)
         {
             Application.Current.MainPage = new ProductsPage();
+        }
+
+        
+        void DropGestureRecognizer_DragOver(System.Object sender, Xamarin.Forms.DragEventArgs e)
+        {
+            var bottomFrame = (sender as Element)?.Parent as Frame;
+            var gesture = (TapGestureRecognizer)bottomFrame.GestureRecognizers[2];
+            var item = (DeliveryInfo)gesture.CommandParameter;
+
+            index = item.ID;
+        }
+
+        void DropGestureRecognizer_DragLeave(System.Object sender, Xamarin.Forms.DragEventArgs e)
+        {
+            
+            Debug.WriteLine("Stop dragging...");
+
+            Drop(e);
+        }
+
+        async  void Drop(Xamarin.Forms.DragEventArgs e)
+        {
+            try
+            {
+                
+                await Task.Delay(2000);
+                Debug.WriteLine("NEW INDEX: " + index);
+                var button = (Frame)e.Data.Properties["Frame"];
+                var g1 = (TapGestureRecognizer)button.GestureRecognizers[2];
+                var itemModelObject = (DeliveryInfo)g1.CommandParameter;
+                var oldIndex = itemModelObject.ID - 1;
+                var changedItem = itemModelObject;
+                if (index < oldIndex)
+                {
+                    // add one to where we delete, because we're increasing the index by inserting
+                    oldIndex += 1;
+                }
+                else
+                {
+                    // add one to where we insert, because we haven't deleted the original yet
+                    index += 1;
+                }
+
+                deliveryList.Insert(index, changedItem);
+                deliveryList.RemoveAt(oldIndex);
+
+                for(int i = 0; i < deliveryList.Count; i++)
+                {
+                    deliveryList[i].IDUpdate = i + 1;
+                }
+                
+            }
+            catch
+            {
+               
+            }
+            
+            //var oldIndex = itemModelObject.ID;
+
+            //deliveryList.Insert(index - 2, itemModelObject);
+
         }
     }
 }

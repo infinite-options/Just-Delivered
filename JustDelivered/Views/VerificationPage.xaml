@@ -50,8 +50,9 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
             <StackLayout Grid.Row="2" Padding="0,0,0,0"  >
-                <Label Text="Please take a picture of the delivered package or the place where the package was dropped off" FontSize="Small" TextColor="Gray" FontAttributes="Bold" HorizontalTextAlignment="Center"></Label>
-                <Button VerticalOptions="CenterAndExpand" Margin="50,0,50,0" Text="Take Picture" TextColor="White" BackgroundColor="red" Clicked="TakePicture"></Button>
+                <!--<Label Text="Please take a picture of the delivered package or the place where the package was dropped off" FontSize="Small" TextColor="Gray" FontAttributes="Bold" HorizontalTextAlignment="Center"></Label>-->
+                <Label Text="Please double-check that all the above items are carefully placed in the bag or box before drop off. Press continue to confirm delivery." FontSize="Small" TextColor="Gray" FontAttributes="Bold" HorizontalTextAlignment="Center"></Label>
+                <Button VerticalOptions="CenterAndExpand" Margin="50,0,50,0" Text="Continue" TextColor="White" BackgroundColor="red" Clicked="TakePictureOrSkipPicture"></Button>
             </StackLayout>
         </Grid>
     </ContentPage.Content>

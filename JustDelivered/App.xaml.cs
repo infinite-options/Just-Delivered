@@ -19,6 +19,7 @@ namespace JustDelivered
         public const string LoggedInKey = "LoggedIn";
         public const string AppleUserIdKey = "AppleUserIdKey";
         string userId;
+
         public App()
         {
             InitializeComponent();
@@ -30,6 +31,7 @@ namespace JustDelivered
                 {
                     user = tempUser;
                     user.PrintUser();
+
                     Application.Current.MainPage = new DeliveriesPage();
                 }
                 else
@@ -95,15 +97,15 @@ namespace JustDelivered
             {
                 if (routeID != "")
                 {
-                    if(isProductionSave != null && isProductionSave != "TRUE")
+                    if (isProductionSave != null && isProductionSave != "TRUE")
                     {
                         UpdateSavedProductsWhenClosingApp();
                     }
                 }
             }
-            catch
+            catch(Exception issueOnSleep)
             {
-
+                Current.MainPage.DisplayAlert("Oops", issueOnSleep.Message, "OK");
             }
         }
 

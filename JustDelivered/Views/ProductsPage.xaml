@@ -8,6 +8,7 @@
              <Grid.RowDefinitions>
                  <RowDefinition Height="80"></RowDefinition>
                  <RowDefinition Height="*"></RowDefinition>
+                 <RowDefinition Height="50"></RowDefinition>
              </Grid.RowDefinitions>
              <StackLayout Grid.Row="0" BackgroundColor="Red">
                   <Label HeightRequest="80" Text="Just Delivered" TextColor="White" FontSize="Title" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"></Label>
@@ -19,7 +20,7 @@
                 <Label Text="Please select and sort every product shown below" TextColor="Black" FontSize="Small" FontAttributes="Bold"></Label>
             </StackLayout>
 
-            <CollectionView x:Name="ItemList" Grid.Row="1" Margin="20,20,20,0">
+            <CollectionView x:Name="ItemList" Grid.Row="1" VerticalOptions="FillAndExpand">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <StackLayout>
@@ -66,9 +67,8 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
-            <Button Text="View Order Summary" TextColor="Red" FontSize="Small" FontAttributes="Bold" Clicked="NavigateToSummaryPage"></Button>
         </StackLayout>
+        <Button Grid.Row="2" Text="View Order Summary" TextColor="Red" FontSize="Small" FontAttributes="Bold" Clicked="NavigateToSummaryPage"></Button>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

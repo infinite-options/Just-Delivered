@@ -204,10 +204,14 @@
                                     </Button>
                                 </Grid>
 
-                                <ListView x:Name="deliveryListView" Margin="0,0,0,50" CachingStrategy="RetainElement" RowHeight="100" HasUnevenRows="True" SeparatorColor="Transparent">
+                                <ListView x:Name="deliveryListView" Margin="0,0,0,50" CachingStrategy="RetainElement" RowHeight="100"  HasUnevenRows="True" SeparatorColor="Transparent">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
                                             <ViewCell>
+                                                
+                                                <!--<StackLayout HeightRequest="80" IsVisible="{Binding isDraggedOver}" BackgroundColor="Yellow">
+
+                                                </StackLayout>-->
                                                 <Frame Padding="0" BackgroundColor="WhiteSmoke" VerticalOptions="CenterAndExpand" HasShadow="False">
                                                     <StackLayout Padding="20,10,20,0">
                                                         <Grid>
@@ -247,7 +251,8 @@
                                                         </Grid>
                                                     </StackLayout>
                                                     <Frame.GestureRecognizers>
-                                                        <DragGestureRecognizer CanDrag="True" DragStarting="DragGestureRecognizer_DragStarting"></DragGestureRecognizer>
+                                                        <DragGestureRecognizer CanDrag="True" DragStarting="DragGestureRecognizer_DragStarting" ></DragGestureRecognizer>
+                                                        <DropGestureRecognizer DragOver="DropGestureRecognizer_DragOver" DragLeave="DropGestureRecognizer_DragLeave"></DropGestureRecognizer>
                                                         <TapGestureRecognizer CommandParameter="{Binding .}"></TapGestureRecognizer>
                                                     </Frame.GestureRecognizers>
                                                 </Frame>
@@ -256,7 +261,7 @@
                                        
                                     </ListView.ItemTemplate>
                                     <ListView.GestureRecognizers>
-                                        <DropGestureRecognizer AllowDrop="True" Drop="DropGestureRecognizer_Drop"></DropGestureRecognizer>
+                                        <DropGestureRecognizer AllowDrop="True"></DropGestureRecognizer>
                                     </ListView.GestureRecognizers>
                                 </ListView>
 
