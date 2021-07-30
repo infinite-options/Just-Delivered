@@ -298,7 +298,7 @@ namespace JustDelivered.Views
             InitializeComponent();
             SetDefaultLocationOnMap();
             VerifyUserAccount();
-            //CheckVersion();
+            CheckVersion();
         }
 
         public DeliveriesPage(string back)
@@ -317,7 +317,7 @@ namespace JustDelivered.Views
 
         }
 
-        public async Task CheckVersion()
+        public async void CheckVersion()
         {
             try
             {
@@ -335,6 +335,7 @@ namespace JustDelivered.Views
             catch (Exception issueVersionChecking)
             {
                 string str = issueVersionChecking.Message;
+                //Debug.WriteLine(str);
             }
         }
 
@@ -407,22 +408,22 @@ namespace JustDelivered.Views
 
                 //TEST
                 //routeClient.uid = "930-000001";
-                //routeClient.delivery_date = currentDate.ToString("2021-07-28 10:00:00");
+                //routeClient.delivery_date = currentDate.ToString("2021-08-01 10:00:00");
 
                 var socialLogInPostSerialized = JsonConvert.SerializeObject(routeClient);
 
-                Debug.WriteLine("JSON: " + socialLogInPostSerialized);
+                //Debug.WriteLine("JSON: " + socialLogInPostSerialized);
 
                 var postContent = new StringContent(socialLogInPostSerialized, Encoding.UTF8, "application/json");
 
-                Debug.WriteLine(socialLogInPostSerialized);
+                //Debug.WriteLine(socialLogInPostSerialized);
                 
                 var RDSResponse = await client.PostAsync(Constant.DriverRouteUrl, postContent);
                 var responseContent = await RDSResponse.Content.ReadAsStringAsync();
 
-                Debug.WriteLine(responseContent);
+                //Debug.WriteLine(responseContent);
 
-                Debug.WriteLine(RDSResponse.IsSuccessStatusCode);
+                //Debug.WriteLine(RDSResponse.IsSuccessStatusCode);
 
                 if (RDSResponse.IsSuccessStatusCode)
                 {
@@ -650,7 +651,7 @@ namespace JustDelivered.Views
                 else
                 {
 
-                    Debug.WriteLine("deliveryList[i].status: " + deliveryList[i].status);
+                    //Debug.WriteLine("deliveryList[i].status: " + deliveryList[i].status);
                     pin.Color = SetPinColor(deliveryList[i].status);
                 }
 
@@ -718,7 +719,7 @@ namespace JustDelivered.Views
                 else
                 {
 
-                    Debug.WriteLine("deliveryList[i].status: " + deliveryList[i].status);
+                    //Debug.WriteLine("deliveryList[i].status: " + deliveryList[i].status);
                     pin.Color = SetPinColor(deliveryList[i].status);
                 }
                 
@@ -739,7 +740,7 @@ namespace JustDelivered.Views
         string SetPinColor(string status)
         {
             string result = "";
-            Debug.WriteLine("COLOR: " + status);
+            //Debug.WriteLine("COLOR: " + status);
             if (status == "Status: Delivered")
             {
                 result = "Green";
@@ -752,7 +753,7 @@ namespace JustDelivered.Views
             {
                 result = "Gray";
             }
-            Debug.WriteLine("RESULT: " + result);
+            //Debug.WriteLine("RESULT: " + result);
             return result;
         }
 
@@ -1049,12 +1050,12 @@ namespace JustDelivered.Views
                 delivery.note = note;
 
                 var deliveryJSON = JsonConvert.SerializeObject(delivery);
-                Debug.WriteLine("DELIVERY JSON: " + deliveryJSON);
                 var content = new StringContent(deliveryJSON, Encoding.UTF8, "application/json");
 
-                var RDSResponse = await client.PostAsync("https://0ig1dbpx3k.execute-api.us-west-1.amazonaws.com/dev/api/v2/UpdateDeliveryStatus", content);
-                Debug.WriteLine("UPDATE DELIVERY STATUS ENDPOINT " + RDSResponse.IsSuccessStatusCode);
+                var endpointCall = await client.PostAsync("https://0ig1dbpx3k.execute-api.us-west-1.amazonaws.com/dev/api/v2/UpdateDeliveryStatus", content);
 
+                //Debug.WriteLine("DELIVERY JSON: " + deliveryJSON);
+                //Debug.WriteLine("UPDATE DELIVERY STATUS ENDPOINT " + endpointCall.IsSuccessStatusCode);
             }
             catch (Exception ErrorUpdatingStatus)
             {
@@ -1065,7 +1066,7 @@ namespace JustDelivered.Views
 
         async void CallCustomer(System.Object sender, System.EventArgs e)
         {
-            Debug.WriteLine("CALL CUSTOMER");
+            //Debug.WriteLine("CALL CUSTOMER");
 
             DeliveryInfo currentDelivery = null;
             if (fullDeliveryListView.IsVisible == false)
@@ -1093,7 +1094,7 @@ namespace JustDelivered.Views
             catch (Exception PhoneDataError)
             {
                 Debug.WriteLine(PhoneDataError.Message);
-                //await DisplayAlert("Oops", "There was an error gathering this customer's phone number","OK");
+                await DisplayAlert("Oops", "There was an error gathering this customer's phone number","OK");
             }
         }
 
@@ -1230,7 +1231,18 @@ namespace JustDelivered.Views
                 i++;
             }
 
-            //var contentString = JsonConvert.SerializeObject(structToSave);
+
+            for (int j = 0; i < deliveryList.Count; j++)
+            {
+                deliveryList[j].IDUpdate = j + 1;
+            }
+
+            ResetMap();
+            UpdateDeliveryIDs(deliveryList);
+            FindNextDeliveryAvailable(deliveryList);
+            SetDelivery();
+            SetCompleteRouteView();
+
             SaveChanges(structToSave);
         }
 
@@ -1247,14 +1259,12 @@ namespace JustDelivered.Views
             var client = new HttpClient();
             var endpointCall = await client.PostAsync(Constant.UpdateRouteOrder, content);
 
-            Debug.WriteLine("JSON TO SEND: " + contentString);
-            Debug.WriteLine("CALL STATUS: " + endpointCall.IsSuccessStatusCode);
+            //Debug.WriteLine("JSON TO SEND: " + contentString);
+            //Debug.WriteLine("CALL STATUS: " + endpointCall.IsSuccessStatusCode);
         }
 
         void ReverseListClick(System.Object sender, System.EventArgs e)
         {
-            Debug.WriteLine("Reverse List");
-            
             deliveryListView.ItemsSource = reverseDeliveryList(deliveryList);
            
             ResetMap();
@@ -1278,7 +1288,6 @@ namespace JustDelivered.Views
                 {
                     reverseList.Add(source[i]);
                 }
-                //BackupDeliveries = reverseList
                 UpdateDeliveryIDs(reverseList);
                 deliveryList = reverseList;
                 return reverseList;
@@ -1287,124 +1296,11 @@ namespace JustDelivered.Views
 
         void DragGestureRecognizer_DragStarting(System.Object sender, Xamarin.Forms.DragStartingEventArgs e)
         {
-            var f = (sender as Element)?.Parent as Frame;
+            var dataToTransfer = (sender as Element)?.Parent as Frame;
             
-            e.Data.Properties.Add("Frame", f);
+            e.Data.Properties.Add("Frame", dataToTransfer);
         }
         public int index = 0;
-
-        void DropGestureRecognizer_Drop(System.Object sender, Xamarin.Forms.DropEventArgs e)
-        {
-
-            //var button = (ImageButton)sender;
-            //var itemModelObject = (SingleItem)button.CommandParameter;
-            //var itemSelected = new ItemPurchased();
-
-            //var button = (Frame)e.Data.Properties["Frame"];
-            //var g = (TapGestureRecognizer)button.GestureRecognizers[1];
-            //var itemModelObject = (DeliveryInfo)g.CommandParameter;
-
-            //deliveryList.Remove(itemModelObject);
-            //deliveryList.Add(itemModelObject);
-            //deliveryListView.ItemsSource = deliveryList;
-
-            //ResetMap();
-            //UpdateDeliveryIDs(deliveryList);
-            //FindNextDeliveryAvailable(deliveryList);
-            //SetDelivery();
-            //SetCompleteRouteView();
-
-
-            Debug.WriteLine("NEW INDEX: " + index);
-
-
-            //var frame = (Frame)sender;
-            //var g1 = (TapGestureRecognizer)frame.GestureRecognizers[1];
-            //var itemModelObject1 = (DeliveryInfo)g1.CommandParameter;
-
-            //Debug.WriteLine("itemModelObject1 before: " + itemModelObject1.ID);
-
-            //var button = (Frame)e.Data.Properties["Frame"];
-            //var g = (TapGestureRecognizer)button.GestureRecognizers[1];
-            //var itemModelObject = (DeliveryInfo)g.CommandParameter;
-
-
-            //Debug.WriteLine("itemModelObject item to drop: " + itemModelObject.ID);
-
-            //deliveryList.Remove(itemModelObject);
-            //deliveryList.Add(itemModelObject);
-            //deliveryListView.ItemsSource = deliveryList;
-
-
-
-
-            //var button = (Frame)e.Data.Properties["Frame"];
-            //var g1 = (TapGestureRecognizer)button.GestureRecognizers[2];
-            //var itemModelObject = (DeliveryInfo)g1.CommandParameter;
-
-            //deliveryList.Insert(newIndex, itemModelObject);
-
-            //var button = (Frame)e.Data.Properties["Frame"];
-            //var g1 = (TapGestureRecognizer)button.GestureRecognizers[2];
-            //var itemModelObject = (DeliveryInfo)g1.CommandParameter;
-            //var oldIndex = itemModelObject.ID;
-
-            //if (newIndex >= 0 && newIndex < deliveryList.Count) {
-
-            //    //var button = (Frame)e.Data.Properties["Frame"];
-            //    //var g1 = (TapGestureRecognizer)button.GestureRecognizers[2];
-            //    //var itemModelObject = (DeliveryInfo)g1.CommandParameter;
-            //    //var oldIndex = itemModelObject.ID;
-
-            //    //deliveryList.RemoveAt(oldIndex - 1);
-
-            //    var tempList = new ObservableCollection<DeliveryInfo>();
-
-            //    for (int i = 0; i < deliveryList.Count; i++)
-            //    {
-            //        if (i != newIndex)
-            //        {
-            //            tempList.Add(deliveryList[i]);
-            //        }
-            //        else
-            //        {
-            //            tempList.Add(itemModelObject);
-            //            for(int j = i + 1; i < deliveryList.Count; i++)
-            //            {
-            //                tempList.Add(deliveryList[j]);
-            //            }
-            //            break;
-            //        }
-
-            //    }
-
-            //    for (int i = 0; i < tempList.Count; i++)
-            //    {
-            //        deliveryList[i].IDUpdate = i + 1;
-            //    }
-
-            //    deliveryList.Clear();
-
-            //    foreach(DeliveryInfo d in tempList)
-            //    {
-            //        deliveryList.Add(d);
-            //    }
-            //    //f1.isDraggedOverUpdate = true;
-            //    Debug.WriteLine("Test");
-
-            //    newIndex = 0;
-            //}
-
-            //deliveryListView.ItemsSource = deliveryList;
-            //deliveryList.Insert()
-
-            //ResetMap();
-            //UpdateDeliveryIDs(deliveryList);
-            //FindNextDeliveryAvailable(deliveryList);
-            //SetDelivery();
-            //SetCompleteRouteView();
-
-        }
 
         void ShowMenu(System.Object sender, System.EventArgs e)
         {
@@ -1441,18 +1337,21 @@ namespace JustDelivered.Views
 
         void LogOut(System.Object sender, System.EventArgs e)
         {
-            user.PrintUser();
+            //user.PrintUser();
+
             if (Application.Current.Properties.Keys.Contains(Constant.Autheticator))
             {
                 user.id = "";
                 user.route_id = "";
-                user.PrintUser();
+                
                 string account = JsonConvert.SerializeObject(user);
+
                 //Debug.WriteLine("USER: " + account);
 
                 Application.Current.Properties[Constant.Autheticator] = account;
                 Application.Current.SavePropertiesAsync();
             }
+
             Application.Current.MainPage = new LogInPage();
         }
 
@@ -1461,7 +1360,6 @@ namespace JustDelivered.Views
             Application.Current.MainPage = new ProductsPage();
         }
 
-        
         void DropGestureRecognizer_DragOver(System.Object sender, Xamarin.Forms.DragEventArgs e)
         {
             var bottomFrame = (sender as Element)?.Parent as Frame;
@@ -1473,53 +1371,70 @@ namespace JustDelivered.Views
 
         void DropGestureRecognizer_DragLeave(System.Object sender, Xamarin.Forms.DragEventArgs e)
         {
-            
-            Debug.WriteLine("Stop dragging...");
-
-            Drop(e);
+            ItemDropped(e);
         }
 
-        async  void Drop(Xamarin.Forms.DragEventArgs e)
+        async void ItemDropped(Xamarin.Forms.DragEventArgs e)
         {
             try
             {
-                
                 await Task.Delay(2000);
-                Debug.WriteLine("NEW INDEX: " + index);
-                var button = (Frame)e.Data.Properties["Frame"];
-                var g1 = (TapGestureRecognizer)button.GestureRecognizers[2];
-                var itemModelObject = (DeliveryInfo)g1.CommandParameter;
-                var oldIndex = itemModelObject.ID - 1;
-                var changedItem = itemModelObject;
-                if (index < oldIndex)
+
+                var data = (Frame)e.Data.Properties["Frame"];
+                var gesture = (TapGestureRecognizer)data.GestureRecognizers[2];
+                var item = (DeliveryInfo)gesture.CommandParameter;
+
+                var newIndex = index - 1;
+                var oldIndex = item.ID - 1;
+
+                //Debug.WriteLine("oldIndex:" + oldIndex);
+                //Debug.WriteLine("newIndex:" + newIndex);
+
+                if (oldIndex > newIndex && newIndex != 0)
                 {
-                    // add one to where we delete, because we're increasing the index by inserting
-                    oldIndex += 1;
+                    deliveryList.Insert(newIndex + 1, item);
+                    deliveryList.RemoveAt(oldIndex + 1);
                 }
-                else
+                else if (oldIndex > newIndex && newIndex == 0)
                 {
-                    // add one to where we insert, because we haven't deleted the original yet
-                    index += 1;
+                    deliveryList.Insert(0, item);
+                    deliveryList.RemoveAt(oldIndex + 1);
+                }
+                else if (oldIndex < newIndex && newIndex != deliveryList.Count - 1)
+                {
+                    deliveryList.Insert(newIndex, item);
+                    deliveryList.RemoveAt(oldIndex);
+                    
+                }else if (oldIndex < newIndex && newIndex == deliveryList.Count - 1)
+                {
+                    deliveryList.Add(item);
+                    deliveryList.RemoveAt(oldIndex);
                 }
 
-                deliveryList.Insert(index, changedItem);
-                deliveryList.RemoveAt(oldIndex);
-
-                for(int i = 0; i < deliveryList.Count; i++)
+                for (int i = 0; i < deliveryList.Count; i++)
                 {
                     deliveryList[i].IDUpdate = i + 1;
                 }
-                
+
+                ResetMap();
+                UpdateDeliveryIDs(deliveryList);
+                FindNextDeliveryAvailable(deliveryList);
+                SetDelivery();
+                SetCompleteRouteView();
             }
             catch
             {
-               
+                for (int i = 0; i < deliveryList.Count; i++)
+                {
+                    deliveryList[i].IDUpdate = i + 1;
+                }
+
+                ResetMap();
+                UpdateDeliveryIDs(deliveryList);
+                FindNextDeliveryAvailable(deliveryList);
+                SetDelivery();
+                SetCompleteRouteView();
             }
-            
-            //var oldIndex = itemModelObject.ID;
-
-            //deliveryList.Insert(index - 2, itemModelObject);
-
         }
     }
 }

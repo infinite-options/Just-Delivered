@@ -84,10 +84,8 @@ namespace JustDelivered.iOS
 
                     f.AddSubview(label);
 
-                    //f.Center = new CGPoint(label.Frame.Size.Width / 2, label.Frame.Size.Height / 2);
-
-                    Debug.WriteLine("INPUT COLOR: " + customPin.Color);
-                    Debug.WriteLine("GET COLOR: " + GetPin(customPin.Color));
+                    //Debug.WriteLine("INPUT COLOR: " + customPin.Color);
+                    //Debug.WriteLine("GET COLOR: " + GetPin(customPin.Color));
                     annotationView.Image = UIImage.FromFile(GetPin(customPin.Color));
 
 
@@ -123,8 +121,8 @@ namespace JustDelivered.iOS
         {
             var button = (UIButton)sender;
             var num = button.GetFocusGroupIdentifier();
-            Debug.WriteLine("num: " + num);
-            Debug.WriteLine("You touch the go button");
+            //Debug.WriteLine("num: " + num);
+            //Debug.WriteLine("You touch the go button");
 
             GetDirectionsFromIOSProject(num);
         }

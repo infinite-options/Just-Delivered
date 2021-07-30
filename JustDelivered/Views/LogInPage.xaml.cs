@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Acr.UserDialogs;
 using JustDelivered.Config;
+using JustDelivered.Interfaces;
 using JustDelivered.LogIn.Apple;
 using JustDelivered.LogIn.Classes;
 using JustDelivered.Models;
@@ -32,6 +33,8 @@ namespace JustDelivered.Views
         {
             InitializeComponent();
 
+            SetAppVersion(versionAndBuild);
+
             if (Device.RuntimePlatform == Device.Android)
             {
                 System.Diagnostics.Debug.WriteLine("Running on Android: Line 32");
@@ -53,6 +56,22 @@ namespace JustDelivered.Views
             {
                 deviceId = Preferences.Get("guid", null);
                 if (deviceId != null) { Debug.WriteLine("This is the Android GUID from Log in " + deviceId); }
+            }
+
+        }
+
+        public void SetAppVersion(Label appVersionLabel)
+        {
+            try
+            {
+                var versionString = DependencyService.Get<IAppVersionAndBuild>().GetVersionNumber();
+                var buildString = DependencyService.Get<IAppVersionAndBuild>().GetBuildNumber();
+
+                appVersionLabel.Text = "Version: " + versionString + ", Build: " + buildString;
+            }
+            catch
+            {
+                appVersionLabel.Text = "";
             }
         }
 

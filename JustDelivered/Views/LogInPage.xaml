@@ -69,6 +69,9 @@
                     </ImageButton>
                 </Grid>
                 <Button IsVisible="false" Margin="30,0,30,0" Text="Sign up to become a JD Driver" Clicked="Button_Clicked" FontAttributes="Bold" TextColor="Red" BackgroundColor="White" BorderColor="Red" BorderWidth="1"></Button>
+                <StackLayout HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
+                    <Label x:Name="versionAndBuild" TextColor="Black" FontSize="12"></Label>
+                </StackLayout>
             </StackLayout>
          
         </Grid>
