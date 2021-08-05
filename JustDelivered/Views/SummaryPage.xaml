@@ -19,7 +19,7 @@
                         </Grid.ColumnDefinitions>
                         <StackLayout Grid.Column="0" HeightRequest="80">
                             <StackLayout Margin="5,0,0,0" VerticalOptions="CenterAndExpand">
-                                <ImageButton  Source="backIcon" HeightRequest="30" Clicked="NavigateToProductsPage"></ImageButton>
+                                <ImageButton  Source="backIcon" BackgroundColor="Transparent" HeightRequest="30" Clicked="NavigateToProductsPage"></ImageButton>
                             </StackLayout>
                         </StackLayout>
                         <Label Grid.Column="1" HeightRequest="80" Text="Order Summary" TextColor="White" FontSize="Title" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"></Label>

@@ -16,7 +16,7 @@
                         <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="100"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <ImageButton  Grid.Row="0" Grid.Column="2" Source="MenuVerticalIcon.png" Scale="0.5" Clicked="ShowMenu" VerticalOptions="End"></ImageButton>
+                    <ImageButton  Grid.Row="0" Grid.Column="2" Source="MenuVerticalIcon.png" Scale="0.5" BackgroundColor="Transparent" Clicked="ShowMenu" VerticalOptions="End"></ImageButton>
                 </Grid>
                 <Grid x:Name="menuRow" Margin="0,100,0,0" IsVisible="false">
                     <Grid.ColumnDefinitions>
@@ -28,23 +28,23 @@
                         <StackLayout>
                             <StackLayout HorizontalOptions="Center">
                                 <StackLayout>
-                                    <ImageButton Margin="0,10,0,0" HeightRequest="25" Source="navigateIcon" Clicked="MenuDirections"></ImageButton>
+                                    <ImageButton Margin="0,10,0,0" HeightRequest="25" BackgroundColor="Transparent" Source="navigateIcon" Clicked="MenuDirections"></ImageButton>
                                     <Label Text="Directions" FontSize="12" HorizontalTextAlignment="Center"></Label>
                                 </StackLayout>
                                 <StackLayout>
-                                    <ImageButton Margin="0,0,0,0" HeightRequest="25" Source="detailsIcon" Clicked="MenuDetails"></ImageButton>
+                                    <ImageButton Margin="0,0,0,0" HeightRequest="25" BackgroundColor="Transparent" Source="detailsIcon" Clicked="MenuDetails"></ImageButton>
                                     <Label Text="Details" FontSize="12" HorizontalTextAlignment="Center"></Label>
                                 </StackLayout>
                                 <StackLayout>
-                                    <ImageButton Margin="0,0,0,0" HeightRequest="25" Source="overviewIcon" Clicked="MenuOverview"></ImageButton>
+                                    <ImageButton Margin="0,0,0,0" HeightRequest="25" BackgroundColor="Transparent" Source="overviewIcon" Clicked="MenuOverview"></ImageButton>
                                     <Label Text="Overview" FontSize="12" HorizontalTextAlignment="Center"></Label>
                                 </StackLayout>
                                 <StackLayout>
-                                    <ImageButton Margin="0,0,0,0" HeightRequest="25" Source="sortingIcon" Clicked="NavigateToProductsPage"></ImageButton>
+                                    <ImageButton Margin="0,0,0,0" HeightRequest="25" BackgroundColor="Transparent" Source="sortingIcon" Clicked="NavigateToProductsPage"></ImageButton>
                                     <Label Text="Sorting" FontSize="12" HorizontalTextAlignment="Center"></Label>
                                 </StackLayout>
                                 <StackLayout Margin="0,0,0,10">
-                                    <ImageButton Margin="0,0,0,0" HeightRequest="25" Source="logoutIcon" Clicked="LogOut"></ImageButton>
+                                    <ImageButton Margin="0,0,0,0" HeightRequest="25" BackgroundColor="Transparent" Source="logoutIcon" Clicked="LogOut"></ImageButton>
                                     <Label Text="Log out" FontSize="12" HorizontalTextAlignment="Center"></Label>
                                 </StackLayout>
                             </StackLayout>
@@ -78,7 +78,7 @@
                                 <ColumnDefinition Width="80"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <StackLayout Grid.Row="0" Grid.Column="0" Padding="0">
-                                 <Label x:Name="CurrentDeliveryNumber" FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center"></Label>
+                                 <Label x:Name="CurrentDeliveryNumber" TextColor="Black" FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center"></Label>
                                  <Label Text="Delivery" FontSize="10" HorizontalTextAlignment="Center" ></Label>
                                 <StackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="GetDirections" ></TapGestureRecognizer>
@@ -87,7 +87,7 @@
                             
                             <Label Grid.Row="0" Grid.Column="1" Text="Swipe up to view delivery details" TextColor="Gray" FontSize="Small" FontAttributes="Bold"  HorizontalTextAlignment="Center" VerticalTextAlignment="Center"></Label>
                             <StackLayout Grid.Row="0" Grid.Column="2" Padding="0" >
-                                <Label  x:Name="TotalDeliveriesNumber" FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center">
+                                <Label  x:Name="TotalDeliveriesNumber" TextColor="Black" FontSize="40" FontAttributes="Bold" HorizontalTextAlignment="Center">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="ShowBackupDeliveriesFrame" ></TapGestureRecognizer>
                                     </Label.GestureRecognizers>
@@ -96,34 +96,34 @@
                             </StackLayout>
                         </Grid>
 
-                        <Frame x:Name="sigleDeliveryView" Margin="0,20,0,0" Padding="0" CornerRadius="0" HasShadow="False" BackgroundColor="Gray">
+                        <Frame x:Name="sigleDeliveryView" Margin="0,40,0,0" Padding="0" CornerRadius="0" HasShadow="False" BackgroundColor="Gray">
                             <StackLayout BackgroundColor="White" Padding="0,10,0,0">
 
                            
                         <StackLayout Padding="20,0,20,0">
-                            <Label Text="Customer" FontSize="Header" TextColor="DarkGray" ></Label>
+                            <Label Text="Customer" FontSize="10" TextColor="DarkGray" ></Label>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                     <ColumnDefinition Width="80"></ColumnDefinition>
                                     <ColumnDefinition Width="80"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                                <Label Grid.Row="0" Grid.Column="0" x:Name="CustomerName" FontAttributes="Bold" FontSize="Small" VerticalOptions="Center" ></Label>
-                                <ImageButton Grid.Row="0" Grid.Column="1" HeightRequest="30" Source="CallIcon.png" HorizontalOptions="End" Clicked="CallCustomer"></ImageButton>
-                                <ImageButton Grid.Row="0" Grid.Column="2" HeightRequest="30" Source="TextIcon.png" Clicked="TextCustomer"></ImageButton>
+                                <Label Grid.Row="0" Grid.Column="0" x:Name="CustomerName" FontAttributes="Bold" FontSize="14" VerticalOptions="Center" ></Label>
+                                <ImageButton Grid.Row="0" Grid.Column="1" HeightRequest="30" Source="CallIcon.png" BackgroundColor="Transparent" HorizontalOptions="End" Clicked="CallCustomer"></ImageButton>
+                                <ImageButton Grid.Row="0" Grid.Column="2" HeightRequest="30" Source="TextIcon.png" BackgroundColor="Transparent" Clicked="TextCustomer"></ImageButton>
                             </Grid>
                             <BoxView HeightRequest="1" Color="Black"></BoxView>
                         </StackLayout>
                         
                         <StackLayout Padding="20,0,20,0">
-                            <Label Text="Address" FontSize="Header" TextColor="DarkGray"></Label>
+                            <Label Text="Address" FontSize="10" TextColor="DarkGray"></Label>
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"></RowDefinition>
                                     <RowDefinition Height="25"></RowDefinition>
                                 </Grid.RowDefinitions>
                               
-                                <Label  Grid.Row="0"  x:Name="CustomerAddress" FontAttributes="Bold" FontSize="Small" VerticalOptions="Center" ></Label>
+                                <Label  Grid.Row="0"  x:Name="CustomerAddress" FontAttributes="Bold" FontSize="14" VerticalOptions="Center" ></Label>
                                 <Grid Grid.Row="1">
                                     <Label  Grid.Column="0" Text="Get Directions" VerticalTextAlignment="Center" FontSize="10" >
                                     <Label.GestureRecognizers>
@@ -147,15 +147,15 @@
                         </StackLayout>
   
                         <StackLayout Padding="20,0,20,0">
-                            <Label Text="Delivery Instructions" FontSize="Header" TextColor="DarkGray"></Label>
+                            <Label Text="Delivery Instructions" FontSize="10" TextColor="DarkGray"></Label>
                             <StackLayout  >
-                                <Label x:Name="DeliveryInstructions" FontSize="Small" FontAttributes="Bold"></Label>
+                                <Label x:Name="DeliveryInstructions" FontSize="14" FontAttributes="Bold"></Label>
                             </StackLayout>
                             <BoxView HeightRequest="1" Color="Black"></BoxView>
                         </StackLayout>
     
                         <StackLayout Padding="20,0,20,0">
-                            <Label Text="Order Items" FontSize="Header" TextColor="DarkGray"  ></Label>
+                            <Label Text="Order Items" FontSize="10" TextColor="DarkGray"  ></Label>
                             <ListView HeightRequest="300" RowHeight="50" x:Name="OrderItemsList" CachingStrategy="RetainElement">
                                 <ListView.ItemTemplate>
                                     <DataTemplate>

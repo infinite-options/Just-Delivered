@@ -23,26 +23,28 @@ namespace JustDelivered
         public App()
         {
             InitializeComponent();
-            
-            if (Application.Current.Properties.Keys.Contains(Constant.Autheticator))
-            {
-                var tempUser = JsonConvert.DeserializeObject<Models.User>(Application.Current.Properties[Constant.Autheticator].ToString());
-                if (tempUser.id != "")
-                {
-                    user = tempUser;
-                    user.PrintUser();
 
-                    Application.Current.MainPage = new DeliveriesPage();
-                }
-                else
-                {
-                    MainPage = new LogInPage();
-                }
-            }
-            else
-            {
-                MainPage = new LogInPage();
-            }
+            //if (Application.Current.Properties.Keys.Contains(Constant.Autheticator))
+            //{
+            //    var tempUser = JsonConvert.DeserializeObject<Models.User>(Application.Current.Properties[Constant.Autheticator].ToString());
+            //    if (tempUser.id != "")
+            //    {
+            //        user = tempUser;
+            //        user.PrintUser();
+
+            //        Application.Current.MainPage = new DeliveriesPage();
+            //    }
+            //    else
+            //    {
+            //        MainPage = new LogInPage();
+            //    }
+            //}
+            //else
+            //{
+            //    MainPage = new LogInPage();
+            //}
+
+            MainPage = new LogInPage();
         }
 
         protected override async void OnStart()

@@ -192,72 +192,98 @@ namespace JustDelivered.Views
 
         void hourListStart_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
         {
-            var list = (CollectionView)sender;
-            list.ScrollTo(hourSourceStart[e.CenterItemIndex]);
-            //Debug.WriteLine("CLASS ID: " + list.ClassId);
+            try
+            {
+                var list = (CollectionView)sender;
+                list.ScrollTo(hourSourceStart[e.CenterItemIndex]);
+                //Debug.WriteLine("CLASS ID: " + list.ClassId);
 
-            var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
-            
-            selectedSchedule[position.key][position.row][0].hour = hourSourceStart[e.CenterItemIndex].hour;
+                var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
+
+                selectedSchedule[position.key][position.row][0].hour = hourSourceStart[e.CenterItemIndex].hour;
+            }
+            catch
+            {
+
+            }
 
         }
 
         void minuteListStart_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
         {
-            var list = (CollectionView)sender;
-            list.ScrollTo(minuteSource[e.CenterItemIndex]);
-            //Debug.WriteLine("CLASS ID: " + list.ClassId);
+            try
+            {
+                var list = (CollectionView)sender;
+                list.ScrollTo(minuteSource[e.CenterItemIndex]);
+                //Debug.WriteLine("CLASS ID: " + list.ClassId);
 
-            var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
+                var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
 
-            selectedSchedule[position.key][position.row][0].minute = minuteSource[e.CenterItemIndex].minute;
-
+                selectedSchedule[position.key][position.row][0].minute = minuteSource[e.CenterItemIndex].minute;
+            }
+            catch { }
         }
 
         void timeListStart_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
         {
-            var list = (CollectionView)sender;
-            list.ScrollTo(timeSourceStart[e.CenterItemIndex]);
-            //Debug.WriteLine("CLASS ID: " + list.ClassId);
+            try
+            {
+                var list = (CollectionView)sender;
+                list.ScrollTo(timeSourceStart[e.CenterItemIndex]);
+                //Debug.WriteLine("CLASS ID: " + list.ClassId);
 
-            var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
+                var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
 
-            selectedSchedule[position.key][position.row][0].time = timeSourceStart[e.CenterItemIndex].time;
+                selectedSchedule[position.key][position.row][0].time = timeSourceStart[e.CenterItemIndex].time;
 
+            }
+            catch { }
         }
 
         void hourListEnd_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
         {
-            var list = (CollectionView)sender;
-            list.ScrollTo(hourSourceEnd[e.CenterItemIndex]);
-            //Debug.WriteLine("CLASS ID: " + list.ClassId);
+            try
+            {
+                var list = (CollectionView)sender;
+                list.ScrollTo(hourSourceEnd[e.CenterItemIndex]);
+                //Debug.WriteLine("CLASS ID: " + list.ClassId);
 
-            var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
+                var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
 
-            selectedSchedule[position.key][position.row][1].hour = hourSourceEnd[e.CenterItemIndex].hour;
+                selectedSchedule[position.key][position.row][1].hour = hourSourceEnd[e.CenterItemIndex].hour;
 
+            }
+            catch { }
         }
 
         void minuteListEnd_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
         {
-            var list = (CollectionView)sender;
-            list.ScrollTo(minuteSource[e.CenterItemIndex]);
-            //Debug.WriteLine("CLASS ID: " + list.ClassId);
+            try
+            {
+                var list = (CollectionView)sender;
+                list.ScrollTo(minuteSource[e.CenterItemIndex]);
+                //Debug.WriteLine("CLASS ID: " + list.ClassId);
 
-            var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
+                var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
 
-            selectedSchedule[position.key][position.row][1].minute = minuteSource[e.CenterItemIndex].minute;
+                selectedSchedule[position.key][position.row][1].minute = minuteSource[e.CenterItemIndex].minute;
+            }
+            catch { }
         }
 
         void timeListEnd_Scrolled(System.Object sender, Xamarin.Forms.ItemsViewScrolledEventArgs e)
         {
-            var list = (CollectionView)sender;
-            list.ScrollTo(timeSourceEnd[e.CenterItemIndex]);
-            //Debug.WriteLine("CLASS ID: " + list.ClassId);
+            try
+            {
+                var list = (CollectionView)sender;
+                list.ScrollTo(timeSourceEnd[e.CenterItemIndex]);
+                //Debug.WriteLine("CLASS ID: " + list.ClassId);
 
-            var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
+                var position = JsonConvert.DeserializeObject<DayRow>(list.ClassId);
 
-            selectedSchedule[position.key][position.row][1].time = timeSourceEnd[e.CenterItemIndex].time;
+                selectedSchedule[position.key][position.row][1].time = timeSourceEnd[e.CenterItemIndex].time;
+            }
+            catch { }
         }
 
         async Task<bool> ProcessRequest()

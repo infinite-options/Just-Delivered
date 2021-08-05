@@ -298,7 +298,7 @@ namespace JustDelivered.Views
             InitializeComponent();
             SetDefaultLocationOnMap();
             VerifyUserAccount();
-            CheckVersion();
+            //CheckVersion();
         }
 
         public DeliveriesPage(string back)
