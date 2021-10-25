@@ -7,6 +7,8 @@ namespace JustDelivered.Models
     {
         public string bussinessName { get; set; }
         public string businessID { get; set; }
+        public double totalAmountToPay { get; set; }
+        public string totalAmountToPayStr { get; set; }
         
         public ObservableCollection<ProductItem> productSource { get; set; }
         public double viewHeight { get; set; }

@@ -12,26 +12,28 @@ using Xamarin.Forms;
 
 namespace JustDelivered.Views
 {
-    public partial class SignUpPage : ContentPage
+    public partial class DriverProfilePage : ContentPage
     {
-        public static SignUpAccount userToSignUp = null;
 
+        public static SignUpAccount userToSignUp = null;
         public static List<string> businessSelected = new List<string>();
         public static byte[] insurancePicture = null;
         public static string accountString = "";
         public string insuraceExpDate = "";
         public string licenseExpDate = "";
         private AddressAutocomplete addressToValidate = null;
-
         public ObservableCollection<Item> businesSource = new ObservableCollection<Item>();
+        Models.Address addr = new Models.Address();
 
+        public string phoneNum = "";
 
-        public SignUpPage()
+        public DriverProfilePage()
         {
             InitializeComponent();
-            if(userToSignUp != null)
+
+            if (userToSignUp != null)
             {
-                if(userToSignUp.platform != "DIRECT")
+                if (userToSignUp.platform != "DIRECT")
                 {
                     firstName.Text = userToSignUp.firstName;
                     lastName.Text = userToSignUp.lastName;
@@ -42,6 +44,9 @@ namespace JustDelivered.Views
                     directSignUp.IsVisible = true;
                 }
             }
+
+            insuranceExpirationDate.Date = DateTime.Now;
+
             SetAvailableBusiness();
         }
 
@@ -54,15 +59,32 @@ namespace JustDelivered.Views
 
                 if (endpointCall.IsSuccessStatusCode)
                 {
+
                     var contentString = await endpointCall.Content.ReadAsStringAsync();
                     var data = JsonConvert.DeserializeObject<Business>(contentString);
-                    foreach(Item item in data.result.result)
+                    foreach (Item item in data.result.result)
                     {
                         item.businessSelected = false;
                         businesSource.Add(item);
                     }
-                    businessList.ItemsSource = businesSource;
-                    businessList.HeightRequest = businesSource.Count * 50;
+
+                    
+                    BindableLayout.SetItemsSource(organizationView,businesSource);
+
+                    if (businesSource.Count == 0)
+                    {
+                        organizationMessageLabel.IsVisible = true;
+                        organizationMessageLabel.Text = "The are zero organization to select at the moment.";
+                    }
+                    else
+                    {
+                        organizationMessageLabel.IsVisible = false;
+                    }
+                }
+                else
+                {
+                    organizationMessageLabel.IsVisible = true;
+                    organizationMessageLabel.Text = "Our system seems to experience a problem. We were not able to retrieve the organizations. Our engineers are working diligently to resolve this issue. ";
                 }
             }
             catch (Exception issueGettingBusiness)
@@ -78,7 +100,7 @@ namespace JustDelivered.Views
             var gesture = (TapGestureRecognizer)stack.GestureRecognizers[0];
             var business = (Item)gesture.CommandParameter;
 
-            if(business.businessSelected == false)
+            if (business.businessSelected == false)
             {
                 business.updateBusinessSelected = true;
                 if (!businessSelected.Contains(business.business_uid))
@@ -96,23 +118,11 @@ namespace JustDelivered.Views
             }
         }
 
-        void ShowList(System.Object sender, System.EventArgs e)
-        {
-            showListButton.IsVisible = false;
-            businessListView.IsVisible = true;
-        }
-
-        void HideList(System.Object sender, System.EventArgs e)
-        {
-            businessListView.IsVisible = false;
-            showListButton.IsVisible = true;
-        }
-
         async void Continue(System.Object sender, System.EventArgs e)
         {
             if (ValidateEntries())
             {
-                if(userToSignUp.platform == "DIRECT")
+                if (userToSignUp.platform == "DIRECT")
                 {
                     if (!ValidatePassword())
                     {
@@ -127,7 +137,7 @@ namespace JustDelivered.Views
                 account.last_name = lastName.Text.Trim();
                 account.business_uid = "";
                 account.driver_hours = "";
-                account.street = address.Text.Trim();
+                //account.street = address.Text.Trim();
                 account.unit = unit.Text == null ? "" : unit.Text;
                 account.city = city.Text.Trim();
                 account.state = state.Text.Trim();
@@ -220,14 +230,13 @@ namespace JustDelivered.Views
 
         bool ValidateEntries()
         {
-          
+            // remove || String.IsNullOrEmpty(address.Text)
             bool result = false;
-            if(!(
+            if (!(
                  String.IsNullOrEmpty(firstName.Text)
               || String.IsNullOrEmpty(lastName.Text)
               || String.IsNullOrEmpty(phoneNumber.Text)
               || String.IsNullOrEmpty(email.Text)
-              || String.IsNullOrEmpty(address.Text)
               || String.IsNullOrEmpty(city.Text)
               || String.IsNullOrEmpty(state.Text)
               || String.IsNullOrEmpty(zipcode.Text)
@@ -249,13 +258,13 @@ namespace JustDelivered.Views
               )
               )
             {
-                if(businessSelected.Count != 0)
+                if (businessSelected.Count != 0)
                 {
-                    if(insurancePicture != null)
+                    if (insurancePicture != null)
                     {
-                        if(addressToValidate != null && addressToValidate.isValidated == true)
+                        if (addressToValidate != null && addressToValidate.isValidated == true)
                         {
-                            result = true; 
+                            result = true;
                         }
                     }
                 }
@@ -264,18 +273,19 @@ namespace JustDelivered.Views
             return result;
 
 
-              //|| String.IsNullOrEmpty(emergencyAddress.Text)
-              //|| String.IsNullOrEmpty(emergencyCity.Text)
-              //|| String.IsNullOrEmpty(emergencyUnit.Text)
-              //|| String.IsNullOrEmpty(emergencyState.Text)
-              //|| String.IsNullOrEmpty(emergencyZipcode.Text)
+            //|| String.IsNullOrEmpty(emergencyAddress.Text)
+            //|| String.IsNullOrEmpty(emergencyCity.Text)
+            //|| String.IsNullOrEmpty(emergencyUnit.Text)
+            //|| String.IsNullOrEmpty(emergencyState.Text)
+            //|| String.IsNullOrEmpty(emergencyZipcode.Text)
         }
 
         bool ValidatePassword()
         {
             bool result = false;
-            if(!(String.IsNullOrEmpty(password1.Text) || String.IsNullOrEmpty(password2.Text))){
-                if(password1.Text == password2.Text)
+            if (!(String.IsNullOrEmpty(password1.Text) || String.IsNullOrEmpty(password2.Text)))
+            {
+                if (password1.Text == password2.Text)
                 {
                     result = true;
                 }
@@ -295,9 +305,11 @@ namespace JustDelivered.Views
                 var photo = await Plugin.Media.CrossMedia.Current.TakePhotoAsync(new Plugin.Media.Abstractions.StoreCameraMediaOptions() { SaveToAlbum = true, Name = "Photo1.png" });
                 if (photo != null)
                 {
+
                     var path = photo.Path;
+                    insuranceImage.Source = ImageSource.FromStream(() => { return photo.GetStream(); });
                     insurancePicture = File.ReadAllBytes(path);
-                 
+                    imageFrame.IsVisible = true;
                     //f.Source = ImageSource.FromStream(() => { return photo.GetStream(); });
                 }
             }
@@ -309,17 +321,35 @@ namespace JustDelivered.Views
             }
         }
 
-        void InsuranceExpirationDate_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        void OnDateSelectedChaged(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
         {
-            insuraceExpDate = e.NewDate.ToString("yyyy-MM-dd");
+            var datePicker = (DatePicker)sender;
+            var frame = (Frame)datePicker.Parent;
+
+            if (datePicker.Date != null)
+            {
+                if (frame.BorderColor == Color.LightGray)
+                {
+                    frame.BorderColor = Color.Red;
+
+                    datePicker.Date = e.NewDate;
+                    datePicker.TextColor = Color.Black;
+                }
+            }
+            else
+            {
+                if (frame.BorderColor == Color.Red)
+                {
+                    frame.BorderColor = Color.LightGray;
+                    datePicker.TextColor = Color.Gray;
+                }
+            }
         }
 
         void DriveLicenseExpirationDate_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
         {
             licenseExpDate = e.NewDate.ToString("yyyy-MM-dd");
         }
-
-        Models.Address addr = new Models.Address();
 
         async void OnAddressChanged(object sender, EventArgs eventArgs)
         {
@@ -357,14 +387,14 @@ namespace JustDelivered.Views
         void addressEntryUnfocused(object sender, EventArgs eventArgs)
         {
             addr.addressEntryUnfocused(addressList, addressFrame);
-            if(addressToValidate != null && addressToValidate.isValidated == true)
+            if (addressToValidate != null && addressToValidate.isValidated == true)
             {
-                addressView.IsVisible = true;
-               
+                //addressView.IsVisible = true;
+
             }
             else
             {
-                addressView.IsVisible = false;
+                //addressView.IsVisible = false;
             }
         }
 
@@ -399,15 +429,15 @@ namespace JustDelivered.Views
                             var location = await client.ConvertAddressToGeoCoordiantes(addressToValidate.Street, addressToValidate.City, addressToValidate.State);
                             if (location != null)
                             {
-                                
+
                                 addressToValidate.Latitude = location.Latitude;
                                 addressToValidate.Longitude = location.Longitude;
-                               
+
 
                                 if (addressStatus == "Y" || addressStatus == "S")
                                 {
                                     await DisplayAlert("Great!", "Your address is valid. Please continue with your application", "OK");
-                                    address.Text = addressToValidate.Street;
+                                    //address.Text = addressToValidate.Street;
                                     unit.Text = addressToValidate.Unit;
                                     city.Text = addressToValidate.City;
                                     state.Text = addressToValidate.State;
@@ -421,7 +451,7 @@ namespace JustDelivered.Views
                                     {
                                         await DisplayAlert("Great!", "Your address is valid. Please continue with your application", "OK");
                                         addressToValidate.Unit = unit1;
-                                        address.Text = addressToValidate.Street;
+                                        //address.Text = addressToValidate.Street;
                                         unit.Text = addressToValidate.Unit;
                                         city.Text = addressToValidate.City;
                                         state.Text = addressToValidate.State;
@@ -436,7 +466,7 @@ namespace JustDelivered.Views
                                 await DisplayAlert("Oops", "We weren't able to find your address", "OK");
                             }
 
-                         
+
                         }
                         else
                         {
@@ -446,7 +476,7 @@ namespace JustDelivered.Views
                 }
                 else
                 {
-                    await DisplayAlert("Oops","Please select an address to validate","OK");
+                    await DisplayAlert("Oops", "Please select an address to validate", "OK");
                 }
             }
             catch (Exception errorFindLocalProduceBaseOnLocation)
@@ -455,5 +485,106 @@ namespace JustDelivered.Views
             }
         }
 
+        void NavigateToDeliveryPage(System.Object sender, System.EventArgs e)
+        {
+            Navigation.PopModalAsync(true);
+        }
+
+        void EntryOnTextChanged(System.Object sender, Xamarin.Forms.TextChangedEventArgs e)
+        {
+            var entry = (Entry)sender;
+            var frame = (Frame)entry.Parent;
+
+            if (!String.IsNullOrEmpty(entry.Text))
+            {
+                if(frame.BorderColor == Color.LightGray)
+                {
+                    frame.BorderColor = Color.Red;
+                }
+            }
+            else
+            {
+                if (frame.BorderColor == Color.Red)
+                {
+                    frame.BorderColor = Color.LightGray;
+                }
+            }
+        }
+
+        void OnPhoneTextChanged(System.Object sender, Xamarin.Forms.TextChangedEventArgs e)
+        {
+            var entry = (Entry)sender;
+            var frame = (Frame)entry.Parent;
+
+            if (!String.IsNullOrEmpty(entry.Text))
+            {
+                if (frame.BorderColor == Color.LightGray)
+                {
+                    frame.BorderColor = Color.Red;
+                }
+            }
+            else
+            {
+                if (frame.BorderColor == Color.Red)
+                {
+                    frame.BorderColor = Color.LightGray;
+                }
+            }
+
+            if (e.NewTextValue != null && e.OldTextValue != null)
+            {
+                if (e.NewTextValue.Length > e.OldTextValue.Length)
+                {
+
+                    var localInput = "";
+
+                    foreach (char i in e.NewTextValue)
+                    {
+                        if (i != '(' && i != ')' && i != ' ' && i != '-')
+                        {
+                            localInput += i;
+                        }
+                    }
+
+                    if (localInput.Length != 0)
+                    {
+                        var newChar = localInput[localInput.Length - 1];
+
+                        int defaultValue = 0;
+                        bool isNumber = int.TryParse(newChar.ToString(), out defaultValue);
+
+                        if (isNumber)
+                        {
+
+                            var phone = "(";
+
+                            for (int i = 0; i < localInput.Length; i++)
+                            {
+                                if (i == 2)
+                                {
+                                    phone += localInput[i] + ") ";
+                                }
+                                else if (i == 5)
+                                {
+                                    phone += localInput[i] + "-";
+                                }
+                                else
+                                {
+                                    phone += localInput[i];
+                                }
+                            }
+
+                            entry.Text = phone;
+
+                        }
+                        else
+                        {
+                            DisplayAlert("Oops", "You enter a non numberical value. Please enter 0-9 digits.", "OK");
+                            entry.Text = e.OldTextValue;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

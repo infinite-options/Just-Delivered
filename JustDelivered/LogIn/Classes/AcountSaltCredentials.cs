@@ -15,5 +15,6 @@ namespace JustDelivered.LogIn.Classes
     {
         public string password_algorithm { get; set; }
         public string password_salt { get; set; }
+        public string message { get; set; }
     }
 }

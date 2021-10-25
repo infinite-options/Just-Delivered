@@ -48,7 +48,7 @@ namespace JustDelivered.Views
                 string date = currentDate.ToString("yyyy-MM-dd");
 
                 // TEST
-                //string date = currentDate.ToString("2021-07-28");
+                //string date = currentDate.ToString("2021-08-22");
 
                 var client = new HttpClient();
                 var endpointCall = await client.GetAsync(Constant.AllProductToBeSorted + date + "," + user.id);
@@ -75,6 +75,9 @@ namespace JustDelivered.Views
                                 customer.backgroundColor = Color.White;
                             }
 
+                            var tempAmount = businesses[details.business_uid].totalAmountToPay;
+                            businesses[details.business_uid].totalAmountToPay = tempAmount + details.qty * details.item_business_price;
+                            businesses[details.business_uid].totalAmountToPayStr = (tempAmount + details.qty * details.item_business_price).ToString("N2");
                             businesses[details.business_uid].productSource.Add(new ProductItem
                             {
                                 color = color,
@@ -85,7 +88,8 @@ namespace JustDelivered.Views
                                 customers = details.customers,
                                 item_uid = details.item_uid,
                                 isEnable = false,
-                                sortedStatusIcon = ""
+                                sortedStatusIcon = "",
+                                amountToPayPerItem = (details.qty * details.item_business_price).ToString("N2")
                             });
                         }
                         else
@@ -105,6 +109,8 @@ namespace JustDelivered.Views
                             {
                                 businessID = details.business_uid,
                                 bussinessName = details.business_name,
+                                totalAmountToPay = details.qty * details.item_business_price,
+                                totalAmountToPayStr = (details.qty * details.item_business_price).ToString("N2"),
                                 productSource = new ObservableCollection<ProductItem>()
                             });
 
@@ -119,6 +125,7 @@ namespace JustDelivered.Views
                                 item_uid = details.item_uid,
                                 isEnable = false,
                                 sortedStatusIcon = "",
+                                amountToPayPerItem = (details.qty * details.item_business_price).ToString("N2")
                             });
 
                         }
@@ -141,7 +148,7 @@ namespace JustDelivered.Views
                             }
                         }
 
-                        double height = (double)(Math.Ceiling(rows) * 130);
+                        double height = (double)(Math.Ceiling(rows) * 160);
                         businesses[ID].viewHeight = height;
                         businessSource.Add(businesses[ID]);
                     }

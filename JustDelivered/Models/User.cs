@@ -10,8 +10,8 @@ namespace JustDelivered.Models
         public string socialId;
         public string platform;
         public string route_id;
+        public DateTime sessionTime;
 
-        
         public User()
         {
             id = "";
@@ -19,6 +19,7 @@ namespace JustDelivered.Models
             socialId = "";
             platform = "";
             route_id = "";
+            sessionTime = new DateTime();
         }
 
         public void PrintUser()

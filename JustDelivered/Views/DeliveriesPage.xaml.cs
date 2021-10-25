@@ -24,6 +24,10 @@ namespace JustDelivered.Views
 {
     public partial class DeliveriesPage : ContentPage
     {
+        public static bool isTimerOn = false;
+        public bool stopTimer = true;
+        public static List<Models.Point> pointList = new List<Models.Point>();
+
         public static Models.User user = null;
         double y = 0;
 
@@ -299,6 +303,96 @@ namespace JustDelivered.Views
             SetDefaultLocationOnMap();
             VerifyUserAccount();
             //CheckVersion();
+
+            if (!isTimerOn)
+            {
+                isTimerOn = true;
+                StartTimer();
+            }
+        }
+
+       
+        void StartTimer()
+        {
+            var counter = 0;
+
+            Device.StartTimer(new TimeSpan(0, 0, 1), () =>
+            {
+
+                GetLastKnownLocationAfterTimeBegins();
+                // 5 mins = 325 seconds
+                // 15 seconds 
+                if (counter == 325)
+                {
+                    counter = 0;
+                    SaveDriverData();
+                }
+
+                counter++;
+
+                return stopTimer;
+            });
+        }
+
+        async void SaveDriverData()
+        {
+            var data = new SaveDrivePath();
+
+            data.action = "post";
+            data.route_id = routeID;
+            data.directions = pointList;
+
+            try
+            {
+                var client = new HttpClient();
+                var dataJSON = JsonConvert.SerializeObject(data);
+                var content = new StringContent(dataJSON, Encoding.UTF8, "application/json");
+                var endpointCall = await client.PostAsync(Constant.DriverPath, content);
+
+                Debug.WriteLine("UPDATE DELIVERY STATUS ENDPOINT " + endpointCall.IsSuccessStatusCode);
+
+            }
+            catch (Exception ErrorUpdatingStatus)
+            {
+                Debug.WriteLine("Exception: " + ErrorUpdatingStatus.Message);
+            }
+
+            pointList.Clear();
+        }
+
+        async void GetLastKnownLocationAfterTimeBegins()
+        {
+            try
+            {
+                var location = await Geolocation.GetLastKnownLocationAsync();
+
+                if (location != null)
+                {
+                    var point = new Models.Point()
+                    {
+                        x = location.Latitude,
+                        y = location.Longitude
+                    };
+
+                    pointList.Add(point);
+                }
+            }
+            catch (FeatureNotSupportedException fnsEx)
+            {
+                // Handle not supported on device exception
+            }
+            catch (FeatureNotEnabledException fneEx)
+            {
+                // Handle not enabled on device exception
+            }
+            catch (PermissionException pEx)
+            {
+                // Handle permission exception
+            }
+            catch (Exception ex)
+            {
+                // Unable to get location
+            }
         }
 
         public DeliveriesPage(string back)
@@ -365,6 +459,8 @@ namespace JustDelivered.Views
 
             if (!found)
             {
+                stopTimer = false;
+                SaveDriverData();
                 await DisplayAlert("Great job!","It looks like you completed all your deliveries","OK");
             }
         }
@@ -403,12 +499,12 @@ namespace JustDelivered.Views
 
 
                 //LIFE
-                routeClient.uid = user.id;
-                routeClient.delivery_date = currentDate.ToString("yyyy-MM-dd 10:00:00");
+                //routeClient.uid = user.id;
+                //routeClient.delivery_date = currentDate.ToString("yyyy-MM-dd 10:00:00");
 
                 //TEST
-                //routeClient.uid = "930-000001";
-                //routeClient.delivery_date = currentDate.ToString("2021-08-01 10:00:00");
+                routeClient.uid = user.id;
+                routeClient.delivery_date = currentDate.ToString("2021-10-24 10:00:00");
 
                 var socialLogInPostSerialized = JsonConvert.SerializeObject(routeClient);
 
@@ -421,7 +517,7 @@ namespace JustDelivered.Views
                 var RDSResponse = await client.PostAsync(Constant.DriverRouteUrl, postContent);
                 var responseContent = await RDSResponse.Content.ReadAsStringAsync();
 
-                //Debug.WriteLine(responseContent);
+                Debug.WriteLine(responseContent);
 
                 //Debug.WriteLine(RDSResponse.IsSuccessStatusCode);
 
@@ -1338,7 +1434,9 @@ namespace JustDelivered.Views
         void LogOut(System.Object sender, System.EventArgs e)
         {
             //user.PrintUser();
-
+            stopTimer = false;
+            SaveDriverData();
+            
             if (Application.Current.Properties.Keys.Contains(Constant.Autheticator))
             {
                 user.id = "";
@@ -1435,6 +1533,24 @@ namespace JustDelivered.Views
                 SetDelivery();
                 SetCompleteRouteView();
             }
+        }
+
+        void AlternativeStopTimer(System.Object sender, System.EventArgs e)
+        {
+            stopTimer = false;
+            SaveDriverData();
+        }
+
+        void NavigateToDriverProfilePage(System.Object sender, System.EventArgs e)
+        {
+            //Navigation.PushModalAsync(new DriverProfilePage(), true);
+            Application.Current.MainPage = new NavigationPage(new DriverProfilePage());
+        }
+
+        void NavigateToSchedulePage(System.Object sender, System.EventArgs e)
+        {
+            //Navigation.PushModalAsync(new DriverSchedulePage(), true);
+            Application.Current.MainPage = new NavigationPage(new DriverSchedulePage());
         }
     }
 }

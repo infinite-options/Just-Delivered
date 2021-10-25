@@ -170,6 +170,9 @@
     <BundleResource Include="Resources\goIcon.png" />
     <BundleResource Include="Resources\completedIcon.png" />
     <BundleResource Include="Resources\inprogressYellowIcon.png" />
+    <BundleResource Include="Resources\stopTimerIcon.png" />
+    <BundleResource Include="Resources\profileIcon.png" />
+    <BundleResource Include="Resources\scheduleIcon.png" />
   </ItemGroup>
   <ItemGroup>
     <ITunesArtwork Include="iTunesArtwork" />

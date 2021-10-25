@@ -453,14 +453,50 @@ namespace JustDelivered.Views
             return true;
         }
 
-        async void UpdateDeliveryStatus(string purchaseId)
+        // needs to update this function to update all purchase id.
+        async void UpdateDeliveryStatus(string strIDs)
+        {
+
+            List<string> purchaseIDList = CovertStrToArray(strIDs);
+
+            foreach(string id in purchaseIDList)
+            {
+                Process(id);
+            }
+        }
+
+        List<string> CovertStrToArray(string s)
+        {
+            string temp = "";
+            List<string> list = new List<string>();
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] != ',' && i != (s.Length - 1))
+                {
+                    temp += s[i];
+                }
+                else if (s[i] != ',' && i == (s.Length - 1))
+                {
+                    temp += s[i];
+                }
+                else if (s[i] == ',')
+                {
+                    list.Add(temp);
+                    temp = "";
+                }
+            }
+            list.Add(temp);
+            return list;
+        }
+
+        async void Process(string id)
         {
             try
             {
                 var client = new HttpClient();
                 var delivery = new UpdateDelivery();
 
-                delivery.purchase_uid = purchaseId;
+                delivery.purchase_uid = id;
                 delivery.cmd = "Delivered";
                 delivery.note = "";
 
@@ -476,8 +512,9 @@ namespace JustDelivered.Views
             {
                 Debug.WriteLine("Exception: " + ErrorUpdatingStatus.Message);
             }
-            
         }
+
+        
 
         void JDDataBase(string purchaseID)
         {

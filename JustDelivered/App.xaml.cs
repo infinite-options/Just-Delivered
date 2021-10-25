@@ -24,38 +24,58 @@ namespace JustDelivered
         {
             InitializeComponent();
 
-            //if (Application.Current.Properties.Keys.Contains(Constant.Autheticator))
-            //{
-            //    var tempUser = JsonConvert.DeserializeObject<Models.User>(Application.Current.Properties[Constant.Autheticator].ToString());
-            //    if (tempUser.id != "")
-            //    {
-            //        user = tempUser;
-            //        user.PrintUser();
+            if (Application.Current.Properties.Keys.Contains(Constant.Autheticator))
+            {
+                var tempUser = JsonConvert.DeserializeObject<User>(Current.Properties[Constant.Autheticator].ToString());
 
-            //        Application.Current.MainPage = new DeliveriesPage();
-            //    }
-            //    else
-            //    {
-            //        MainPage = new LogInPage();
-            //    }
-            //}
-            //else
-            //{
-            //    MainPage = new LogInPage();
-            //}
+                if(tempUser.id != "")
+                {
+                    DateTime today = DateTime.Now;
+                    var expTime = tempUser.sessionTime;
 
-            MainPage = new LogInPage();
+                    if (today <= expTime)
+                    {
+                        SetUser(tempUser);
+                        MainPage = new DeliveriesPage();
+                    }
+                    else
+                    {
+                        MainPage = new NavigationPage(new LogInPage());
+
+                        //string socialPlatform = tempUser.getUserPlatform();
+
+                        //if (socialPlatform.Equals(Constant.Facebook))
+                        //{
+                        //    Application.Current.MainPage.Navigation.PushModalAsync(new LogInPage(Constant.Facebook));
+                        //}
+                        //else if (socialPlatform.Equals(Constant.Google))
+                        //{
+                        //    Application.Current.MainPage.Navigation.PushModalAsync(new LogInPage(Constant.Google));
+                        //}
+                        //else if (socialPlatform.Equals(Constant.Apple))
+                        //{
+                        //    Application.Current.MainPage.Navigation.PushModalAsync(new LogInPage(Constant.Apple));
+                        //}
+                    }
+                }
+                else
+                {
+                    MainPage = new NavigationPage(new LogInPage());
+                }
+            }
+            else
+            {
+                MainPage = new NavigationPage(new LogInPage());
+            }
         }
 
         protected override async void OnStart()
         {
             var appleSignInService = DependencyService.Get<IAppleSignInService>();
 
-            // Retrieve user info if user is signed on via Apple ID)
             if (appleSignInService != null)
             {
                 userId = await SecureStorage.GetAsync(AppleUserIdKey);
-                //System.Diagnostics.Debug.WriteLine("This is the Apple userID :" + userId);
                 if (appleSignInService.IsAvailable && !string.IsNullOrEmpty(userId))
                 {
                     var credentialState = await appleSignInService.GetCredentialStateAsync(userId);
@@ -73,6 +93,20 @@ namespace JustDelivered
                     }
                 }
             }
+        }
+
+        void SetUser(User temp)
+        {
+            DateTime today = DateTime.Now;
+            DateTime expDate = today.AddDays(Constant.days);
+
+            user = new User();
+            user.id = temp.id;
+            user.sessionTime = expDate;
+            user.email = "";
+            user.socialId = "";
+            user.platform = "";
+            user.route_id = "";
         }
 
         protected override void OnSleep()

@@ -43,6 +43,18 @@
                                     <ImageButton Margin="0,0,0,0" HeightRequest="25" BackgroundColor="Transparent" Source="sortingIcon" Clicked="NavigateToProductsPage"></ImageButton>
                                     <Label Text="Sorting" FontSize="12" HorizontalTextAlignment="Center"></Label>
                                 </StackLayout>
+                                <StackLayout>
+                                    <ImageButton Margin="0,0,0,0" HeightRequest="25" BackgroundColor="Transparent" Source="profileIcon" Clicked="NavigateToDriverProfilePage"></ImageButton>
+                                    <Label Text="Profile" FontSize="12" HorizontalTextAlignment="Center"></Label>
+                                </StackLayout>
+                                <StackLayout>
+                                    <ImageButton Margin="0,0,0,0" HeightRequest="25" BackgroundColor="Transparent" Source="scheduleIcon" Clicked="NavigateToSchedulePage"></ImageButton>
+                                    <Label Text="Schedule" FontSize="12" HorizontalTextAlignment="Center"></Label>
+                                </StackLayout>
+                                <StackLayout>
+                                    <ImageButton Margin="0,0,0,0" HeightRequest="25" BackgroundColor="Transparent" Source="stopTimerIcon" Clicked="AlternativeStopTimer"></ImageButton>
+                                    <Label Text="Timer" FontSize="12" HorizontalTextAlignment="Center"></Label>
+                                </StackLayout>
                                 <StackLayout Margin="0,0,0,10">
                                     <ImageButton Margin="0,0,0,0" HeightRequest="25" BackgroundColor="Transparent" Source="logoutIcon" Clicked="LogOut"></ImageButton>
                                     <Label Text="Log out" FontSize="12" HorizontalTextAlignment="Center"></Label>

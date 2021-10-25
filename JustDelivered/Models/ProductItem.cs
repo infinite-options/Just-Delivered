@@ -17,6 +17,7 @@ namespace JustDelivered.Models
         public  IList<Customer> customers { get;set; }
         public bool isEnable { get; set; }
         public string sortedStatusIcon { get; set; }
+        public string amountToPayPerItem { get; set; }
 
         public bool isEnableUpdate
         {

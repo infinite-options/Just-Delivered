@@ -14,8 +14,9 @@ using static JustDelivered.Views.SignUpPage;
 
 namespace JustDelivered.Views
 {
-    public partial class SubmitSignUpPage : ContentPage
+    public partial class DriverSchedulePage : ContentPage
     {
+
         public ObservableCollection<Schedule> scheduleSource = new ObservableCollection<Schedule>();
 
         public ObservableCollection<PickerTimeHour> hourSourceStart = new ObservableCollection<PickerTimeHour>();
@@ -30,32 +31,33 @@ namespace JustDelivered.Views
 
         public string dayToAddScheduleTime = "";
 
-        public SubmitSignUpPage()
+        public DriverSchedulePage()
         {
             InitializeComponent();
             SetSchedule(scheduleView);
             SetDictionary();
         }
 
-        void SetSchedule(CollectionView view) 
+        void SetSchedule(CollectionView view)
         {
             SetHoursStart();
-        
+
             SetTimeStart();
 
             SetMinutes();
 
             SetHoursEnd();
-    
+
             SetTimeEnd();
 
             string[] weekdays = new[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
-            foreach(string day in weekdays)
+            foreach (string day in weekdays)
             {
                 var position = new DayRow { key = day, row = 0 };
                 var positionString = JsonConvert.SerializeObject(position);
                 Debug.WriteLine("POSITION: " + positionString);
-                scheduleSource.Add(new Schedule {
+                scheduleSource.Add(new Schedule
+                {
                     colorValue = Color.Black,
                     isEnabledValue = false,
                     opacityValue = 0.5,
@@ -102,13 +104,13 @@ namespace JustDelivered.Views
                     }
                     hourSourceStart.Add(new PickerTimeHour { hour = value });
                 }
-                
+
             }
             catch (Exception setHourIssue)
             {
                 Debug.WriteLine("Error: " + setHourIssue.Message);
             }
-            
+
         }
 
         void SetHoursEnd()
@@ -146,22 +148,22 @@ namespace JustDelivered.Views
                 minuteSource.Add(new PickerTimeMinute { minute = "15" });
                 minuteSource.Add(new PickerTimeMinute { minute = "30" });
                 minuteSource.Add(new PickerTimeMinute { minute = "45" });
-                
+
             }
             catch (Exception setHourIssue)
             {
                 Debug.WriteLine("Error: " + setHourIssue.Message);
             }
-           
+
         }
 
-        void  SetTimeStart()
+        void SetTimeStart()
         {
             try
             {
                 timeSourceStart.Add(new PickerTime { time = "AM" });
                 timeSourceStart.Add(new PickerTime { time = "PM" });
-               
+
             }
             catch (Exception setHourIssue)
             {
@@ -293,12 +295,12 @@ namespace JustDelivered.Views
 
             foreach (string day in selectedSchedule.Keys)
             {
-                if(selectedSchedule[day].Count != 0)
+                if (selectedSchedule[day].Count != 0)
                 {
                     //DateTime today = DateTime.Now;
                     string todayString = today.ToString("yyyy-MM-dd");
-                    
-                    foreach(List<Time> interval in selectedSchedule[day])
+
+                    foreach (List<Time> interval in selectedSchedule[day])
                     {
                         string startTime = todayString;
                         string endTime = todayString;
@@ -325,7 +327,7 @@ namespace JustDelivered.Views
                         {
                             timesRecorded.Add(day, list);
                         }
-                       
+
                     }
                 }
                 else
@@ -345,12 +347,12 @@ namespace JustDelivered.Views
             var scheduleToSubmitString = JsonConvert.SerializeObject(scheduleToSubmit);
             Debug.WriteLine("TIMES: " + scheduleToSubmitString);
             var businessIDs = "";
-            foreach(string id in businessSelected)
+            foreach (string id in businessSelected)
             {
                 businessIDs += id + ",";
             }
 
-            if(businessIDs != "")
+            if (businessIDs != "")
             {
                 businessIDs = businessIDs.Remove(businessIDs.Length - 1);
             }
@@ -455,7 +457,7 @@ namespace JustDelivered.Views
         {
             UserDialogs.Instance.ShowLoading("We are processing your request and checking that all schedule entries are valid...");
             var timesAreInvalid = false;
-            foreach(string day in selectedSchedule.Keys)
+            foreach (string day in selectedSchedule.Keys)
             {
                 if (!timesValidation(selectedSchedule[day]))
                 {
@@ -464,7 +466,7 @@ namespace JustDelivered.Views
                 }
             }
 
-            
+
 
             if (!timesAreInvalid)
             {
@@ -495,7 +497,7 @@ namespace JustDelivered.Views
                 UserDialogs.Instance.HideLoading();
                 await DisplayAlert("Oops", "We see that one or more times in your schedule are not valid entries. Please make sure no time in your schedule overlaps.", "OK");
             }
-            
+
         }
 
         bool isScheduleEmpty()
@@ -526,7 +528,7 @@ namespace JustDelivered.Views
             var gesture = (TapGestureRecognizer)frame.GestureRecognizers[0];
             var selected = (Schedule)gesture.CommandParameter;
 
-            if(selected.colorValue == Color.Black)
+            if (selected.colorValue == Color.Black)
             {
                 selected.updateColorValue = Color.Red;
                 selected.updateIsEnabledValue = true;
@@ -550,7 +552,7 @@ namespace JustDelivered.Views
                 selected.updateIsEnabledValue = false;
                 selected.updateOpacityValue = 0.5;
                 var position = JsonConvert.DeserializeObject<DayRow>(selected.row);
-                if(position.row < selectedSchedule[selected.day].Count)
+                if (position.row < selectedSchedule[selected.day].Count)
                 {
                     selectedSchedule[selected.day].RemoveAt(position.row);
                 }
@@ -579,16 +581,16 @@ namespace JustDelivered.Views
 
             list.Add(mStartTime);
             list.Add(mEndTime);
-            
+
             return list;
         }
 
-        bool timesValidation(List<List<Time>> collection) 
+        bool timesValidation(List<List<Time>> collection)
         {
             var result = false;
             var listDateTimes = new List<List<DateTime>>();
             // Step 1. Covert Time struct to DateTime for comparisons
-            foreach(List<Time> interval in collection)
+            foreach (List<Time> interval in collection)
             {
                 var sTime = " " + interval[0].hour + ":" + interval[0].minute + " " + interval[0].time;
                 var eTime = " " + interval[1].hour + ":" + interval[1].minute + " " + interval[1].time;
@@ -596,17 +598,17 @@ namespace JustDelivered.Views
                 listDateTimes.Add(dateTimeInterval);
             }
 
-            if(listDateTimes.Count == 0)
+            if (listDateTimes.Count == 0)
             {
-                result =  true;
+                result = true;
             }
             else
             {
-                for(int i = 0; i < listDateTimes.Count; i++)
+                for (int i = 0; i < listDateTimes.Count; i++)
                 {
-                    for(int j = 0; j < listDateTimes.Count; j++)
+                    for (int j = 0; j < listDateTimes.Count; j++)
                     {
-                        if(i != j)
+                        if (i != j)
                         {
                             var oldStart = listDateTimes[i][0];
                             var oldEnd = listDateTimes[i][1];
@@ -651,7 +653,7 @@ namespace JustDelivered.Views
         async void AddAnoherTime(System.Object sender, System.EventArgs e)
         {
             var day = await DisplayActionSheet("Select one of the following days when you would like to add another available time.", "Cancel", null, new string[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" });
-            if(day != null && day != "" && day != "Cancel")
+            if (day != null && day != "" && day != "Cancel")
             {
                 UserDialogs.Instance.ShowLoading("Updating your schedule...");
                 var position = new DayRow { key = day, row = 0 };
@@ -681,12 +683,12 @@ namespace JustDelivered.Views
 
                 string[] weekdays = new[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
-                foreach(string dayToSort in weekdays)
+                foreach (string dayToSort in weekdays)
                 {
                     var rowIndex = 0;
-                    foreach(Schedule schedule in scheduleSource)
+                    foreach (Schedule schedule in scheduleSource)
                     {
-                        if(schedule.day == dayToSort)
+                        if (schedule.day == dayToSort)
                         {
                             var p = new DayRow { key = dayToSort, row = rowIndex };
                             var pString = JsonConvert.SerializeObject(p);
@@ -715,5 +717,6 @@ namespace JustDelivered.Views
 
             }
         }
+
     }
 }

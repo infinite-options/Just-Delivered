@@ -12,18 +12,6 @@
             
            
             <StackLayout Grid.Row="1"  Padding="25,0,25,0" >
-                <!--<Label Text="Select Organization" FontSize="Default" FontAttributes="Bold"></Label>
-                <Button 
-                    x:Name="organizations"
-                 
-                    Text="infiniteoptions"
-                    FontAttributes="Bold"
-                    TextColor="LightGray"
-                    HeightRequest="35"
-                    BackgroundColor="WhiteSmoke"
-                    BorderColor="DarkGray"
-                    BorderWidth="1">
-                </Button>-->
                 <Label Text="Email Address" FontSize="Default" FontAttributes="Bold"></Label>
                 <Entry
                     x:Name="userEmailAddress"
@@ -55,7 +43,7 @@
                         Source="GoogleIcon.png"
                         Padding="5,0,5,0"
                         BackgroundColor="Transparent"
-                        Clicked="GoogleClick">
+                        Clicked="GoogleLogInClick">
                     </ImageButton>
                     <ImageButton
                         x:Name="appleLogInButton"
@@ -64,8 +52,7 @@
                         Source="AppleIcon.png"
                         Padding="25,0,0,0"
                         BackgroundColor="Transparent"
-                        Clicked="AppleLogInClick"
-                        Command = "{Binding SignInWithAppleCommand}">
+                        Clicked="AppleLogInClick">
                     </ImageButton>
                 </Grid>
                 <Button IsVisible="false" Margin="30,0,30,0" Text="Sign up to become a JD Driver" Clicked="Button_Clicked" FontAttributes="Bold" TextColor="Red" BackgroundColor="White" BorderColor="Red" BorderWidth="1"></Button>
