@@ -404,7 +404,7 @@ namespace JustDelivered.Views
                     //    await Application.Current.MainPage.DisplayAlert("Oops", "It looks like you don't have an account with Serving Fresh. Please sign up!", "OK");
                     //}
 
-                    await Application.Current.MainPage.DisplayAlert("Oops", "It looks like you don't have an account with Just Delivered. Please sign up!", "OK");
+                    //await Application.Current.MainPage.DisplayAlert("Oops", "It looks like you don't have an account with Just Delivered. Please sign up!", "OK");
                     //await Navigation.PopModalAsync(false);
                     //await Application.Current.MainPage.Navigation.PushModalAsync(new AddressPage(), true);
                 }

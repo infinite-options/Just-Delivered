@@ -34,21 +34,21 @@
                                     <Entry ClassId="firstName" x:Name="firstName" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="First name" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
                                 </Frame>
                                 <Frame BorderColor="LightGray" Grid.Row="0" Grid.Column="1" Padding="0" HasShadow="False">
-                                    <Entry x:Name="lastName" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Last name" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"> </Entry>
+                                    <Entry ClassId="lastName" x:Name="lastName" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Last name" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"> </Entry>
                                 </Frame>
                             </Grid>
                             <Frame BorderColor="LightGray" Padding="0" HasShadow="False">
-                                <Entry x:Name="phoneNumber" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Phone number" PlaceholderColor="Gray" TextColor="Black" Keyboard="Numeric" MaxLength="14" TextChanged="OnPhoneTextChanged"></Entry>
+                                <Entry ClassId="phoneNumber" x:Name="phoneNumber" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Phone number" PlaceholderColor="Gray" TextColor="Black" Keyboard="Numeric" MaxLength="14" TextChanged="OnPhoneTextChanged"></Entry>
                             </Frame>
                             <Frame BorderColor="LightGray" Padding="0" HasShadow="False">
-                                <Entry x:Name="email" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Email address" PlaceholderColor="Gray" TextColor="Black" Keyboard="Email" TextChanged="EntryOnTextChanged"></Entry>
+                                <Entry ClassId="email" x:Name="email" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Email address" PlaceholderColor="Gray" TextColor="Black" Keyboard="Email" TextChanged="EntryOnTextChanged"></Entry>
                             </Frame>
                             <StackLayout x:Name="directSignUp" IsVisible="false">
                                 <Frame BorderColor="LightGray" Padding="0" HasShadow="False">
-                                    <Entry x:Name="password1" FontSize="14" Placeholder="Create password" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
+                                    <Entry ClassId="password1" x:Name="password1" FontSize="14" Placeholder="Create password" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
                                 </Frame>
                                 <Frame BorderColor="LightGray" Padding="0" HasShadow="False">
-                                    <Entry x:Name="password2" FontSize="14" Placeholder="Confirm password" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
+                                    <Entry ClassId="password2" x:Name="password2" FontSize="14" Placeholder="Confirm password" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
                                 </Frame>
                             </StackLayout>
                         </StackLayout>
@@ -57,7 +57,7 @@
                         <StackLayout x:Name="organizationView" Margin="20,0,0,0">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate>
-                                    <StackLayout Orientation="Horizontal">
+                                    <StackLayout Orientation="Horizontal" ClassId="organizations">
                                         <CheckBox IsEnabled="False" Color="Red"  WidthRequest="35" HeightRequest="25" IsChecked="{Binding businessSelected}" ></CheckBox>
                                         <Label Text="{Binding business_name}" TextColor="Black" FontSize="14" VerticalOptions="Center"></Label>
                                         <StackLayout.GestureRecognizers>
@@ -70,7 +70,7 @@
                         <Label Text="Contact Information" FontSize="14" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                         <StackLayout Padding="0,0,0,0" >
                             <Frame BorderColor="LightGray" Padding="0" HasShadow="False">
-                                <Entry x:Name="AddressEntry" ClearButtonVisibility="WhileEditing" PlaceholderColor="Gray" TextColor="Black" FontSize="14" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" Placeholder="Search for your address" Keyboard="Text" TextChanged="OnAddressChanged" Focused="addressEntryFocused" Unfocused="addressEntryUnfocused"/>
+                                <Entry ClassId="street" x:Name="AddressEntry" ClearButtonVisibility="WhileEditing" PlaceholderColor="Gray" TextColor="Black" FontSize="14" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" Placeholder="Search for your address" Keyboard="Text" TextChanged="OnAddressChanged" Focused="addressEntryFocused" Unfocused="addressEntryUnfocused"/>
                             </Frame>
                             <Frame Margin="0,0,0,0" Padding="2" HorizontalOptions="CenterAndExpand" BackgroundColor="Red" HasShadow="False" CornerRadius="0" x:Name="addressFrame" IsVisible="false">
                                 <ListView x:Name="addressList" IsVisible="false" HasUnevenRows="True" SeparatorVisibility="None" RowHeight="40" BackgroundColor="White" HorizontalOptions="CenterAndExpand" HeightRequest="80" ItemSelected="addressSelected">
@@ -89,19 +89,19 @@
                         </StackLayout>
                         <StackLayout Padding="0,0,0,0" x:Name="addressView">
                             <Frame BorderColor="LightGray" Padding="0" HasShadow="False">
-                                <Entry x:Name="unit" FontSize="14" ClearButtonVisibility="WhileEditing" PlaceholderColor="Gray" TextColor="Black" Placeholder="Unit"></Entry>
+                                <Entry ClassId="unit" x:Name="unit" FontSize="14" ClearButtonVisibility="WhileEditing" PlaceholderColor="Gray" TextColor="Black" Placeholder="Unit" TextChanged="EntryOnTextChanged"></Entry>
                             </Frame>
                             <Grid>
                                 <Frame Grid.Row="0" Grid.Column="0" BorderColor="LightGray" Padding="0" HasShadow="False">
-                                    <Entry x:Name="city" FontSize="14" ClearButtonVisibility="WhileEditing" PlaceholderColor="Gray" TextColor="Black" Placeholder="City"></Entry>
+                                    <Entry ClassId="city" x:Name="city" FontSize="14" ClearButtonVisibility="WhileEditing" PlaceholderColor="Gray" TextColor="Black" Placeholder="City" TextChanged="EntryOnTextChanged"></Entry>
                                 </Frame>
 
                                 <Frame Grid.Row="0" Grid.Column="1" BorderColor="LightGray" Padding="0" HasShadow="False">
-                                    <Entry x:Name="state" FontSize="14" ClearButtonVisibility="WhileEditing" PlaceholderColor="Gray" TextColor="Black" Placeholder="State"> </Entry>
+                                    <Entry ClassId="state" x:Name="state" FontSize="14" ClearButtonVisibility="WhileEditing" PlaceholderColor="Gray" TextColor="Black" Placeholder="State" TextChanged="EntryOnTextChanged"> </Entry>
                                 </Frame>
 
                                 <Frame Grid.Row="0" Grid.Column="2" BorderColor="LightGray" Padding="0" HasShadow="False">
-                                    <Entry x:Name="zipcode" FontSize="14" ClearButtonVisibility="WhileEditing" PlaceholderColor="Gray" TextColor="Black" Placeholder="Zip"></Entry>
+                                    <Entry ClassId="zipcode" x:Name="zipcode" FontSize="14" ClearButtonVisibility="WhileEditing" PlaceholderColor="Gray" TextColor="Black" Placeholder="Zip" TextChanged="EntryOnTextChanged"></Entry>
                                 </Frame>
                             </Grid>
                         </StackLayout>
@@ -112,17 +112,17 @@
                         <StackLayout Padding="0,0,0,0">
                             <Grid>
                                 <Frame Grid.Row="0" Grid.Column="0" BorderColor="LightGray" Padding="0" HasShadow="False">
-                                    <Entry x:Name="emergencyFirstName" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="First name" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
+                                    <Entry ClassId="emergencyFirstName" x:Name="emergencyFirstName" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="First name" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
                                 </Frame>
                                 <Frame Grid.Row="0" Grid.Column="1" BorderColor="LightGray" Padding="0" HasShadow="False">
-                                    <Entry x:Name="emergencyLastName" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Last name" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"> </Entry>
+                                    <Entry ClassId="emergencyLastName" x:Name="emergencyLastName" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Last name" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"> </Entry>
                                 </Frame>
                             </Grid>
                             <Frame BorderColor="LightGray" Padding="0" HasShadow="False">
-                                <Entry x:Name="emergencyRelationship" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Relationship" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
+                                <Entry ClassId="emergencyRelationship" x:Name="emergencyRelationship" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Relationship" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
                             </Frame>
                             <Frame BorderColor="LightGray" Padding="0" HasShadow="False">
-                                <Entry x:Name="emergencyPhoneNumber" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Phone number" Keyboard="Numeric" MaxLength="14" PlaceholderColor="Gray" TextColor="Black" TextChanged="OnPhoneTextChanged"></Entry>
+                                <Entry ClassId="emergencyPhoneNumber" x:Name="emergencyPhoneNumber" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Phone number" Keyboard="Numeric" MaxLength="14" PlaceholderColor="Gray" TextColor="Black" TextChanged="OnPhoneTextChanged"></Entry>
                             </Frame>
                             <StackLayout IsVisible="false">
                                 <Entry x:Name="emergencyAddress" Placeholder="Address"></Entry>
@@ -137,37 +137,37 @@
                         <Label Text="Social Security Number" FontSize="14" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                         <StackLayout Padding="0,0,0,0">
                         <Frame BorderColor="LightGray" Padding="0" HasShadow="False">
-                            <Entry x:Name="ssNumber" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="111-22-3333" MaxLength="9" Keyboard="Numeric" IsPassword="True" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
+                            <Entry ClassId="ssNumber" x:Name="ssNumber" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="111-22-3333" MaxLength="9" Keyboard="Numeric" IsPassword="True" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
                         </Frame>
                         </StackLayout>
                         <Label Text="Vehicle Insurance Information" FontSize="14" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                         <StackLayout Padding="0,0,0,0">
                             <Label Text="Vehicle Year" FontSize="14" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                             <Frame BorderColor="LightGray" Padding="0" HasShadow="False">
-                                <Entry x:Name="carYear" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="2020" MaxLength="4" Keyboard="Numeric" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
+                                <Entry ClassId="carYear" x:Name="carYear" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="2020" MaxLength="4" Keyboard="Numeric" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
                             </Frame>
                             <Label Text="Vehicle Model" FontSize="14" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                             <Frame BorderColor="LightGray" Padding="0" HasShadow="False">
-                                <Entry x:Name="carModel" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Camry" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
+                                <Entry ClassId="carModel" x:Name="carModel" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Camry" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
                             </Frame>
                             <Label Text="Vehicle Make" FontSize="14" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                             <Frame BorderColor="LightGray" Padding="0" HasShadow="False">
-                                <Entry x:Name="carMake" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Toyota" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
+                                <Entry ClassId="carMake" x:Name="carMake" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Toyota" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
                             </Frame>
                             <Label Text="Insurance Carrier" FontSize="14" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                             <Frame BorderColor="LightGray" Padding="0" HasShadow="False">
-                                <Entry x:Name="insuranceCarrier" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="State Farm" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
+                                <Entry ClassId="insuranceCarrier" x:Name="insuranceCarrier" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="State Farm" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
                             </Frame>
                             <Label Text="Insurance Policy Number" FontSize="14" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                             <Frame BorderColor="LightGray" Padding="0" HasShadow="False">
-                                <Entry x:Name="insuranceNumber" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="1231234-A04-05" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
+                                <Entry ClassId="insuranceNumber" x:Name="insuranceNumber" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="1231234-A04-05" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
                             </Frame>
                             <Label Text="Insurance Expiration Date" FontSize="14" FontAttributes="Bold" VerticalTextAlignment="Center"></Label>
                             <Frame BorderColor="LightGray" Padding="0" HasShadow="False">
-                                <DatePicker x:Name="insuranceExpirationDate" FontSize="14" MinimumDate="01/01/1996" TextColor="Gray" MaximumDate="12/31/2050" DateSelected="OnDateSelectedChaged" ></DatePicker>
+                                <DatePicker ClassId="insuranceExpirationDate" x:Name="insuranceExpirationDate" FontSize="14" MinimumDate="01/01/1996" TextColor="Gray" MaximumDate="12/31/2050" DateSelected="OnDateSelectedChaged" ></DatePicker>
                             </Frame>
                             <Frame x:Name="imageFrame" HasShadow="False" BorderColor="LightGray" HorizontalOptions="CenterAndExpand" IsVisible="false">
-                                <Image HeightRequest="100" x:Name="insuranceImage" Source="sortingIcon" BackgroundColor="Red"></Image>
+                                <Image ClassId="insuranceImage" HeightRequest="100" x:Name="insuranceImage" Source="sortingIcon" BackgroundColor="Red"></Image>
                             </Frame>
                             <Button Margin="100,5,100,5" BackgroundColor="Red" TextColor="White" Text="Take picture" Clicked="TakePicture"></Button>
                         </StackLayout>
@@ -175,10 +175,10 @@
                         <StackLayout Padding="0,0,0,0">
                            <Grid>
                                 <Frame Grid.Row="0" Grid.Column="0" BorderColor="LightGray" Padding="0" HasShadow="False">
-                                    <Entry x:Name="driveLicenseNumber" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="F1234567" Keyboard="Chat" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
+                                    <Entry ClassId="driveLicenseNumber" x:Name="driveLicenseNumber" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="F1234567" Keyboard="Chat" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
                                 </Frame>
                                 <Frame Grid.Row="0" Grid.Column="1" BorderColor="LightGray" Padding="0" HasShadow="False">
-                                    <DatePicker x:Name="driveLicenseExperirationDate" FontSize="14" TextColor="Gray" MinimumDate="01/01/1996" MaximumDate="12/31/2050" DateSelected="OnDateSelectedChaged"></DatePicker>
+                                    <DatePicker ClassId="driveLicenseExperirationDate" x:Name="driveLicenseExperirationDate" FontSize="14" TextColor="Gray" MinimumDate="01/01/1996" MaximumDate="12/31/2050" DateSelected="OnDateSelectedChaged"></DatePicker>
                                 </Frame>
                             </Grid>
                         </StackLayout>
@@ -186,14 +186,14 @@
                         <StackLayout Padding="0,0,0,0">
                             <Grid>
                                 <Frame Grid.Row="0" Grid.Column="0" BorderColor="LightGray" Padding="0" HasShadow="False">
-                                    <Entry x:Name="accountNumber" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Account number" Keyboard="Numeric" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
+                                    <Entry ClassId="accountNumber"  x:Name="accountNumber" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Account number" Keyboard="Numeric" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"></Entry>
                                 </Frame>
                                 <Frame Grid.Row="0" Grid.Column="1" BorderColor="LightGray" Padding="0" HasShadow="False">
-                                    <Entry x:Name="routingNumber" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Routing number" Keyboard="Numeric" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"> </Entry>
+                                    <Entry ClassId="routingNumber"  x:Name="routingNumber" FontSize="14" ClearButtonVisibility="WhileEditing" Placeholder="Routing number" Keyboard="Numeric" PlaceholderColor="Gray" TextColor="Black" TextChanged="EntryOnTextChanged"> </Entry>
                                 </Frame>
                             </Grid>
                         </StackLayout>
-                        <Button Margin="50,30,50,30" BackgroundColor="Red" Text="Save Changes" TextColor="White" FontSize="14" FontAttributes="Bold" Clicked="Continue"></Button>
+                        <Button Margin="50,30,50,30" BackgroundColor="Red" Text="Save Changes" TextColor="White" FontSize="14" FontAttributes="Bold" Clicked="SaveChanges"></Button>
                     </StackLayout>
                 </ScrollView>
             </StackLayout>

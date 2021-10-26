@@ -1543,14 +1543,14 @@ namespace JustDelivered.Views
 
         void NavigateToDriverProfilePage(System.Object sender, System.EventArgs e)
         {
-            //Navigation.PushModalAsync(new DriverProfilePage(), true);
-            Application.Current.MainPage = new NavigationPage(new DriverProfilePage());
+            Navigation.PushModalAsync(new DriverProfilePage(), true);
+            //Application.Current.MainPage = new NavigationPage(new DriverProfilePage());
         }
 
         void NavigateToSchedulePage(System.Object sender, System.EventArgs e)
         {
-            //Navigation.PushModalAsync(new DriverSchedulePage(), true);
-            Application.Current.MainPage = new NavigationPage(new DriverSchedulePage());
+            Navigation.PushModalAsync(new DriverSchedulePage(), true);
+            //Application.Current.MainPage = new NavigationPage(new DriverSchedulePage());
         }
     }
 }
