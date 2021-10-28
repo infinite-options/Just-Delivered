@@ -9,8 +9,9 @@ using Acr.UserDialogs;
 using JustDelivered.Config;
 using JustDelivered.Models;
 using Newtonsoft.Json;
+using Xamarin.Essentials;
 using Xamarin.Forms;
-using static JustDelivered.Views.SignUpPage;
+using static JustDelivered.Views.DeliveriesPage;
 
 namespace JustDelivered.Views
 {
@@ -289,168 +290,84 @@ namespace JustDelivered.Views
 
         async Task<bool> ProcessRequest()
         {
-            var client = new HttpClient();
-            var content = new MultipartFormDataContent();
-            var scheduleToSubmit = new ScheduleToSubmit();
+            bool result = false;
 
-            foreach (string day in selectedSchedule.Keys)
+            try
             {
-                if (selectedSchedule[day].Count != 0)
+                var client = new HttpClient();
+                var scheduleToSubmit = new ScheduleToSubmit();
+
+                foreach (string day in selectedSchedule.Keys)
                 {
-                    //DateTime today = DateTime.Now;
-                    string todayString = today.ToString("yyyy-MM-dd");
-
-                    foreach (List<Time> interval in selectedSchedule[day])
+                    if (selectedSchedule[day].Count != 0)
                     {
-                        string startTime = todayString;
-                        string endTime = todayString;
+                        string todayString = today.ToString("yyyy-MM-dd");
 
-                        startTime += " " + interval[0].hour + ":" + interval[0].minute + " " + interval[0].time;
-                        endTime += " " + interval[1].hour + ":" + interval[1].minute + " " + interval[1].time;
-
-                        Debug.WriteLine("START:" + startTime);
-                        Debug.WriteLine("END: " + endTime);
-
-                        string mStartTime = DateTime.Parse(startTime).ToString("HH:mm:ss");
-                        string mEndTime = DateTime.Parse(endTime).ToString("HH:mm:ss");
-
-                        var array = new List<string>();
-                        array.Add(mStartTime);
-                        array.Add(mEndTime);
-                        var list = new List<string[]>();
-                        list.Add(array.ToArray());
-                        if (timesRecorded.ContainsKey(day))
+                        foreach (List<Time> interval in selectedSchedule[day])
                         {
-                            timesRecorded[day].Add(array.ToArray());
-                        }
-                        else
-                        {
-                            timesRecorded.Add(day, list);
-                        }
+                            string startTime = todayString;
+                            string endTime = todayString;
 
+                            startTime += " " + interval[0].hour + ":" + interval[0].minute + " " + interval[0].time;
+                            endTime += " " + interval[1].hour + ":" + interval[1].minute + " " + interval[1].time;
+
+                            Debug.WriteLine("START:" + startTime);
+                            Debug.WriteLine("END: " + endTime);
+
+                            string mStartTime = DateTime.Parse(startTime).ToString("HH:mm:ss");
+                            string mEndTime = DateTime.Parse(endTime).ToString("HH:mm:ss");
+
+                            var array = new List<string>();
+                            array.Add(mStartTime);
+                            array.Add(mEndTime);
+                            var list = new List<string[]>();
+                            list.Add(array.ToArray());
+                            if (timesRecorded.ContainsKey(day))
+                            {
+                                timesRecorded[day].Add(array.ToArray());
+                            }
+                            else
+                            {
+                                timesRecorded.Add(day, list);
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        timesRecorded.Add(day, new List<string[]>());
                     }
                 }
-                else
+
+                scheduleToSubmit.sunday = timesRecorded["Sunday"];
+                scheduleToSubmit.monday = timesRecorded["Monday"];
+                scheduleToSubmit.tuesday = timesRecorded["Tuesday"];
+                scheduleToSubmit.wednesday = timesRecorded["Wednesday"];
+                scheduleToSubmit.thursday = timesRecorded["Thursday"];
+                scheduleToSubmit.friday = timesRecorded["Friday"];
+                scheduleToSubmit.saturday = timesRecorded["Saturday"];
+
+                var scheduleContent = new UpdateDriverSchedule();
+
+                scheduleContent.driver_hours = scheduleToSubmit;
+                scheduleContent.uid = user.id;
+
+                var scheduleToSubmitString = JsonConvert.SerializeObject(scheduleContent);
+                var content = new StringContent(scheduleToSubmitString, Encoding.UTF8, "application/json");
+                var endpointCall = await client.PostAsync(Constant.UpdateDriverSchedule, content);
+
+
+                if (endpointCall.IsSuccessStatusCode)
                 {
-                    timesRecorded.Add(day, new List<string[]>());
+                    result = true;
                 }
             }
-
-            scheduleToSubmit.sunday = timesRecorded["Sunday"];
-            scheduleToSubmit.monday = timesRecorded["Monday"];
-            scheduleToSubmit.tuesday = timesRecorded["Tuesday"];
-            scheduleToSubmit.wednesday = timesRecorded["Wednesday"];
-            scheduleToSubmit.thursday = timesRecorded["Thursday"];
-            scheduleToSubmit.friday = timesRecorded["Friday"];
-            scheduleToSubmit.saturday = timesRecorded["Saturday"];
-
-            var scheduleToSubmitString = JsonConvert.SerializeObject(scheduleToSubmit);
-            Debug.WriteLine("TIMES: " + scheduleToSubmitString);
-            var businessIDs = "";
-            foreach (string id in businessSelected)
+            catch
             {
-                businessIDs += id + ",";
+
             }
 
-            if (businessIDs != "")
-            {
-                businessIDs = businessIDs.Remove(businessIDs.Length - 1);
-            }
-
-            var account = JsonConvert.DeserializeObject<SignUp>(accountString);
-
-            var first_name = new StringContent(account.first_name, Encoding.UTF8);
-            var last_name = new StringContent(account.last_name, Encoding.UTF8);
-            var business_uid = new StringContent(businessIDs, Encoding.UTF8);
-            var referral_source = new StringContent(account.referral_source, Encoding.UTF8);
-            var driver_hours = new StringContent(scheduleToSubmitString, Encoding.UTF8);
-            var street = new StringContent(account.street, Encoding.UTF8);
-            var unit = new StringContent(account.unit, Encoding.UTF8);
-            var city = new StringContent(account.city, Encoding.UTF8);
-            var state = new StringContent(account.state, Encoding.UTF8);
-            var zipcode = new StringContent(account.zipcode, Encoding.UTF8);
-            var latitude = new StringContent(account.latitude, Encoding.UTF8);
-            var longitude = new StringContent(account.longitude, Encoding.UTF8);
-            var email = new StringContent(account.email, Encoding.UTF8);
-            var phone = new StringContent(account.phone, Encoding.UTF8);
-            var ssn = new StringContent(account.ssn, Encoding.UTF8);
-            var license_num = new StringContent(account.license_num, Encoding.UTF8);
-            var license_exp = new StringContent(account.license_exp, Encoding.UTF8);
-            var driver_car_year = new StringContent(account.driver_car_year, Encoding.UTF8);
-            var driver_car_model = new StringContent(account.driver_car_model, Encoding.UTF8);
-            var driver_car_make = new StringContent(account.driver_car_make, Encoding.UTF8);
-            var driver_insurance_carrier = new StringContent(account.driver_insurance_carrier, Encoding.UTF8);
-            var driver_insurance_num = new StringContent(account.driver_insurance_num, Encoding.UTF8);
-            var driver_insurance_exp_date = new StringContent(account.driver_insurance_exp_date, Encoding.UTF8);
-            var contact_name = new StringContent(account.contact_name, Encoding.UTF8);
-            var contact_phone = new StringContent(account.contact_phone, Encoding.UTF8);
-            var contact_relation = new StringContent(account.contact_relation, Encoding.UTF8);
-            var bank_acc_info = new StringContent(account.bank_acc_info, Encoding.UTF8);
-            var bank_routing_info = new StringContent(account.bank_routing_info, Encoding.UTF8);
-            var password = new StringContent(account.password, Encoding.UTF8);
-            var social = new StringContent(account.social, Encoding.UTF8);
-            var mobile_access_token = new StringContent(account.mobile_access_token, Encoding.UTF8);
-            var mobile_refresh_token = new StringContent(account.mobile_refresh_token, Encoding.UTF8);
-            var user_access_token = new StringContent(account.user_access_token, Encoding.UTF8);
-            var user_refresh_token = new StringContent(account.user_refresh_token, Encoding.UTF8);
-            var social_id = new StringContent(account.social_id, Encoding.UTF8);
-            var userImageContent = new ByteArrayContent(insurancePicture);
-
-
-            // CONTENT, NAME
-            content.Add(first_name, "first_name");
-            content.Add(last_name, "last_name");
-            content.Add(business_uid, "business_uid");
-            content.Add(referral_source, "referral_source");
-            content.Add(driver_hours, "driver_hours");
-            content.Add(street, "street");
-            content.Add(unit, "unit");
-            content.Add(city, "city");
-            content.Add(state, "state");
-            content.Add(zipcode, "zipcode");
-            content.Add(latitude, "latitude");
-            content.Add(longitude, "longitude");
-            content.Add(email, "email");
-            content.Add(phone, "phone");
-            content.Add(ssn, "ssn");
-            content.Add(license_num, "license_num");
-            content.Add(license_exp, "license_exp");
-            content.Add(driver_car_year, "driver_car_year");
-            content.Add(driver_car_model, "driver_car_model");
-            content.Add(driver_car_make, "driver_car_make");
-            content.Add(driver_insurance_carrier, "driver_insurance_carrier");
-            content.Add(driver_insurance_num, "driver_insurance_num");
-            content.Add(driver_insurance_exp_date, "driver_insurance_exp_date");
-            content.Add(contact_name, "contact_name");
-            content.Add(contact_phone, "contact_phone");
-            content.Add(contact_relation, "contact_relation");
-            content.Add(bank_acc_info, "bank_acc_info");
-            content.Add(bank_routing_info, "bank_routing_info");
-            content.Add(password, "password");
-            content.Add(social, "social");
-            content.Add(mobile_access_token, "mobile_access_token");
-            content.Add(mobile_refresh_token, "mobile_refresh_token");
-            content.Add(user_access_token, "user_access_token");
-            content.Add(user_refresh_token, "user_refresh_token");
-            content.Add(social_id, "social_id");
-
-            // CONTENT, NAME, FILENAME
-            content.Add(userImageContent, "driver_insurance_picture", "product_image.png");
-
-            var request = new HttpRequestMessage();
-
-            request.RequestUri = new Uri(Constant.SignUpUrl);
-            request.Method = HttpMethod.Post;
-            request.Content = content;
-
-            var response = await client.SendAsync(request);
-            if (response.IsSuccessStatusCode)
-            {
-                var contentString = await response.Content.ReadAsStringAsync();
-                Debug.WriteLine("contentString: " + contentString);
-                return true;
-            }
-            return false;
+            return result;
         }
 
         async void SubmitApplication(System.Object sender, System.EventArgs e)
@@ -471,25 +388,21 @@ namespace JustDelivered.Views
             if (!timesAreInvalid)
             {
 
-                if (isScheduleEmpty())
+                //if (isScheduleEmpty())
+                //{
+                //    UserDialogs.Instance.HideLoading();
+                //    await DisplayAlert("Oops", "Your schedule is empty. We can't process your request. Please add a valid entry to your schedule.", "OK");
+                //}
+                var result = await ProcessRequest();
+                if (result)
                 {
                     UserDialogs.Instance.HideLoading();
-                    await DisplayAlert("Oops", "Your schedule is empty. We can't process your request. Please add a valid entry to your schedule.", "OK");
+                    await DisplayAlert("Great!", "We have updated your schedule.", "OK");
                 }
                 else
                 {
-                    var result = await ProcessRequest();
-                    if (result)
-                    {
-                        UserDialogs.Instance.HideLoading();
-                        await DisplayAlert("Congratulations!", "Your application is in process. We will notify you of your result via email.", "OK");
-                        Application.Current.MainPage = new LogInPage();
-                    }
-                    else
-                    {
-                        UserDialogs.Instance.HideLoading();
-                        await DisplayAlert("Oops", "Unfortunately, we weren't able to sign you up. Please try again later.", "OK");
-                    }
+                    UserDialogs.Instance.HideLoading();
+                    await DisplayAlert("Oops", "We were not able to complete this request. Please try again.", "OK");
                 }
             }
             else
@@ -718,5 +631,9 @@ namespace JustDelivered.Views
             }
         }
 
+        void NavigateToPreviousPage(System.Object sender, System.EventArgs e)
+        {
+            Navigation.PopModalAsync(true);
+        }
     }
 }

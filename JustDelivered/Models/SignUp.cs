@@ -5,8 +5,10 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using JustDelivered.Config;
+using JustDelivered.Interfaces;
 using JustDelivered.LogIn.Classes;
 using Newtonsoft.Json;
+using Xamarin.Forms;
 using static JustDelivered.Views.DeliveriesPage;
 
 namespace JustDelivered.Models
@@ -95,9 +97,7 @@ namespace JustDelivered.Models
         {
             var client = new HttpClient();
             var content = new MultipartFormDataContent();
-            var scheduleToSubmit = new ScheduleToSubmit();
 
-    
             if(account.platform == "DIRECT")
             {
                 content.Add(new StringContent("NULL", Encoding.UTF8), "first_name");
@@ -105,10 +105,10 @@ namespace JustDelivered.Models
                 content.Add(new StringContent(account.password, Encoding.UTF8), "password");
                 content.Add(new StringContent(account.email, Encoding.UTF8), "email");
                 content.Add(new StringContent("NULL", Encoding.UTF8), "social");
-                content.Add(new StringContent("FALSE", Encoding.UTF8), "mobile_access_token");
-                content.Add(new StringContent("FALSE", Encoding.UTF8), "mobile_refresh_token");
-                content.Add(new StringContent("FALSE", Encoding.UTF8), "user_access_token");
-                content.Add(new StringContent("FALSE", Encoding.UTF8), "user_refresh_token");
+                content.Add(new StringContent("NULL", Encoding.UTF8), "mobile_access_token");
+                content.Add(new StringContent("NULL", Encoding.UTF8), "mobile_refresh_token");
+                content.Add(new StringContent("NULL", Encoding.UTF8), "user_access_token");
+                content.Add(new StringContent("NULL", Encoding.UTF8), "user_refresh_token");
                 content.Add(new StringContent("NULL", Encoding.UTF8), "social_id");
             }
             else
@@ -128,7 +128,7 @@ namespace JustDelivered.Models
             // CONTENT, NAME
 
             content.Add(new StringContent("NULL", Encoding.UTF8), "business_uid");
-            content.Add(new StringContent("NULL", Encoding.UTF8), "referral_source");
+            content.Add(new StringContent(GetVersion(), Encoding.UTF8), "referral_source");
             content.Add(new StringContent("[]", Encoding.UTF8), "driver_hours");
             content.Add(new StringContent("NULL", Encoding.UTF8), "street");
             content.Add(new StringContent("NULL", Encoding.UTF8), "unit");
@@ -181,7 +181,7 @@ namespace JustDelivered.Models
                 user.sessionTime = expDate;
                 user.email = "";
                 user.socialId = "";
-                user.platform = "";
+                user.platform = account.socialID;
                 user.route_id = "";
 
 
@@ -190,58 +190,58 @@ namespace JustDelivered.Models
             return false;
         }
 
+        string GetVersion()
+        {
+            string result = "NULL";
+            try
+            {
+                var versionString = DependencyService.Get<IAppVersionAndBuild>().GetVersionNumber();
+                var buildString = DependencyService.Get<IAppVersionAndBuild>().GetBuildNumber();
+
+                result = "Version: " + versionString + ", Build: " + buildString;
+            }
+            catch
+            {
+
+            }
+
+            return result;
+        }
 
         public async Task<bool> UpdateUserProfile(Dictionary<string, object> account)
         {
             bool result = false;
             var client = new HttpClient();
             var content = new MultipartFormDataContent();
-            var scheduleToSubmit = new ScheduleToSubmit();
 
-            //if ((string)account["platform"] == "DIRECT")
-            //{
-            //    //content.Add(new StringContent("", Encoding.UTF8), "first_name");
-            //    //content.Add(new StringContent("", Encoding.UTF8), "last_name");
-            //    //content.Add(new StringContent(account.password, Encoding.UTF8), "password");
-            //    //content.Add(new StringContent(account.email, Encoding.UTF8), "email");
-            //    content.Add(new StringContent("NULL", Encoding.UTF8), "social");
-            //    content.Add(new StringContent("FALSE", Encoding.UTF8), "mobile_access_token");
-            //    content.Add(new StringContent("FALSE", Encoding.UTF8), "mobile_refresh_token");
-            //    content.Add(new StringContent("FALSE", Encoding.UTF8), "user_access_token");
-            //    content.Add(new StringContent("FALSE", Encoding.UTF8), "user_refresh_token");
-            //    content.Add(new StringContent("NULL", Encoding.UTF8), "social_id");
-            //}
-            //else
-            //{
-            //    content.Add(new StringContent(account.firstName, Encoding.UTF8), "first_name");
-            //    content.Add(new StringContent(account.lastName, Encoding.UTF8), "last_name");
-            //    content.Add(new StringContent("", Encoding.UTF8), "password");
-            //    //content.Add(new StringContent(account.email, Encoding.UTF8), "email");
-            //    content.Add(new StringContent(account.platform, Encoding.UTF8), "social");
-            //    content.Add(new StringContent(account.accessToken, Encoding.UTF8), "mobile_access_token");
-            //    content.Add(new StringContent(account.refreshToken, Encoding.UTF8), "mobile_refresh_token");
-            //    content.Add(new StringContent("FALSE", Encoding.UTF8), "user_access_token");
-            //    content.Add(new StringContent("FALSE", Encoding.UTF8), "user_refresh_token");
-            //    content.Add(new StringContent(account.socialID, Encoding.UTF8), "social_id");
-            //}
+            if ((string)account["platform"] == "DIRECT")
+            {
+                content.Add(new StringContent("", Encoding.UTF8), "password");
+                content.Add(new StringContent("NULL", Encoding.UTF8), "social");
+                content.Add(new StringContent("FALSE", Encoding.UTF8), "mobile_access_token");
+                content.Add(new StringContent("FALSE", Encoding.UTF8), "mobile_refresh_token");
+                content.Add(new StringContent("FALSE", Encoding.UTF8), "user_access_token");
+                content.Add(new StringContent("FALSE", Encoding.UTF8), "user_refresh_token");
+                content.Add(new StringContent("NULL", Encoding.UTF8), "social_id");
+            }
+            else
+            {
+                content.Add(new StringContent("", Encoding.UTF8), "password");
+                content.Add(new StringContent((string)account["platform"] == null ? "NULL" : (string)account["platform"], Encoding.UTF8), "social");
+                content.Add(new StringContent("FALSE", Encoding.UTF8), "mobile_access_token");
+                content.Add(new StringContent("FALSE", Encoding.UTF8), "mobile_refresh_token");
+                content.Add(new StringContent("FALSE", Encoding.UTF8), "user_access_token");
+                content.Add(new StringContent("FALSE", Encoding.UTF8), "user_refresh_token");
+                content.Add(new StringContent((string)account["social_id"] == null ? "NULL" : (string)account["social_id"], Encoding.UTF8), "social_id");
+            }
 
             // CONTENT, NAME
-
-            var id = (string)account["driver_uid"] == null ? "NULL" : (string)account["driver_uid"];
-            var name = (string)account["firstName"] == null ? "NULL" : (string)account["firstName"];
 
             content.Add(new StringContent((string)account["driver_uid"] == null ? "NULL" : (string)account["driver_uid"], Encoding.UTF8), "driver_uid");
             content.Add(new StringContent((string)account["firstName"]== null? "NULL":(string)account["firstName"], Encoding.UTF8), "first_name");
             content.Add(new StringContent((string)account["lastName"] == null ? "NULL" : (string)account["lastName"], Encoding.UTF8), "last_name");
-            content.Add(new StringContent((string)account["platform"], Encoding.UTF8), "social");
-            content.Add(new StringContent("FALSE", Encoding.UTF8), "mobile_access_token");
-            content.Add(new StringContent("FALSE", Encoding.UTF8), "mobile_refresh_token");
-            content.Add(new StringContent("FALSE", Encoding.UTF8), "user_access_token");
-            content.Add(new StringContent("FALSE", Encoding.UTF8), "user_refresh_token");
-            content.Add(new StringContent((string)account["lastName"] == null ? "NULL" : (string)account["lastName"], Encoding.UTF8), "social_id");
-            content.Add(new StringContent("", Encoding.UTF8), "password");
-            content.Add(new StringContent((string)account["lastName"] == null ? "NULL" : (string)account["lastName"], Encoding.UTF8), "business_uid");
-            content.Add(new StringContent("NULL", Encoding.UTF8), "referral_source");
+            content.Add(new StringContent((string)account["organizations"] == null ? "NULL" : (string)account["organizations"], Encoding.UTF8), "business_uid");
+            content.Add(new StringContent((string)account["referal"] == null ? "NULL" : (string)account["referal"], Encoding.UTF8), "referral_source");
             content.Add(new StringContent("[]", Encoding.UTF8), "driver_hours");
             content.Add(new StringContent((string)account["street"] == null ? "NULL" : (string)account["street"], Encoding.UTF8), "street");
             content.Add(new StringContent((string)account["unit"] == null ? "NULL" : (string)account["unit"], Encoding.UTF8), "unit");
@@ -253,24 +253,26 @@ namespace JustDelivered.Models
             content.Add(new StringContent((string)account["email"] == null ? "NULL" : (string)account["email"], Encoding.UTF8), "email");
             content.Add(new StringContent((string)account["phoneNumber"] == null ? "NULL" : (string)account["phoneNumber"], Encoding.UTF8), "phone");
             content.Add(new StringContent((string)account["ssNumber"] == null ? "NULL" : (string)account["ssNumber"], Encoding.UTF8), "ssn");
-            content.Add(new StringContent((string)account["insuranceNumber"] == null ? "NULL" : (string)account["insuranceNumber"], Encoding.UTF8), "license_num");
-            content.Add(new StringContent((string)account["insuranceExpirationDate"] == null ? "NULL" : (string)account["insuranceExpirationDate"], Encoding.UTF8), "license_exp");
+            content.Add(new StringContent((string)account["driveLicenseNumber"] == null ? "NULL" : (string)account["driveLicenseNumber"], Encoding.UTF8), "license_num");
+            content.Add(new StringContent((string)account["driveLicenseExperirationDate"] == null ? "NULL" : (string)account["driveLicenseExperirationDate"], Encoding.UTF8), "license_exp");
             content.Add(new StringContent((string)account["carYear"] == null ? "NULL" : (string)account["carYear"], Encoding.UTF8), "driver_car_year");
             content.Add(new StringContent((string)account["carModel"] == null ? "NULL" : (string)account["carModel"], Encoding.UTF8), "driver_car_model");
             content.Add(new StringContent((string)account["carMake"] == null ? "NULL" : (string)account["carMake"], Encoding.UTF8), "driver_car_make");
             content.Add(new StringContent((string)account["insuranceCarrier"] == null ? "NULL" : (string)account["insuranceCarrier"], Encoding.UTF8), "driver_insurance_carrier");
             content.Add(new StringContent((string)account["insuranceNumber"] == null ? "NULL" : (string)account["insuranceNumber"], Encoding.UTF8), "driver_insurance_num");
             content.Add(new StringContent((string)account["insuranceExpirationDate"] == null ? "NULL" : (string)account["insuranceExpirationDate"], Encoding.UTF8), "driver_insurance_exp_date");
-            var emergencyFirstName = (string)account["emergencyFirstName"] == null ? "NULL" : (string)account["emergencyFirstName"];
-            var emergencyLastName = (string)account["emergencyLastName"] == null ? "NULL" : (string)account["emergencyLastName"];
-            var emergencyContact = emergencyFirstName + " " + emergencyLastName;
-            content.Add(new StringContent(emergencyContact, Encoding.UTF8), "contact_name");
             content.Add(new StringContent((string)account["emergencyPhoneNumber"] == null ? "NULL" : (string)account["emergencyPhoneNumber"], Encoding.UTF8), "contact_phone");
             content.Add(new StringContent((string)account["emergencyRelationship"] == null ? "NULL" : (string)account["emergencyRelationship"], Encoding.UTF8), "contact_relation");
             content.Add(new StringContent((string)account["accountNumber"] == null ? "NULL" : (string)account["accountNumber"], Encoding.UTF8), "bank_acc_info");
             content.Add(new StringContent((string)account["routingNumber"] == null ? "NULL" : (string)account["routingNumber"], Encoding.UTF8), "bank_routing_info");
 
-            if((object)account["insuranceImage"] == null)
+            var emergencyFirstName = (string)account["emergencyFirstName"] == null ? "NULL" : (string)account["emergencyFirstName"];
+            var emergencyLastName = (string)account["emergencyLastName"] == null ? "NULL" : (string)account["emergencyLastName"];
+            var emergencyContact = JsonConvert.SerializeObject(new EmergencyContact(emergencyFirstName, emergencyLastName));
+
+            content.Add(new StringContent(emergencyContact, Encoding.UTF8), "contact_name");
+
+            if (account["insuranceImage"] == null)
             {
                 var array = new byte[0];
                 var image = new ByteArrayContent(array);
@@ -296,20 +298,6 @@ namespace JustDelivered.Models
             if (response.IsSuccessStatusCode)
             {
                 result = true;
-                //var contentString = await response.Content.ReadAsStringAsync();
-                //var data = JsonConvert.DeserializeObject<FastSignUpAccount>(contentString);
-                //Debug.WriteLine("contentString: " + contentString);
-
-                //DateTime today = DateTime.Now;
-                //DateTime expDate = today.AddDays(Constant.days);
-
-                //user = new User();
-                //user.id = data.result.driver_uid;
-                //user.sessionTime = expDate;
-                //user.email = "";
-                //user.socialId = "";
-                //user.platform = "";
-                //user.route_id = "";
 
             }
 

@@ -159,7 +159,7 @@ namespace JustDelivered.Models
                         user.sessionTime = expDate;
                         user.email = "";
                         user.socialId = "";
-                        user.platform = "";
+                        user.platform = "DIRECT";
                         user.route_id = "";
 
                         //var notificationStatus = await SetUserRemoteNotification();
@@ -534,7 +534,7 @@ namespace JustDelivered.Models
                                 user.sessionTime = expDate;
                                 user.email = "";
                                 user.socialId = "";
-                                user.platform = "";
+                                user.platform = platform;
                                 user.route_id = "";
 
                                 var statusUpdatingTokens = await UpdateAccessRefreshToken(user.id, accessToken, refreshToken);

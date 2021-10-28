@@ -35,8 +35,15 @@ namespace JustDelivered
 
                     if (today <= expTime)
                     {
-                        SetUser(tempUser);
-                        MainPage = new DeliveriesPage();
+                        try
+                        {
+                            SetUser(tempUser);
+                            MainPage = new DeliveriesPage();
+                        }
+                        catch (Exception s)
+                        {
+                            Debug.WriteLine(s.Message);
+                        }
                     }
                     else
                     {
@@ -57,6 +64,7 @@ namespace JustDelivered
                         //    Application.Current.MainPage.Navigation.PushModalAsync(new LogInPage(Constant.Apple));
                         //}
                     }
+                    
                 }
                 else
                 {

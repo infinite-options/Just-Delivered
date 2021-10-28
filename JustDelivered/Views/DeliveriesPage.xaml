@@ -3,8 +3,6 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:JustDelivered.Controls"
-
-   
     x:Class="JustDelivered.Views.DeliveriesPage">
     <ContentPage.Content>
         <StackLayout BackgroundColor="White" x:Name="MyStack">

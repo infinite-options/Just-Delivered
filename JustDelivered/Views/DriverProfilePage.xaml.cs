@@ -11,90 +11,243 @@ using JustDelivered.Models;
 using Newtonsoft.Json;
 using Xamarin.Forms;
 using static JustDelivered.Views.DeliveriesPage;
+
 namespace JustDelivered.Views
 {
     public partial class DriverProfilePage : ContentPage
     {
         public Connect client = new Connect();
 
-        public static SignUpAccount userToSignUp = null;
-        public static List<string> businessSelected = new List<string>();
-        public static byte[] insurancePicture = null;
-        public static string accountString = "";
-        public string insuraceExpDate = "";
-        public string licenseExpDate = "";
+        List<string> businessSelected = new List<string>();
+        byte[] insurancePicture = null;
 
-        private AddressAutocomplete addressToValidate = null;
-        public ObservableCollection<Models.Item> businesSource = new ObservableCollection<Models.Item>();
-        Models.Address addr = new Models.Address();
+
+
+        AddressAutocomplete addressToValidate  = new AddressAutocomplete();
+        ObservableCollection<Models.Item> businesSource = new ObservableCollection<Models.Item>();
+        Address addr = new Address();
 
         Driver driver = new Driver();
 
         Dictionary<string, object> account = new Dictionary<string, object>();
 
-        public string phoneNum = "";
+        bool displayAddress = false;
+        AddressValidation addressValidationClient = new AddressValidation();
 
         public DriverProfilePage()
         {
-            InitializeComponent();
-
-            if (userToSignUp != null)
+            try
             {
-                if (userToSignUp.platform != "DIRECT")
-                {
-                    firstName.Text = userToSignUp.firstName;
-                    lastName.Text = userToSignUp.lastName;
-                    email.Text = userToSignUp.email;
-                }
-                else
-                {
-                    directSignUp.IsVisible = true;
-                }
-            }
+                InitializeComponent();
 
-            SetDatePickers(insuranceExpirationDate, driveLicenseExperirationDate);
-            SetAccountKeysValues();
-            _= SetUpAccountDetails();
-            
+                //if (userToSignUp != null)
+                //{
+                //    if (userToSignUp.platform != "DIRECT")
+                //    {
+                //        firstName.Text = userToSignUp.firstName;
+                //        lastName.Text = userToSignUp.lastName;
+                //        email.Text = userToSignUp.email;
+                //    }
+                //    else
+                //    {
+                //        directSignUp.IsVisible = true;
+                //    }
+                //}
+
+                SetAccountKeysValues();
+                SetUpAccountDetails();
+                addressValidationClient.InitializeMap(MapView);
+            }
+            catch (Exception s)
+            {
+                Debug.WriteLine(s.Message);
+            }
         }
 
-        async Task SetUpAccountDetails()
+        async void SetUpAccountDetails()
         {
+
+
             driver = await client.GetUserProfile(user.id);
 
             if(driver != null)
             {
-                // parse organizations...
-                firstName.Text = driver.result[0].driver_first_name == null || driver.result[0].driver_first_name == "NULL" ? null : driver.result[0].driver_first_name;
-                lastName.Text = driver.result[0].driver_last_name == null || driver.result[0].driver_last_name == "NULL" ? null : driver.result[0].driver_last_name;
-                email.Text = driver.result[0].driver_email == null || driver.result[0].driver_email == "NULL" ? null : driver.result[0].driver_email;
-                AddressEntry.Text = driver.result[0].driver_street == null || driver.result[0].driver_street == "NULL" ? null : driver.result[0].driver_street;
-                unit.Text = driver.result[0].driver_unit == null || driver.result[0].driver_unit == "NULL" ? null : driver.result[0].driver_unit;
-                city.Text = driver.result[0].driver_city == null || driver.result[0].driver_city == "NULL" ? null : driver.result[0].driver_city;
-                state.Text = driver.result[0].driver_state == null || driver.result[0].driver_state == "NULL" ? null : driver.result[0].driver_state;
-                zipcode.Text = driver.result[0].driver_zip == null || driver.result[0].driver_zip == "NULL" ? null : driver.result[0].driver_zip;
-                emergencyFirstName.Text = driver.result[0].emergency_contact_name == null || driver.result[0].emergency_contact_name == "NULL" ? null : driver.result[0].emergency_contact_name;
-                emergencyRelationship.Text = driver.result[0].emergency_contact_relationship == null || driver.result[0].emergency_contact_relationship == "NULL" ? null : driver.result[0].emergency_contact_relationship;
-                emergencyPhoneNumber.Text = driver.result[0].emergency_contact_phone == null || driver.result[0].emergency_contact_phone == "NULL" ? null : driver.result[0].emergency_contact_phone;
-                ssNumber.Text = driver.result[0].driver_ssn == null || driver.result[0].driver_ssn == "NULL" ? null : driver.result[0].driver_ssn;
-                carYear.Text = driver.result[0].driver_car_year == null || driver.result[0].driver_car_year == "NULL" ? null : driver.result[0].driver_car_year;
-                carModel.Text = driver.result[0].driver_car_model == null || driver.result[0].driver_car_model == "NULL" ? null : driver.result[0].driver_car_model;
-                carMake.Text = driver.result[0].driver_car_make == null || driver.result[0].driver_car_make == "NULL" ? null : driver.result[0].driver_car_make;
-                insuranceCarrier.Text = driver.result[0].driver_insurance_carrier == null || driver.result[0].driver_insurance_carrier == "NULL" ? null : driver.result[0].driver_insurance_carrier;
-                insuranceNumber.Text = driver.result[0].driver_insurance_carrier == null || driver.result[0].driver_insurance_carrier == "NULL" ? null : driver.result[0].driver_insurance_carrier;
-                insuranceExpirationDate.Date = driver.result[0].driver_first_name == null || driver.result[0].driver_first_name == "NULL" ? DateTime.Now : DateTime.Parse(driver.result[0].driver_insurance_exp_date);
-                driveLicenseNumber.Text = driver.result[0].driver_license == null || driver.result[0].driver_license == "NULL" ? null : driver.result[0].driver_license;
-                driveLicenseExperirationDate.Date = driver.result[0].driver_first_name == null || driver.result[0].driver_first_name == "NULL" ? DateTime.Now : DateTime.Parse(driver.result[0].driver_insurance_exp_date);
-                accountNumber.Text = driver.result[0].bank_account_info == null || driver.result[0].bank_account_info == "NULL" ? null : driver.result[0].bank_account_info;
-                routingNumber.Text = driver.result[0].bank_routing_info == null || driver.result[0].bank_routing_info == "NULL" ? null : driver.result[0].bank_routing_info;
-                SetAvailableBusiness();
+                if (driver.result.Count != 0)
+                {
+
+
+                    EmergencyContact emergencyContact = new EmergencyContact();
+                    string emergencyContactString = SetDataBaseOnDriverProfile(driver.result[0].emergency_contact_name);
+
+                    if (emergencyContactString != null)
+                    {
+                        emergencyContact = ParseEmergencyContact(emergencyContactString);
+                    }
+
+                    if (SetDataBaseOnDriverProfile(driver.result[0].driver_street) == null)
+                    {
+                        displayAddress = true;
+                    }
+
+                    if(SetDataBaseOnDriverProfile(driver.result[0].driver_first_name) != null)
+                    {
+                        FirstNameEntry.IsEnabled = false;
+                    }
+
+                    if (SetDataBaseOnDriverProfile(driver.result[0].driver_last_name) != null)
+                    {
+                        LastNameEntry.IsEnabled = false;
+                    }
+
+                    if (SetDataBaseOnDriverProfile(driver.result[0].driver_street) != null)
+                    {
+                        double defaultResult = 0;
+
+                        addressToValidate.isValidated = true;
+                        addressToValidate.Street = SetDataBaseOnDriverProfile(driver.result[0].driver_street);
+
+                        if (Double.TryParse(driver.result[0].driver_latitude, out defaultResult))
+                        {
+                            addressToValidate.Latitude = Double.Parse(driver.result[0].driver_latitude);
+                        }
+
+                        if (Double.TryParse(driver.result[0].driver_latitude, out defaultResult))
+                        {
+                            addressToValidate.Longitude = Double.Parse(driver.result[0].driver_longitude);
+                        }
+
+
+                        addressValidationClient.SetPinOnMap(MapView, new Xamarin.Essentials.Location(addressToValidate.Latitude, addressToValidate.Longitude), addressToValidate.Street);
+
+                        //public void InitializeMap()
+                        //{
+                        //    map.MapType = MapType.Street;
+                        //    Position point = new Position(37.334789, -121.888138);
+                        //    var mapSpan = new MapSpan(point, 5, 5);
+                        //    map.MoveToRegion(mapSpan);
+                        //    map.Pins.Clear();
+                        //}
+                    }
+
+                    SetEntry(FirstNameEntry, SetDataBaseOnDriverProfile(driver.result[0].driver_first_name));
+                    SetEntry(LastNameEntry, SetDataBaseOnDriverProfile(driver.result[0].driver_last_name));
+                    SetEntry(EmailEntry, SetDataBaseOnDriverProfile(driver.result[0].driver_email));
+                    SetEntry(StreetEntry, SetDataBaseOnDriverProfile(driver.result[0].driver_street));
+                    SetEntry(UnitEntry, SetDataBaseOnDriverProfile(driver.result[0].driver_unit));
+                    SetEntry(CityEntry, SetDataBaseOnDriverProfile(driver.result[0].driver_city));
+                    SetEntry(StateEntry, SetDataBaseOnDriverProfile(driver.result[0].driver_state));
+                    SetEntry(ZipcodeEntry, SetDataBaseOnDriverProfile(driver.result[0].driver_zip));
+                    SetEntry(ContactFirstNameEntry, SetDataBaseOnDriverProfile(emergencyContact.firstName));
+                    SetEntry(ContactLastNameEntry, SetDataBaseOnDriverProfile(emergencyContact.lastName));
+                    SetEntry(ContactRelationshipEntry, SetDataBaseOnDriverProfile(driver.result[0].emergency_contact_relationship));
+                    SetEntry(CarYearEntry, SetDataBaseOnDriverProfile(driver.result[0].driver_car_year));
+                    SetEntry(CarModelEntry, SetDataBaseOnDriverProfile(driver.result[0].driver_car_model));
+                    SetEntry(carMakeEntry, SetDataBaseOnDriverProfile(driver.result[0].driver_car_make));
+                    SetEntry(InsuranceCarrierEntry, SetDataBaseOnDriverProfile(driver.result[0].driver_insurance_carrier));
+                    SetEntry(InsuranceNumberEntry, SetDataBaseOnDriverProfile(driver.result[0].driver_insurance_num));
+                    SetEntry(AccountNumberEntry, SetDataBaseOnDriverProfile(driver.result[0].bank_account_info));
+                    SetEntry(RoutingNumberEntry, SetDataBaseOnDriverProfile(driver.result[0].bank_routing_info));
+                    SetEntry(SSNEntry, SetDataBaseOnDriverProfile(driver.result[0].driver_ssn));
+                    SetEntry(DriveLicenseNumberEntry, SetDataBaseOnDriverProfile(driver.result[0].driver_license));
+                    OnPhoneTextChanged(PhoneEntry, SetEntry(SetDataBaseOnDriverProfile(driver.result[0].driver_phone_num)));
+                    OnPhoneTextChanged(ContactPhoneEntry, SetEntry(SetDataBaseOnDriverProfile(driver.result[0].emergency_contact_phone)));
+
+                    SetPickerDate(InsuranceDatePicker, SetDataBaseOnDriverProfile(driver.result[0].driver_insurance_exp_date));
+                    SetPickerDate(DriveLicenseDatePicker, SetDataBaseOnDriverProfile(driver.result[0].driver_license_exp));
+
+                    SetInsuranceImage(SetDataBaseOnDriverProfile(driver.result[0].driver_insurance_picture));
+
+                    SetAvailableBusiness(SetDataBaseOnDriverProfile(driver.result[0].business_id));
+                }
             }
         }
 
-        void SetDatePickers(DatePicker picker1, DatePicker picker2)
+        void SetPickerDate(DatePicker picker, string data)
         {
-            picker1.Date = DateTime.Now;
-            picker2.Date = DateTime.Now;
+            if (data != null)
+            {
+                OnDateSelectedChaged(picker, SetDateBaseOn(SetTimeBaseOnProfile(SetDataBaseOnDriverProfile(driver.result[0].driver_insurance_exp_date))));
+            }
+            else
+            {
+                InsuranceDatePicker.Date = DateTime.Now;
+            }
+        }
+
+        void SetInsuranceImage(string image)
+        {
+            if(image != null)
+            {
+                InsuranceImage.Source = image;
+            }
+        }
+
+        TextChangedEventArgs SetEntry(string data)
+        {
+            return new TextChangedEventArgs(null, data);
+        }
+
+        void SetEntry(Entry element, string data)
+        {
+            if(data != null)
+            {
+                element.Text = data;
+            }
+        }
+
+        void SetDatePicker(DatePicker element, string data)
+        {
+            
+        }
+
+        EmergencyContact ParseEmergencyContact(string contact)
+        {
+            EmergencyContact result = null;
+
+            result = JsonConvert.DeserializeObject<EmergencyContact>(contact);
+
+            return result;
+        }
+
+        DateTime SetTimeBaseOnProfile(string property)
+        {
+            DateTime result = new DateTime();
+
+            try
+            {
+                if (property != null && property != "NULL" && property != "")
+                {
+                    result = DateTime.Parse(property + " " + "00:00:00");
+                }
+            }
+            catch
+            {
+
+            }
+
+            return result;
+        }
+
+        DateChangedEventArgs SetDateBaseOn(DateTime date)
+        {
+            return new DateChangedEventArgs(DateTime.Now, date);
+        }
+
+
+        string SetDataBaseOnDriverProfile(string property)
+        {
+            string result = null;
+
+            try
+            {
+                result = property == null || property == "NULL"  ||  property == "0000-00-00" ? null : property;
+            }
+            catch
+            {
+
+            }
+
+            return result;
         }
 
         void SetAccountKeysValues()
@@ -130,25 +283,22 @@ namespace JustDelivered.Views
                 "latitude",
                 "longitude",
                 "platform",
-                "driver_uid"
+                "driver_uid",
+                "social_id",
+                "password",
+                "referal",
+                "schedule"
             };
 
             foreach(string k in keys)
             {
-                if(k == "organizations")
-                {
-                    account.Add(k, new List<string>());
-                }
-                else
-                {
-                    account.Add(k, null);
-                }
+                account.Add(k, null);
             }
 
             account["platform"] = user.platform;
         }
 
-        async void SetAvailableBusiness()
+        async void SetAvailableBusiness(string organizations)
         {
             try
             {
@@ -160,11 +310,21 @@ namespace JustDelivered.Views
 
                     var contentString = await endpointCall.Content.ReadAsStringAsync();
                     var data = JsonConvert.DeserializeObject<Business>(contentString);
+
                     foreach (Models.Item item in data.result.result)
                     {
-                        if (driver.result[0].business_id.Contains(item.business_name))
+
+                        if (organizations != null && organizations != "" && organizations != "NULL")
                         {
-                            item.businessSelected = true;
+                            if (organizations.Contains(item.business_uid))
+                            {
+                                item.businessSelected = true;
+                                businessSelected.Add(item.business_uid);
+                            }
+                            else
+                            {
+                                item.businessSelected = false;
+                            }
                         }
                         else
                         {
@@ -173,10 +333,6 @@ namespace JustDelivered.Views
 
                         businesSource.Add(item);
                     }
-
-                    
-                    
-                    BindableLayout.SetItemsSource(organizationView,businesSource);
 
                     if (businesSource.Count == 0)
                     {
@@ -187,6 +343,8 @@ namespace JustDelivered.Views
                     {
                         organizationMessageLabel.IsVisible = false;
                     }
+
+                    BindableLayout.SetItemsSource(organizationView, businesSource);
                 }
                 else
                 {
@@ -228,11 +386,6 @@ namespace JustDelivered.Views
         async void SaveChanges(System.Object sender, System.EventArgs e)
         {
             var client = new SignUp();
-            foreach(string key in account.Keys)
-            {
-                Debug.WriteLine("KEY: {0}, VALUE: {1}", key, account[key]);
-            }
-
 
             var businessIDs = "";
             foreach (string id in businessSelected)
@@ -240,13 +393,27 @@ namespace JustDelivered.Views
                 businessIDs += id + ",";
             }
 
+
             if (businessIDs != "")
             {
+                account["organizations"] = "";
                 businessIDs = businessIDs.Remove(businessIDs.Length - 1);
             }
 
+            account["street"] = addressToValidate.Street;
+            account["latitude"] = addressToValidate.Latitude.ToString();
+            account["longitude"] = addressToValidate.Longitude.ToString();
+            account["social_id"] = driver == null && driver.result.Count == 0 ? null : driver.result[0].social_id;
+            account["platform"] = user.platform;
             account["driver_uid"] = user.id;
             account["organizations"] = businessIDs;
+            account["referal"] = driver == null && driver.result.Count == 0 ? null: driver.result[0].referral_source;
+            account["schedule"] = driver == null && driver.result.Count == 0 ? null : driver.result[0].driver_available_hours;
+
+            foreach (string key in account.Keys)
+            {
+                Debug.WriteLine("KEY: {0}, VALUE: {1}", key, account[key]);
+            }
 
             var result = await client.UpdateUserProfile(account);
 
@@ -260,8 +427,6 @@ namespace JustDelivered.Views
             {
                 await DisplayAlert("Oops", "We were not able to update your profile. Please try again.", "OK");
             }
-
-
         }
 
         public static string GetAppVersion()
@@ -298,64 +463,64 @@ namespace JustDelivered.Views
 
 
 
-        bool ValidateEntries()
-        {
-            // remove || String.IsNullOrEmpty(address.Text)
-            bool result = false;
-            if (!(
-                 String.IsNullOrEmpty(firstName.Text)
-              || String.IsNullOrEmpty(lastName.Text)
-              || String.IsNullOrEmpty(phoneNumber.Text)
-              || String.IsNullOrEmpty(email.Text)
-              || String.IsNullOrEmpty(city.Text)
-              || String.IsNullOrEmpty(state.Text)
-              || String.IsNullOrEmpty(zipcode.Text)
-              || String.IsNullOrEmpty(emergencyFirstName.Text)
-              || String.IsNullOrEmpty(emergencyLastName.Text)
-              || String.IsNullOrEmpty(emergencyRelationship.Text)
-              || String.IsNullOrEmpty(emergencyPhoneNumber.Text)
-              || String.IsNullOrEmpty(ssNumber.Text)
-              || String.IsNullOrEmpty(carYear.Text)
-              || String.IsNullOrEmpty(carModel.Text)
-              || String.IsNullOrEmpty(carMake.Text)
-              || String.IsNullOrEmpty(insuranceCarrier.Text)
-              || String.IsNullOrEmpty(insuranceNumber.Text)
-              || String.IsNullOrEmpty(insuraceExpDate)
-              || String.IsNullOrEmpty(driveLicenseNumber.Text)
-              || String.IsNullOrEmpty(licenseExpDate)
-              || String.IsNullOrEmpty(accountNumber.Text)
-              || String.IsNullOrEmpty(routingNumber.Text)
-              )
-              )
-            {
-                if (businessSelected.Count != 0)
-                {
-                    if (insurancePicture != null)
-                    {
-                        if (addressToValidate != null && addressToValidate.isValidated == true)
-                        {
-                            result = true;
-                        }
-                    }
-                }
+        //bool ValidateEntries()
+        //{
+        //    // remove || String.IsNullOrEmpty(address.Text)
+        //    bool result = false;
+        //    if (!(
+        //         String.IsNullOrEmpty(firstName.Text)
+        //      || String.IsNullOrEmpty(lastName.Text)
+        //      || String.IsNullOrEmpty(phoneNumber.Text)
+        //      || String.IsNullOrEmpty(email.Text)
+        //      || String.IsNullOrEmpty(city.Text)
+        //      || String.IsNullOrEmpty(state.Text)
+        //      || String.IsNullOrEmpty(zipcode.Text)
+        //      || String.IsNullOrEmpty(emergencyFirstName.Text)
+        //      || String.IsNullOrEmpty(emergencyLastName.Text)
+        //      || String.IsNullOrEmpty(emergencyRelationship.Text)
+        //      || String.IsNullOrEmpty(emergencyPhoneNumber.Text)
+        //      || String.IsNullOrEmpty(ssNumber.Text)
+        //      || String.IsNullOrEmpty(carYear.Text)
+        //      || String.IsNullOrEmpty(carModel.Text)
+        //      || String.IsNullOrEmpty(carMake.Text)
+        //      || String.IsNullOrEmpty(insuranceCarrier.Text)
+        //      || String.IsNullOrEmpty(insuranceNumber.Text)
+        //      || String.IsNullOrEmpty(insuraceExpDate)
+        //      || String.IsNullOrEmpty(driveLicenseNumber.Text)
+        //      || String.IsNullOrEmpty(licenseExpDate)
+        //      || String.IsNullOrEmpty(accountNumber.Text)
+        //      || String.IsNullOrEmpty(routingNumber.Text)
+        //      )
+        //      )
+        //    {
+        //        if (businessSelected.Count != 0)
+        //        {
+        //            if (insurancePicture != null)
+        //            {
+        //                if (addressToValidate != null && addressToValidate.isValidated == true)
+        //                {
+        //                    result = true;
+        //                }
+        //            }
+        //        }
 
-            }
-            return result;
+        //    }
+        //    return result;
 
 
-            //|| String.IsNullOrEmpty(emergencyAddress.Text)
-            //|| String.IsNullOrEmpty(emergencyCity.Text)
-            //|| String.IsNullOrEmpty(emergencyUnit.Text)
-            //|| String.IsNullOrEmpty(emergencyState.Text)
-            //|| String.IsNullOrEmpty(emergencyZipcode.Text)
-        }
+        //    //|| String.IsNullOrEmpty(emergencyAddress.Text)
+        //    //|| String.IsNullOrEmpty(emergencyCity.Text)
+        //    //|| String.IsNullOrEmpty(emergencyUnit.Text)
+        //    //|| String.IsNullOrEmpty(emergencyState.Text)
+        //    //|| String.IsNullOrEmpty(emergencyZipcode.Text)
+        //}
 
         bool ValidatePassword()
         {
             bool result = false;
-            if (!(String.IsNullOrEmpty(password1.Text) || String.IsNullOrEmpty(password2.Text)))
+            if (!(String.IsNullOrEmpty(Password1Entry.Text) || String.IsNullOrEmpty(Password1Entry.Text)))
             {
-                if (password1.Text == password2.Text)
+                if (Password1Entry.Text == Password1Entry.Text)
                 {
                     result = true;
                 }
@@ -370,7 +535,7 @@ namespace JustDelivered.Views
 
         async void TakePicture(System.Object sender, System.EventArgs e)
         {
-            var image = (Image)sender;
+            var image = (Button)sender;
 
             try
             {
@@ -379,7 +544,7 @@ namespace JustDelivered.Views
                 {
 
                     var path = photo.Path;
-                    insuranceImage.Source = ImageSource.FromStream(() => { return photo.GetStream(); });
+                    InsuranceImage.Source = ImageSource.FromStream(() => { return photo.GetStream(); });
                     insurancePicture = File.ReadAllBytes(path);
                     imageFrame.IsVisible = true;
 
@@ -429,63 +594,91 @@ namespace JustDelivered.Views
 
         async void OnAddressChanged(object sender, EventArgs eventArgs)
         {
-            if (!String.IsNullOrEmpty(AddressEntry.Text))
+            var entry = (Entry)sender;
+            var frame = (Frame)entry.Parent;
+
+            if (displayAddress)
             {
-                if (addressToValidate != null)
+                if (!String.IsNullOrEmpty(StreetEntry.Text))
                 {
-                    if (addressToValidate.Street != AddressEntry.Text)
+                    if (frame.BorderColor == Color.LightGray)
                     {
-                        addressList.ItemsSource = await addr.GetPlacesPredictionsAsync(AddressEntry.Text);
+                        frame.BorderColor = Color.Red;
+                    }
+
+                    if (addressToValidate != null)
+                    {
+                        if (addressToValidate.Street != StreetEntry.Text)
+                        {
+                            AddressListView.ItemsSource = await addr.GetPlacesPredictionsAsync(StreetEntry.Text);
+                            addressEntryFocused(sender, eventArgs);
+                        }
+                    }
+                    else
+                    {
+                        AddressListView.ItemsSource = await addr.GetPlacesPredictionsAsync(StreetEntry.Text);
                         addressEntryFocused(sender, eventArgs);
                     }
                 }
                 else
                 {
-                    addressList.ItemsSource = await addr.GetPlacesPredictionsAsync(AddressEntry.Text);
-                    addressEntryFocused(sender, eventArgs);
+                    if (frame.BorderColor == Color.Red)
+                    {
+                        frame.BorderColor = Color.LightGray;
+                        SetAccountValues(entry.ClassId, null);
+                    }
+
+                    addressEntryUnfocused(sender, eventArgs);
+                    addressToValidate = null;
                 }
             }
             else
             {
-                addressEntryUnfocused(sender, eventArgs);
-                addressToValidate = null;
+                if (!String.IsNullOrEmpty(entry.Text))
+                {
+                    if (frame.BorderColor == Color.LightGray)
+                    {
+                        frame.BorderColor = Color.Red;
+                    }
+                }
+                else
+                {
+                    if (frame.BorderColor == Color.Red)
+                    {
+                        frame.BorderColor = Color.LightGray;
+                        SetAccountValues(entry.ClassId, null);
+                    }
+                }
             }
         }
 
         void addressEntryFocused(object sender, EventArgs eventArgs)
         {
-            if (!String.IsNullOrEmpty(AddressEntry.Text))
+          
+            if (!String.IsNullOrEmpty(StreetEntry.Text))
             {
-                addr.addressEntryFocused(addressList, addressFrame);
+                displayAddress = true;
+                addr.addressEntryFocused(AddressListView, addressFrame);
             }
         }
 
         void addressEntryUnfocused(object sender, EventArgs eventArgs)
         {
-            addr.addressEntryUnfocused(addressList, addressFrame);
-            if (addressToValidate != null && addressToValidate.isValidated == true)
-            {
-                //addressView.IsVisible = true;
-
-            }
-            else
-            {
-                //addressView.IsVisible = false;
-            }
+            addr.addressEntryUnfocused(AddressListView, addressFrame);
         }
 
         async void addressSelected(System.Object sender, SelectedItemChangedEventArgs e)
         {
-            AddressEntry.TextChanged -= OnAddressChanged;
-            addressToValidate = addr.addressSelected(addressList, AddressEntry, addressFrame);
+            StreetEntry.TextChanged -= OnAddressChanged;
+            addressToValidate = addr.addressSelected(AddressListView, StreetEntry, addressFrame);
             addressToValidate.isValidated = false;
-            AddressEntry.Text = addressToValidate.Street;
+            StreetEntry.Text = addressToValidate.Street;
             string zipcode = await addr.getZipcode(addressToValidate.PredictionID);
             if (zipcode != null)
             {
                 addressToValidate.ZipCode = zipcode;
             }
-            AddressEntry.TextChanged += OnAddressChanged;
+            StreetEntry.TextChanged += OnAddressChanged;
             ValidateAddress(sender, e);
         }
 
@@ -495,7 +688,7 @@ namespace JustDelivered.Views
             {
                 if (addressToValidate != null)
                 {
-                    if (!String.IsNullOrEmpty(AddressEntry.Text))
+                    if (!String.IsNullOrEmpty(StreetEntry.Text))
                     {
                         var client = new AddressValidation();
                         var addressStatus = client.ValidateAddressString(addressToValidate.Street, addressToValidate.Unit, addressToValidate.City, addressToValidate.State, addressToValidate.ZipCode);
@@ -514,22 +707,19 @@ namespace JustDelivered.Views
                                 {
                                     await DisplayAlert("Great!", "Your address is valid. Please continue with your application", "OK");
                                     //account["street"] = addressToValidate.Street;
-                                    unit.Text = addressToValidate.Unit;
-                                    city.Text = addressToValidate.City;
-                                    state.Text = addressToValidate.State;
-                                    zipcode.Text = addressToValidate.ZipCode;
-
+                                    StreetEntry.Text = addressToValidate.Street;
+                                    UnitEntry.Text = addressToValidate.Unit;
+                                    CityEntry.Text = addressToValidate.City;
+                                    StateEntry.Text = addressToValidate.State;
+                                    ZipcodeEntry.Text = addressToValidate.ZipCode;
 
                                     account["street"] = addressToValidate.Street;
-                                    account["unit"] = addressToValidate.Unit;
-                                    account["city"] = addressToValidate.City;
-                                    account["state"] = addressToValidate.State;
-                                    account["zipcode"] = addressToValidate.ZipCode;
                                     account["latitude"] = addressToValidate.Latitude.ToString();
                                     account["longitude"] = addressToValidate.Longitude.ToString();
 
-
                                     addressToValidate.isValidated = true;
+
+                                    addressValidationClient.SetPinOnMap(MapView, new Xamarin.Essentials.Location(addressToValidate.Latitude, addressToValidate.Longitude), addressToValidate.Street);
                                 }
                                 else if (addressStatus == "D")
                                 {
@@ -538,21 +728,19 @@ namespace JustDelivered.Views
                                     {
                                         await DisplayAlert("Great!", "Your address is valid. Please continue with your application", "OK");
                                         addressToValidate.Unit = unit1;
-                                        //address.Text = addressToValidate.Street;
-                                        unit.Text = addressToValidate.Unit;
-                                        city.Text = addressToValidate.City;
-                                        state.Text = addressToValidate.State;
-                                        zipcode.Text = addressToValidate.ZipCode;
+                                        StreetEntry.Text = addressToValidate.Street;
+                                        UnitEntry.Text = addressToValidate.Unit;
+                                        CityEntry.Text = addressToValidate.City;
+                                        StateEntry.Text = addressToValidate.State;
+                                        ZipcodeEntry.Text = addressToValidate.ZipCode;
 
                                         account["street"] = addressToValidate.Street;
-                                        account["unit"] = addressToValidate.Unit;
-                                        account["city"] = addressToValidate.City;
-                                        account["state"] = addressToValidate.State;
-                                        account["zipcode"] = addressToValidate.ZipCode;
                                         account["latitude"] = addressToValidate.Latitude.ToString();
                                         account["longitude"] = addressToValidate.Longitude.ToString();
 
                                         addressToValidate.isValidated = true;
+
+                                        addressValidationClient.SetPinOnMap(MapView, new Xamarin.Essentials.Location(addressToValidate.Latitude, addressToValidate.Longitude), addressToValidate.Street);
                                     }
                                     return;
                                 }
@@ -642,10 +830,9 @@ namespace JustDelivered.Views
                 }
             }
 
-            if (e.NewTextValue != null && e.OldTextValue != null)
+            if (e.NewTextValue != null)
             {
-                if (e.NewTextValue.Length > e.OldTextValue.Length)
-                {
+
 
                     var localInput = "";
 
@@ -687,7 +874,7 @@ namespace JustDelivered.Views
 
                             entry.Text = phone;
 
-                            SetAccountValues(entry.ClassId, phone.Trim());
+                            SetAccountValues(entry.ClassId, localInput.Trim());
 
                         }
                         else
@@ -695,7 +882,7 @@ namespace JustDelivered.Views
                             DisplayAlert("Oops", "You enter a non numberical value. Please enter 0-9 digits.", "OK");
                             entry.Text = e.OldTextValue;
                         }
-                    }
+                    
                 }
             }
             else

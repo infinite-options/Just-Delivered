@@ -64,6 +64,16 @@ namespace JustDelivered.Models
             return result;
         }
 
+        public void InitializeMap(Xamarin.Forms.Maps.Map map)
+        {
+            map.MapType = MapType.Street;
+            Position point = new Position(37.334789, -121.888138);
+            var mapSpan = new MapSpan(point, 5, 5);
+            map.MoveToRegion(mapSpan);
+            map.Pins.Clear();
+        }
+
+
         public string ValidateAddressString(string address, string unit, string city, string state, string zipcode)
         {
             string result = null;

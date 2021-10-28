@@ -299,15 +299,23 @@ namespace JustDelivered.Views
 
         public DeliveriesPage()
         {
-            InitializeComponent();
-            SetDefaultLocationOnMap();
-            VerifyUserAccount();
-            //CheckVersion();
-
-            if (!isTimerOn)
+            try
             {
-                isTimerOn = true;
-                StartTimer();
+                InitializeComponent();
+                SetDefaultLocationOnMap();
+                VerifyUserAccount();
+                //CheckVersion();
+
+                //if (!isTimerOn)
+                //{
+                //    isTimerOn = true;
+                //    StartTimer();
+                //}
+
+            }
+            catch (Exception s )
+            {
+                Debug.WriteLine(s.Message);
             }
         }
 
