@@ -17,7 +17,7 @@ namespace JustDelivered.Views
 {
     public partial class DriverSchedulePage : ContentPage
     {
-
+        // Attributes
         public ObservableCollection<Schedule> scheduleSource = new ObservableCollection<Schedule>();
 
         public ObservableCollection<PickerTimeHour> hourSourceStart = new ObservableCollection<PickerTimeHour>();
@@ -32,6 +32,7 @@ namespace JustDelivered.Views
 
         public string dayToAddScheduleTime = "";
 
+        // Constructor
         public DriverSchedulePage()
         {
             InitializeComponent();
