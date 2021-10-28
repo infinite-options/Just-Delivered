@@ -304,7 +304,7 @@ namespace JustDelivered.Views
                 InitializeComponent();
                 SetDefaultLocationOnMap();
                 VerifyUserAccount();
-                //CheckVersion();
+                CheckVersion();
 
                 //if (!isTimerOn)
                 //{
