@@ -179,11 +179,10 @@ namespace JustDelivered.Models
                 user = new User();
                 user.id = data.result.driver_uid;
                 user.sessionTime = expDate;
+                user.platform = account.platform;
                 user.email = "";
                 user.socialId = "";
-                user.platform = account.socialID;
                 user.route_id = "";
-
 
                 return true;
             }
@@ -198,11 +197,27 @@ namespace JustDelivered.Models
                 var versionString = DependencyService.Get<IAppVersionAndBuild>().GetVersionNumber();
                 var buildString = DependencyService.Get<IAppVersionAndBuild>().GetBuildNumber();
 
-                result = "Version: " + versionString + ", Build: " + buildString;
+                result = GetDevicePlatform() + versionString + ", Build: " + buildString;
             }
             catch
             {
 
+            }
+
+            return result;
+        }
+
+        string GetDevicePlatform()
+        {
+            string result = "MOBILE: ";
+
+            if(Device.RuntimePlatform == Device.iOS)
+            {
+                result += "iOS: ";
+            }
+            else if (Device.RuntimePlatform == Device.Android)
+            {
+                result += "Android: ";
             }
 
             return result;
@@ -290,7 +305,8 @@ namespace JustDelivered.Models
 
             var request = new HttpRequestMessage();
 
-            request.RequestUri = new Uri(Constant.SignUpUrl);
+
+            request.RequestUri = new Uri(SetURLBaseOnPlatform((string)account["platform"]));
             request.Method = HttpMethod.Post;
             request.Content = content;
 
@@ -298,6 +314,28 @@ namespace JustDelivered.Models
             if (response.IsSuccessStatusCode)
             {
                 result = true;
+
+            }
+
+            return result;
+        }
+
+        string SetURLBaseOnPlatform(string type)
+        {
+            string result = "";
+            try
+            {
+                if (type == "DIRECT")
+                {
+                    result = Constant.UpdateDirectProfile;
+                }
+                else
+                {
+                    result = Constant.UpdateSocialProfile;
+                }
+            }
+            catch
+            {
 
             }
 

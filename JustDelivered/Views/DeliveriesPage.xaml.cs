@@ -507,12 +507,12 @@ namespace JustDelivered.Views
 
 
                 //LIFE
-                //routeClient.uid = user.id;
-                //routeClient.delivery_date = currentDate.ToString("yyyy-MM-dd 10:00:00");
+                routeClient.uid = user.id;
+                routeClient.delivery_date = currentDate.ToString("yyyy-MM-dd 10:00:00");
 
                 //TEST
-                routeClient.uid = user.id;
-                routeClient.delivery_date = currentDate.ToString("2021-10-24 10:00:00");
+                //routeClient.uid = user.id;
+                //routeClient.delivery_date = currentDate.ToString("2021-10-24 10:00:00");
 
                 var socialLogInPostSerialized = JsonConvert.SerializeObject(routeClient);
 

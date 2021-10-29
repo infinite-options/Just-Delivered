@@ -78,7 +78,7 @@ namespace JustDelivered.Models
                     {
                         userToSignUp = new SignUpAccount();
                         userToSignUp.email = userEmail.ToLower().Trim();
-                        platform = "DIRECT";
+                        userToSignUp.platform = "DIRECT";
 
                         userInformation = new AccountSalt
                         {
@@ -144,7 +144,7 @@ namespace JustDelivered.Models
                         userToSignUp = new SignUpAccount();
                         userToSignUp.email = userEmail.ToLower().Trim();
                         userToSignUp.password = userPassword.Trim();
-                        platform = "DIRECT";
+                        userToSignUp.platform = "DIRECT";
 
                         isUserVerified = "USER NEEDS TO SIGN UP";
                     }
@@ -157,9 +157,9 @@ namespace JustDelivered.Models
                         user = new User();
                         user.id = authetication.result[0].driver_uid;
                         user.sessionTime = expDate;
+                        user.platform = "DIRECT";
                         user.email = "";
                         user.socialId = "";
-                        user.platform = "DIRECT";
                         user.route_id = "";
 
                         //var notificationStatus = await SetUserRemoteNotification();
@@ -532,9 +532,9 @@ namespace JustDelivered.Models
                                 user = new User();
                                 user.id = authetication.result[0].driver_uid;
                                 user.sessionTime = expDate;
+                                user.platform = platform;
                                 user.email = "";
                                 user.socialId = "";
-                                user.platform = platform;
                                 user.route_id = "";
 
                                 var statusUpdatingTokens = await UpdateAccessRefreshToken(user.id, accessToken, refreshToken);

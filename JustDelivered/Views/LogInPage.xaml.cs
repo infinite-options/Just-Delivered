@@ -25,7 +25,7 @@ namespace JustDelivered.Views
     public partial class LogInPage : ContentPage
     {
         public string direction = "";
-
+        public static bool isDirectCredentialsVerified = false;
         public LogInPage()
         {
             InitializeComponent();
@@ -335,21 +335,15 @@ namespace JustDelivered.Views
                 {
                     UserDialogs.Instance.HideLoading();
 
-                    Debug.WriteLine("DIRECTION VALUE: " + direction);
-                    if (direction == "")
-                    {
+                    //Debug.WriteLine("DIRECTION VALUE: " + direction);
+                    //if (direction == "")
+                    //{
+                    //    Application.Current.MainPage = new DeliveriesPage();
+                    //}
+                    //else
+                    //{
                         Application.Current.MainPage = new DeliveriesPage();
-                    }
-                    else
-                    {
 
-                        var client = new SignUp();
-
-                        if(userToSignUp != null)
-                        {
-                            var s = await client.FastSignUp(userToSignUp);
-
-                        }
                         //Dictionary<string, Page> array = new Dictionary<string, Page>();
 
                         //array.Add("ServingFresh.Views.CheckoutPage", new CheckoutPage());
@@ -362,7 +356,7 @@ namespace JustDelivered.Views
 
                         //var root = Application.Current.MainPage;
                         //Application.Current.MainPage = array[root.ToString()];
-                    }
+                    //}
 
                 }
                 else if (status == "USER NEEDS TO SIGN UP")
@@ -374,18 +368,29 @@ namespace JustDelivered.Views
 
                     if (userToSignUp != null)
                     {
-                        var s = await client.FastSignUp(userToSignUp);
-                        if (s)
+                        if (userToSignUp.platform != "DIRECT")
                         {
-                            Application.Current.MainPage = new DeliveriesPage();
-
+                            var result = await client.FastSignUp(userToSignUp);
+                            if (result)
+                            {
+                                Application.Current.MainPage = new DeliveriesPage();
+                            }
+                            else
+                            {
+                                await Application.Current.MainPage.DisplayAlert("Oops", "We were not able to create an account. Please try again.", "OK");
+                            }
                         }
                         else
                         {
-                            await Application.Current.MainPage.DisplayAlert("Oops", "We were not able to create an account. Please try again.", "OK");
+                            await Navigation.PushModalAsync(new DriverCredentialsVerificationPage(userToSignUp.email, userToSignUp.password));
                         }
-
                     }
+                    else
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Oops", "We were not able to create an account. Please try again.", "OK");
+                    }
+
+                    
 
 
                     //if (messageList != null)

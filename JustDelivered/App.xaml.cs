@@ -113,7 +113,7 @@ namespace JustDelivered
             user.sessionTime = expDate;
             user.email = "";
             user.socialId = "";
-            user.platform = "";
+            user.platform = temp.platform;
             user.route_id = "";
         }
 
